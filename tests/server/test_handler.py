@@ -1,10 +1,12 @@
 """Tests for the WebSocket connection handler."""
+
 from __future__ import annotations
 
 import json
 from unittest.mock import AsyncMock, MagicMock
 
 import numpy as np
+import websockets.exceptions
 
 from counter_cruiser.server.handler import handle_connection
 from counter_cruiser.server.model import DetectionModel
@@ -19,6 +21,8 @@ from counter_cruiser.shared.protocol import (
 
 
 class FakeModel(DetectionModel):
+    """A stub detection model that returns a fixed set of boxes."""
+
     def __init__(self, boxes: list[BoundingBox] | None = None) -> None:
         self._boxes = boxes or []
 
@@ -37,13 +41,17 @@ def _fake_ws(messages: list[str]) -> MagicMock:
 
 def aiter_from(items: list):
     """Async iterator over *items*."""
+
     async def _gen():
         for item in items:
             yield item
+
     return _gen()
 
 
 class TestHandleConnection:
+    """Tests for handle_connection's message dispatch and disconnect handling."""
+
     async def test_valid_frame_returns_detection(
         self, sample_frame: np.ndarray
     ) -> None:
@@ -103,3 +111,32 @@ class TestHandleConnection:
         ws = _fake_ws(frames)
         await handle_connection(ws, model)
         assert ws.send.call_count == 3
+
+    async def test_connection_closed_during_iteration_returns_quietly(
+        self,
+    ) -> None:
+        ws = MagicMock()
+        ws.remote_address = ('127.0.0.1', 12345)
+
+        def _raise_closed():
+            raise websockets.exceptions.ConnectionClosed(None, None)
+
+        ws.__aiter__ = MagicMock(side_effect=_raise_closed)
+        ws.send = AsyncMock()
+
+        await handle_connection(ws, FakeModel())
+
+        ws.send.assert_not_called()
+
+    async def test_connection_closed_during_send_propagates_without_error_reply(
+        self, sample_frame: np.ndarray
+    ) -> None:
+        frame_msg = encode_frame(sample_frame, frame_id=7, quality=85)
+        ws = _fake_ws([serialize(frame_msg)])
+        ws.send = AsyncMock(
+            side_effect=websockets.exceptions.ConnectionClosed(None, None)
+        )
+
+        await handle_connection(ws, FakeModel())
+
+        ws.send.assert_called_once()

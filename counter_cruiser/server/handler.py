@@ -1,4 +1,5 @@
 """WebSocket connection handler for the inference server."""
+
 from __future__ import annotations
 
 import logging
@@ -42,14 +43,12 @@ async def handle_connection(websocket, model: DetectionModel) -> None:
                         processing_time_ms=elapsed_ms,
                     )
                     await websocket.send(serialize(result))
+            except websockets.exceptions.ConnectionClosed:
+                raise
             except Exception as exc:
                 logger.exception('Error processing message: %s', exc)
-                frame_id = (
-                    msg.frame_id if isinstance(msg, FrameMessage) else None
-                )
-                error_msg = make_error(
-                    'processing_error', str(exc), frame_id
-                )
+                frame_id = msg.frame_id if isinstance(msg, FrameMessage) else None
+                error_msg = make_error('processing_error', str(exc), frame_id)
                 await websocket.send(serialize(error_msg))
     except websockets.exceptions.ConnectionClosed:
         logger.info('Client disconnected: %s', websocket.remote_address)
