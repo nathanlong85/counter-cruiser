@@ -76,7 +76,7 @@
 
 ## 11. Finalization
 
-- [ ] 11.1 Run full test suite; confirm 100% coverage
-- [ ] 11.2 Run `ruff check` and `ruff format`; resolve all findings
-- [ ] 11.3 Verify docstrings on all public modules/classes/functions
-- [ ] 11.4 Update root `CLAUDE.md` Architecture/Commands sections to reflect the real structure
+- [x] 11.1 Run full test suite; confirm 100% coverage
+- [x] 11.2 Run `ruff check` and `ruff format`; resolve all findings
+- [x] 11.3 Verify docstrings on all public modules/classes/functions
+- [x] 11.4 Update root `CLAUDE.md` Architecture/Commands sections to reflect the real structure

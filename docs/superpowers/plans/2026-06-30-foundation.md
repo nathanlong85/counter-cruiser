@@ -2697,7 +2697,7 @@ git commit -m "test: integration tests for elevated and floor dog pipeline repor
 **Files:**
 - Modify: `CLAUDE.md` (Architecture/Commands sections)
 
-- [ ] **Step 12.1 — Run full test suite with coverage**
+- [x] **Step 12.1 — Run full test suite with coverage**
 
 ```bash
 pytest --cov=counter_cruiser --cov-report=term-missing --cov-fail-under=100
@@ -2705,7 +2705,7 @@ pytest --cov=counter_cruiser --cov-report=term-missing --cov-fail-under=100
 
 Expected: all tests pass, coverage at 100%. If any line is missed, either add a test or add `# pragma: no cover` with justification in a comment.
 
-- [ ] **Step 12.2 — Run ruff lint**
+- [x] **Step 12.2 — Run ruff lint**
 
 ```bash
 ruff check .
@@ -2713,7 +2713,7 @@ ruff check .
 
 Expected: exits 0 with no findings. Fix any violations; do not suppress without justification.
 
-- [ ] **Step 12.3 — Run ruff formatter check**
+- [x] **Step 12.3 — Run ruff formatter check**
 
 ```bash
 ruff format --check .
@@ -2721,7 +2721,7 @@ ruff format --check .
 
 Expected: exits 0. If not, run `ruff format .` and re-check.
 
-- [ ] **Step 12.4 — Verify docstrings on all public symbols**
+- [x] **Step 12.4 — Verify docstrings on all public symbols**
 
 ```bash
 ruff check --select D .
@@ -2729,7 +2729,7 @@ ruff check --select D .
 
 If `D` rules are not in the project config, manually verify: every public module, class, and function has at least a one-line docstring. Private helpers (leading `_`) are exempt.
 
-- [ ] **Step 12.5 — Update CLAUDE.md architecture section**
+- [x] **Step 12.5 — Update CLAUDE.md architecture section**
 
 In `CLAUDE.md`, update (or create) an Architecture section reflecting the real layout:
 
@@ -2768,7 +2768,7 @@ python -m counter_cruiser.client
 ```
 ```
 
-- [ ] **Step 12.6 — Final commit**
+- [x] **Step 12.6 — Final commit**
 
 ```bash
 git add CLAUDE.md
