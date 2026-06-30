@@ -33,13 +33,13 @@
 
 ## 5. Configuration (configuration)
 
-- [ ] 5.1 Write tests for `Zone` model: valid zone loads, <3 points rejected, no-zones permitted
-- [ ] 5.2 Implement `Zone` model with polygon validation
-- [ ] 5.3 Write tests for client/server settings: correct fields present, type/range/unknown-key rejection, range validators
-- [ ] 5.4 Implement `ClientSettings`, `ServerSettings`, shared base with `extra='forbid'` and field validators
-- [ ] 5.5 Write tests for loading: default path, `COUNTER_CRUISER_CONFIG` override, missing file → defaults, env-var precedence
-- [ ] 5.6 Implement TOML loading + precedence (env > file > defaults)
-- [ ] 5.7 Add example TOML config files for client and server (used as test fixtures and user templates)
+- [x] 5.1 Write tests for `Zone` model: valid zone loads, <3 points rejected, no-zones permitted
+- [x] 5.2 Implement `Zone` model with polygon validation
+- [x] 5.3 Write tests for client/server settings: correct fields present, type/range/unknown-key rejection, range validators
+- [x] 5.4 Implement `ClientSettings`, `ServerSettings`, shared base with `extra='forbid'` and field validators
+- [x] 5.5 Write tests for loading: default path, `COUNTER_CRUISER_CONFIG` override, missing file → defaults, env-var precedence
+- [x] 5.6 Implement TOML loading + precedence (env > file > defaults)
+- [x] 5.7 Add example TOML config files for client and server (used as test fixtures and user templates)
 
 ## 6. Server: model abstraction & device selection (detection-pipeline)
 

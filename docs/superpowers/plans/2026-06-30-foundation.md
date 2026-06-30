@@ -1084,7 +1084,7 @@ git commit -m "feat: implement typed WebSocket protocol models, serialization, a
 
 **ServerSettings fields:** `host: str = '0.0.0.0'`, `port: int = 8765`, `model_name: str = 'yolov8n.pt'`, `device: str = 'auto'`, `confidence_threshold: float = 0.5` (0.0–1.0)
 
-- [ ] **Step 6.1 — Write failing tests**
+- [x] **Step 6.1 — Write failing tests**
 
 `tests/config/test_config.py`:
 ```python
@@ -1199,7 +1199,7 @@ class TestTomlLoading:
         assert result.confidence_threshold == pytest.approx(0.7)
 ```
 
-- [ ] **Step 6.2 — Run to confirm failures**
+- [x] **Step 6.2 — Run to confirm failures**
 
 ```bash
 pytest tests/config/test_config.py -v
@@ -1207,7 +1207,7 @@ pytest tests/config/test_config.py -v
 
 Expected: ModuleNotFoundError.
 
-- [ ] **Step 6.3 — Implement config models**
+- [x] **Step 6.3 — Implement config models**
 
 `counter_cruiser/config/models.py`:
 ```python
@@ -1298,7 +1298,7 @@ class ServerSettings(_BaseConfig):
         return v
 ```
 
-- [ ] **Step 6.4 — Implement TOML loader**
+- [x] **Step 6.4 — Implement TOML loader**
 
 `counter_cruiser/config/loader.py`:
 ```python
@@ -1356,7 +1356,7 @@ def load_server_config(path: Path | None = None) -> ServerSettings:
     return ServerSettings(**data)
 ```
 
-- [ ] **Step 6.5 — Create fixture TOML files**
+- [x] **Step 6.5 — Create fixture TOML files**
 
 `fixtures/client.toml`:
 ```toml
@@ -1393,7 +1393,7 @@ device = "auto"
 confidence_threshold = 0.5
 ```
 
-- [ ] **Step 6.6 — Run config tests**
+- [x] **Step 6.6 — Run config tests**
 
 ```bash
 pytest tests/config/test_config.py -v
@@ -1401,7 +1401,7 @@ pytest tests/config/test_config.py -v
 
 Expected: all tests pass.
 
-- [ ] **Step 6.7 — Commit**
+- [x] **Step 6.7 — Commit**
 
 ```bash
 git add counter_cruiser/config/ tests/config/ fixtures/
