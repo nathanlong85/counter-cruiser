@@ -71,8 +71,8 @@
 
 ## 10. End-to-end pipeline reporting (detection-pipeline)
 
-- [ ] 10.1 Write an integration-style test (mocked camera + in-memory socket + fake model): elevated dog reported with zones, floor dog reported not-elevated
-- [ ] 10.2 Wire detection results through zone analysis + debounce to a console report of elevated/floor per frame
+- [x] 10.1 Write an integration-style test (mocked camera + in-memory socket + fake model): elevated dog reported with zones, floor dog reported not-elevated
+- [x] 10.2 Wire detection results through zone analysis + debounce to a console report of elevated/floor per frame
 
 ## 11. Finalization
 

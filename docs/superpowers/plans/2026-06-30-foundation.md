@@ -2523,7 +2523,7 @@ git commit -m "feat: ClientSession with send/receive loops, frame skipping, and 
 - Consumes: all previously built components
 - Produces: integration test asserting elevated and floor dogs are correctly reported via the real pipeline (mocked camera + in-process WebSocket server + fake model)
 
-- [ ] **Step 11.1 — Write the integration test**
+- [x] **Step 11.1 — Write the integration test**
 
 `tests/test_integration.py`:
 ```python
@@ -2675,7 +2675,7 @@ async def test_floor_dog_reported_not_elevated() -> None:
     assert all(s == 'floor' for s in statuses)
 ```
 
-- [ ] **Step 11.2 — Run integration tests**
+- [x] **Step 11.2 — Run integration tests**
 
 ```bash
 pytest tests/test_integration.py -v -m integration
@@ -2683,7 +2683,7 @@ pytest tests/test_integration.py -v -m integration
 
 Expected: both tests pass.
 
-- [ ] **Step 11.3 — Commit**
+- [x] **Step 11.3 — Commit**
 
 ```bash
 git add tests/test_integration.py
