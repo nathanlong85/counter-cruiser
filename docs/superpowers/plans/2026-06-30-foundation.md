@@ -267,7 +267,7 @@ git commit -m "feat: initialize counter_cruiser package skeleton with quality ga
   - `check_zones(box: BoundingBox, zones: list[Zone]) -> list[str]`
   - `box_test_points(box: BoundingBox) -> list[tuple[float, float]]`
 
-- [ ] **Step 2.1 — Write failing tests for check_zones**
+- [x] **Step 2.1 — Write failing tests for check_zones**
 
 `tests/shared/test_geometry.py` (add this section):
 ```python
@@ -321,7 +321,7 @@ class TestCheckZones:
         assert check_zones(_box(), []) == []
 ```
 
-- [ ] **Step 2.2 — Run tests to confirm they fail**
+- [x] **Step 2.2 — Run tests to confirm they fail**
 
 ```bash
 pytest tests/shared/test_geometry.py::TestCheckZones -v
@@ -329,7 +329,7 @@ pytest tests/shared/test_geometry.py::TestCheckZones -v
 
 Expected: ImportError or AttributeError (geometry module does not exist yet).
 
-- [ ] **Step 2.3 — Implement check_zones**
+- [x] **Step 2.3 — Implement check_zones**
 
 `counter_cruiser/shared/geometry.py`:
 ```python
@@ -373,7 +373,7 @@ def check_zones(box: BoundingBox, zones: list[Zone]) -> list[str]:
     return triggered
 ```
 
-- [ ] **Step 2.4 — Run tests to confirm they pass**
+- [x] **Step 2.4 — Run tests to confirm they pass**
 
 ```bash
 pytest tests/shared/test_geometry.py::TestCheckZones -v
@@ -381,7 +381,7 @@ pytest tests/shared/test_geometry.py::TestCheckZones -v
 
 Expected: 5 tests pass.
 
-- [ ] **Step 2.5 — Commit**
+- [x] **Step 2.5 — Commit**
 
 ```bash
 git add counter_cruiser/shared/geometry.py tests/shared/test_geometry.py

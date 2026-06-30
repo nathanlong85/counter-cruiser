@@ -8,8 +8,8 @@
 
 ## 2. Shared geometry (zone-analysis: containment, elevated, aggregate)
 
-- [ ] 2.1 Write tests for point-in-polygon containment: point inside, point outside, disabled zones ignored, multiple zones triggered
-- [ ] 2.2 Implement `check_zones(box, zones)` using corners+center against enabled polygons
+- [x] 2.1 Write tests for point-in-polygon containment: point inside, point outside, disabled zones ignored, multiple zones triggered
+- [x] 2.2 Implement `check_zones(box, zones)` using corners+center against enabled polygons
 - [ ] 2.3 Write tests for the elevated decision: large+in-zone, large+outside, small+in-zone, size-ratio computation
 - [ ] 2.4 Implement `analyze_dog_position` (size ratio vs. min, AND in-zone)
 - [ ] 2.5 Write tests for aggregate frame analysis: any-elevated, zone union, no-detections
