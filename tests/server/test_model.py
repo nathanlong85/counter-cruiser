@@ -97,3 +97,7 @@ class TestSelectDevice:
         mock_torch.cuda.is_available.return_value = False
         mock_torch.backends.mps.is_available.return_value = False
         assert select_device('auto') == 'cpu'
+
+    @patch('counter_cruiser.server.model.torch', None)
+    def test_auto_falls_back_to_cpu_when_torch_unavailable(self) -> None:
+        assert select_device('auto') == 'cpu'

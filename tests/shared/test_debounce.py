@@ -1,5 +1,4 @@
 """Tests for consecutive-detection debouncing."""
-import pytest
 
 from counter_cruiser.shared.debounce import DetectionHistory
 
@@ -52,5 +51,7 @@ class TestDetectionHistory:
         h = DetectionHistory()
         h.add(1, is_elevated=True)
         h.add(2, is_elevated=False)
-        h.add(3, is_elevated=True)  # gap between elevated[0] and elevated[1] = 2 → meets
+        h.add(
+            3, is_elevated=True
+        )  # gap between elevated[0] and elevated[1] = 2 → meets
         assert h.is_consecutive_elevated() is True

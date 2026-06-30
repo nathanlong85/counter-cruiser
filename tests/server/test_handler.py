@@ -103,6 +103,14 @@ class TestHandleConnection:
         assert sent['type'] == 'error'
         assert sent['frame_id'] == 5
 
+    async def test_unrecognized_message_type_is_ignored(self) -> None:
+        pong = PongMessage(ping_timestamp=PingMessage().timestamp)
+        ws = _fake_ws([serialize(pong)])
+
+        await handle_connection(ws, FakeModel())
+
+        ws.send.assert_not_called()
+
     async def test_multiple_frames_processed_independently(
         self, sample_frame: np.ndarray
     ) -> None:

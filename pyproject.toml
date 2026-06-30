@@ -45,6 +45,9 @@ markers = [
 strict_markers = true
 addopts = "--strict-markers --cov=counter_cruiser --cov-report=term-missing --cov-fail-under=100"
 
+[tool.coverage.run]
+branch = true
+
 [tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",

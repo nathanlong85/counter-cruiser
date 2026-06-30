@@ -6,6 +6,7 @@ import asyncio
 import contextlib
 import json
 import logging
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import numpy as np
@@ -16,6 +17,7 @@ from counter_cruiser.config.models import ClientSettings
 from counter_cruiser.shared.protocol import (
     DetectionMessage,
     ErrorMessage,
+    PongMessage,
     serialize,
 )
 
@@ -212,6 +214,53 @@ class TestClientSessionSendReceive:
                 await asyncio.wait_for(task, timeout=2.0)
 
         assert any('oops' in r.message for r in caplog.records)
+
+    async def test_unrecognized_message_type_is_ignored(self) -> None:
+        capture = FakeCapture([])
+        config = _default_config()
+        results: list = []
+
+        pong_msg = serialize(PongMessage(ping_timestamp=datetime.now(tz=UTC)))
+
+        class FakeWS:
+            async def send(self, data: str) -> None:
+                pass
+
+            def __aiter__(self):
+                return self._iter()
+
+            async def _iter(self):
+                yield pong_msg
+
+            async def close(self):
+                pass
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *_):
+                pass
+
+        async def fake_connect(url, **kw):
+            return FakeWS()
+
+        session = ClientSession(
+            capture=capture,
+            config=config,
+            on_result=lambda m, lat: results.append(m),
+            reconnect_interval=0.01,
+        )
+        with patch(
+            'counter_cruiser.client.transport.websockets.connect',
+            side_effect=fake_connect,
+        ):
+            task = asyncio.create_task(session.run())
+            await asyncio.sleep(0.1)
+            session.stop()
+            with contextlib.suppress(Exception):
+                await asyncio.wait_for(task, timeout=2.0)
+
+        assert results == []
 
     async def test_camera_released_on_stop(self) -> None:
         capture = FakeCapture([])

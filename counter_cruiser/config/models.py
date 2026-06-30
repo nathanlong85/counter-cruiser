@@ -1,8 +1,13 @@
 """Pydantic-settings configuration models for client and server components."""
+
 from __future__ import annotations
 
 from pydantic import BaseModel, field_validator
-from pydantic_settings import BaseSettings, PydanticBaseSettingsSource, SettingsConfigDict
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+)
 
 
 class Zone(BaseModel):
@@ -23,7 +28,7 @@ class Zone(BaseModel):
 
 
 class _BaseConfig(BaseSettings):
-    """Shared pydantic-settings base: env prefix, strict extras, env-over-init priority."""
+    """Shared pydantic-settings base: env prefix, strict extras, env-over-init."""
 
     model_config = SettingsConfigDict(
         extra='forbid',

@@ -1,4 +1,5 @@
 """Consecutive-detection debouncing for the zone-analysis pipeline."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -32,7 +33,7 @@ class DetectionHistory:
             self._records = self._records[-self._max_size :]
 
     def is_consecutive_elevated(self, max_gap: int = 2) -> bool:
-        """Return True if any two elevated frames in history have frame-id gap <= max_gap."""
+        """Return True if any two elevated frames have a frame-id gap <= max_gap."""
         elevated = sorted(
             (r for r in self._records if r.is_elevated),
             key=lambda r: r.frame_id,

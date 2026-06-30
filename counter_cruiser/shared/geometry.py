@@ -1,4 +1,5 @@
 """Pure geometry helpers for zone containment and elevated-dog classification."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

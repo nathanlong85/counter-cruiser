@@ -12,8 +12,12 @@ DOG_CLASS_ID = 16  # COCO dataset index for "dog"
 
 # Imported at module level so tests can patch it without importing torch/ultralytics
 try:
-    import torch
-    from ultralytics import YOLO
+    # Whether this succeeds or raises depends on whether the optional
+    # 'server' extra (torch/ultralytics) is installed; in any single dev/CI
+    # environment only one of the try/except branches is exercisable, so
+    # both sides are marked no cover.
+    import torch  # pragma: no cover
+    from ultralytics import YOLO  # pragma: no cover
 except ImportError:  # pragma: no cover
     torch = None  # type: ignore[assignment]
     YOLO = None  # type: ignore[assignment]

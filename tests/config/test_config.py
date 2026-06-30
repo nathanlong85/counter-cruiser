@@ -1,7 +1,7 @@
 """Tests for configuration models and TOML loading."""
+
 from __future__ import annotations
 
-import os
 from pathlib import Path
 
 import pytest
@@ -85,7 +85,9 @@ class TestTomlLoading:
         result = load_client_config(tmp_path / 'nonexistent.toml')
         assert result == ClientSettings()
 
-    def test_env_var_overrides_file_value(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_env_var_overrides_file_value(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         cfg = tmp_path / 'client.toml'
         cfg.write_text('[counter_cruiser]\nserver_port = 9999\n')
         monkeypatch.setenv('COUNTER_CRUISER_SERVER_PORT', '7777')
@@ -118,7 +120,7 @@ class TestTomlLoading:
     def test_no_path_no_env_var_falls_back_to_default(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """When no explicit path and no env var, default path is used (absent → defaults)."""
+        """No explicit path, no env var → default path used (absent → defaults)."""
         monkeypatch.delenv('COUNTER_CRUISER_CONFIG', raising=False)
         result = load_client_config()
         assert isinstance(result, ClientSettings)
