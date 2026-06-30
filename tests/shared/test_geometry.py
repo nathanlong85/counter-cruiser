@@ -1,7 +1,4 @@
 """Tests for shared geometry helpers."""
-import numpy as np
-import pytest
-
 from counter_cruiser.config.models import Zone
 from counter_cruiser.shared.geometry import check_zones
 from counter_cruiser.shared.protocol import BoundingBox
