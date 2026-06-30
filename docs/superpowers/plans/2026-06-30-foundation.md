@@ -1424,7 +1424,7 @@ git commit -m "feat: typed pydantic-settings config with TOML loading and env-va
   - `class YOLOAdapter(DetectionModel)`: `__init__(model_name, device, confidence_threshold)`; wraps `ultralytics.YOLO`
   - `select_device(device: str) -> str`: `'auto'` → best available; explicit → passthrough
 
-- [ ] **Step 7.1 — Write failing tests**
+- [x] **Step 7.1 — Write failing tests**
 
 `tests/server/test_model.py`:
 ```python
@@ -1529,7 +1529,7 @@ class TestSelectDevice:
         assert select_device('auto') == 'cpu'
 ```
 
-- [ ] **Step 7.2 — Run to confirm failures**
+- [x] **Step 7.2 — Run to confirm failures**
 
 ```bash
 pytest tests/server/test_model.py -v
@@ -1537,7 +1537,7 @@ pytest tests/server/test_model.py -v
 
 Expected: ModuleNotFoundError.
 
-- [ ] **Step 7.3 — Implement model.py**
+- [x] **Step 7.3 — Implement model.py**
 
 `counter_cruiser/server/model.py`:
 ```python
@@ -1614,7 +1614,7 @@ def select_device(device: str) -> str:
     return 'cpu'
 ```
 
-- [ ] **Step 7.4 — Run server model tests**
+- [x] **Step 7.4 — Run server model tests**
 
 ```bash
 pytest tests/server/test_model.py -v
@@ -1622,7 +1622,7 @@ pytest tests/server/test_model.py -v
 
 Expected: all tests pass.
 
-- [ ] **Step 7.5 — Commit**
+- [x] **Step 7.5 — Commit**
 
 ```bash
 git add counter_cruiser/server/model.py tests/server/test_model.py

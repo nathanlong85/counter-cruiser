@@ -43,10 +43,10 @@
 
 ## 6. Server: model abstraction & device selection (detection-pipeline)
 
-- [ ] 6.1 Write tests for the `DetectionModel` adapter: filters to dog class, excludes below-threshold, maps results to `BoundingBox` (ultralytics mocked)
-- [ ] 6.2 Implement `DetectionModel` ABC and the YOLO/ultralytics adapter
-- [ ] 6.3 Write tests for device selection: auto picks accelerator/falls back to CPU, explicit device honored
-- [ ] 6.4 Implement device selection and one-time model load
+- [x] 6.1 Write tests for the `DetectionModel` adapter: filters to dog class, excludes below-threshold, maps results to `BoundingBox` (ultralytics mocked)
+- [x] 6.2 Implement `DetectionModel` ABC and the YOLO/ultralytics adapter
+- [x] 6.3 Write tests for device selection: auto picks accelerator/falls back to CPU, explicit device honored
+- [x] 6.4 Implement device selection and one-time model load
 
 ## 7. Server: websocket frame processing (detection-pipeline)
 
