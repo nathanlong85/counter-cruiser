@@ -1,10 +1,10 @@
 ## 1. Project scaffolding & quality gates
 
-- [ ] 1.1 Initialize `counter_cruiser` package with `uv`; create `client/`, `server/`, `shared/`, `config/` subpackages and matching `tests/` tree
-- [ ] 1.2 Configure `pyproject.toml`: core deps (`pydantic`, `pydantic-settings`, `websockets`, `opencv-python`, `numpy`) and a `server` extra (`torch`, `ultralytics`)
-- [ ] 1.3 Carry forward dev deps and ruff config from no-diggity (B, E, F, I, SIM, UP; single quotes; line-length 88)
-- [ ] 1.4 Configure pytest (`pytest-asyncio`, markers, `--strict-markers`) and coverage with `--cov-fail-under=100` and the carried-over `exclude_lines`
-- [ ] 1.5 Add a logging facade configured once at entrypoints (console handler); establish "no `print()`, no import-time side effects" convention
+- [x] 1.1 Initialize `counter_cruiser` package with `uv`; create `client/`, `server/`, `shared/`, `config/` subpackages and matching `tests/` tree
+- [x] 1.2 Configure `pyproject.toml`: core deps (`pydantic`, `pydantic-settings`, `websockets`, `opencv-python`, `numpy`) and a `server` extra (`torch`, `ultralytics`)
+- [x] 1.3 Carry forward dev deps and ruff config from no-diggity (B, E, F, I, SIM, UP; single quotes; line-length 88)
+- [x] 1.4 Configure pytest (`pytest-asyncio`, markers, `--strict-markers`) and coverage with `--cov-fail-under=100` and the carried-over `exclude_lines`
+- [x] 1.5 Add a logging facade configured once at entrypoints (console handler); establish "no `print()`, no import-time side effects" convention
 
 ## 2. Shared geometry (zone-analysis: containment, elevated, aggregate)
 

@@ -94,7 +94,7 @@ fixtures/
 **Interfaces:**
 - Produces: installable package; `pytest`, `ruff check .`, `ruff format --check .` all exit 0.
 
-- [ ] **Step 1.1 — Initialize the package with uv**
+- [x] **Step 1.1 — Initialize the package with uv**
 
 ```bash
 cd /Users/nate/repos/counter-cruiser
@@ -160,7 +160,7 @@ exclude_lines = [
 ]
 ```
 
-- [ ] **Step 1.2 — Create package skeleton**
+- [x] **Step 1.2 — Create package skeleton**
 
 ```bash
 mkdir -p counter_cruiser/{shared,config,client,server}
@@ -197,7 +197,7 @@ Create each `__init__.py` as an empty file with a module docstring:
 
 Create `tests/__init__.py`, `tests/shared/__init__.py`, `tests/config/__init__.py`, `tests/client/__init__.py`, `tests/server/__init__.py` — all empty (no docstring needed for test packages).
 
-- [ ] **Step 1.3 — Install in editable mode with dev extras**
+- [x] **Step 1.3 — Install in editable mode with dev extras**
 
 ```bash
 uv pip install -e ".[dev]"
@@ -205,7 +205,7 @@ uv pip install -e ".[dev]"
 
 Expected: resolves and installs without errors. `counter_cruiser` is importable.
 
-- [ ] **Step 1.4 — Create the shared test fixtures conftest**
+- [x] **Step 1.4 — Create the shared test fixtures conftest**
 
 `tests/conftest.py`:
 ```python
@@ -235,7 +235,7 @@ def full_frame_zone() -> Zone:
 
 Note: this fixture imports `Zone` which does not exist yet — that is expected. Pytest will collect this file but fail gracefully until Task 5 is done. The fixture is defined here so later tasks can use it.
 
-- [ ] **Step 1.5 — Verify ruff config works**
+- [x] **Step 1.5 — Verify ruff config works**
 
 ```bash
 ruff check . && ruff format --check .
@@ -243,7 +243,7 @@ ruff check . && ruff format --check .
 
 Expected: exits 0 with no findings (only `__init__.py` stubs exist so far). If ruff complains about missing trailing newline, add one.
 
-- [ ] **Step 1.6 — Commit**
+- [x] **Step 1.6 — Commit**
 
 ```bash
 git add pyproject.toml counter_cruiser/ tests/ fixtures/
