@@ -56,8 +56,8 @@
 
 ## 8. Client: capture & frame skipping (detection-pipeline)
 
-- [ ] 8.1 Write tests (fake camera): opens+reads+records dims, open failure raises before loop, transient read failure continues
-- [ ] 8.2 Implement the camera capture interface and a real OpenCV implementation
+- [x] 8.1 Write tests (fake camera): opens+reads+records dims, open failure raises before loop, transient read failure continues
+- [x] 8.2 Implement the camera capture interface and a real OpenCV implementation
 - [ ] 8.3 Write tests for frame skipping: every Nth sent, skip=1 sends all
 - [ ] 8.4 Implement the capture/send loop with frame skipping
 

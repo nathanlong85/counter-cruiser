@@ -1886,7 +1886,7 @@ git commit -m "feat: websocket connection handler and server entrypoint"
   - `CameraCapture(Protocol)`: `open(index, width, height) -> tuple[int, int]`, `read() -> np.ndarray | None`, `release() -> None`
   - `OpenCVCapture(CameraCapture)`: real implementation via `cv2.VideoCapture`
 
-- [ ] **Step 9.1 — Write failing camera tests**
+- [x] **Step 9.1 — Write failing camera tests**
 
 `tests/client/test_capture.py`:
 ```python
@@ -1976,7 +1976,7 @@ class TestOpenCVCapture:
         cap_mock.release.assert_called_once()
 ```
 
-- [ ] **Step 9.2 — Run to confirm failures**
+- [x] **Step 9.2 — Run to confirm failures**
 
 ```bash
 pytest tests/client/test_capture.py -v
@@ -1984,7 +1984,7 @@ pytest tests/client/test_capture.py -v
 
 Expected: ModuleNotFoundError.
 
-- [ ] **Step 9.3 — Implement capture.py**
+- [x] **Step 9.3 — Implement capture.py**
 
 `counter_cruiser/client/capture.py`:
 ```python
@@ -2053,7 +2053,7 @@ class OpenCVCapture:
             self._cap = None
 ```
 
-- [ ] **Step 9.4 — Run camera tests**
+- [x] **Step 9.4 — Run camera tests**
 
 ```bash
 pytest tests/client/test_capture.py -v
@@ -2061,7 +2061,7 @@ pytest tests/client/test_capture.py -v
 
 Expected: all tests pass.
 
-- [ ] **Step 9.5 — Commit**
+- [x] **Step 9.5 — Commit**
 
 ```bash
 git add counter_cruiser/client/capture.py tests/client/test_capture.py
