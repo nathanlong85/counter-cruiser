@@ -1,10 +1,10 @@
 """Tests for DetectionModel abstraction and device selection."""
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
 import numpy as np
-import pytest
 
 from counter_cruiser.server.model import DOG_CLASS_ID, YOLOAdapter, select_device
 from counter_cruiser.shared.protocol import BoundingBox

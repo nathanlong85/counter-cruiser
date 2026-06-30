@@ -1,4 +1,5 @@
 """Detection model abstraction and device selection for the inference server."""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -29,7 +30,9 @@ class DetectionModel(ABC):
 class YOLOAdapter(DetectionModel):
     """Wraps an ``ultralytics.YOLO`` model, filtering to dogs above threshold."""
 
-    def __init__(self, model_name: str, device: str, confidence_threshold: float) -> None:
+    def __init__(
+        self, model_name: str, device: str, confidence_threshold: float
+    ) -> None:
         """Load the YOLO model once at construction time."""
         self._model = YOLO(model_name)
         self._device = device
@@ -48,8 +51,13 @@ class YOLOAdapter(DetectionModel):
                 x1, y1, x2, y2 = (int(v) for v in box.xyxy[0])
                 boxes.append(
                     BoundingBox(
-                        x1=x1, y1=y1, x2=x2, y2=y2,
-                        confidence=conf, class_id=cls_id, class_name='dog',
+                        x1=x1,
+                        y1=y1,
+                        x2=x2,
+                        y2=y2,
+                        confidence=conf,
+                        class_id=cls_id,
+                        class_name='dog',
                     ),
                 )
         return boxes
