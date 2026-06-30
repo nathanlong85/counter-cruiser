@@ -734,7 +734,7 @@ git commit -m "feat: implement bounded detection history with consecutive-elevat
   - `make_error(error_type, message, frame_id=None) -> ErrorMessage`
   - `make_pong(ping: PingMessage) -> PongMessage`
 
-- [ ] **Step 5.1 — Write failing tests for message models**
+- [x] **Step 5.1 — Write failing tests for message models**
 
 `tests/shared/test_protocol.py`:
 ```python
@@ -868,7 +868,7 @@ class TestErrorAndPingPong:
         assert pong.ping_timestamp == ping.timestamp
 ```
 
-- [ ] **Step 5.2 — Run to confirm failures**
+- [x] **Step 5.2 — Run to confirm failures**
 
 ```bash
 pytest tests/shared/test_protocol.py -v
@@ -876,7 +876,7 @@ pytest tests/shared/test_protocol.py -v
 
 Expected: ModuleNotFoundError.
 
-- [ ] **Step 5.3 — Implement protocol.py**
+- [x] **Step 5.3 — Implement protocol.py**
 
 `counter_cruiser/shared/protocol.py`:
 ```python
@@ -1045,7 +1045,7 @@ def make_pong(ping: PingMessage) -> PongMessage:
     return PongMessage(ping_timestamp=ping.timestamp)
 ```
 
-- [ ] **Step 5.4 — Run protocol tests**
+- [x] **Step 5.4 — Run protocol tests**
 
 ```bash
 pytest tests/shared/test_protocol.py -v
@@ -1053,7 +1053,7 @@ pytest tests/shared/test_protocol.py -v
 
 Expected: all tests pass.
 
-- [ ] **Step 5.5 — Commit**
+- [x] **Step 5.5 — Commit**
 
 ```bash
 git add counter_cruiser/shared/protocol.py tests/shared/test_protocol.py

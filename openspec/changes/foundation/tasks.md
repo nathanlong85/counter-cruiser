@@ -22,14 +22,14 @@
 
 ## 4. Protocol (detection-protocol)
 
-- [ ] 4.1 Write tests for typed message models (frame, detection, error, ping, pong): each has type discriminator + timestamp
-- [ ] 4.2 Implement Pydantic message models and `BoundingBox` model
-- [ ] 4.3 Write tests for serialize/deserialize: round-trip equality, type-based dispatch, malformed rejected, unknown type rejected
-- [ ] 4.4 Implement discriminated-union serialization/deserialization
-- [ ] 4.5 Write tests for frame encode/decode: encode produces image+id+shape+timestamp, decode recovers equivalent image, encode failure raises
-- [ ] 4.6 Implement JPEG encode/decode (base64-in-JSON) for frame messages
-- [ ] 4.7 Write tests for error and ping/pong: error carries context, ping answered by pong echoing timestamp
-- [ ] 4.8 Implement error and ping/pong helpers
+- [x] 4.1 Write tests for typed message models (frame, detection, error, ping, pong): each has type discriminator + timestamp
+- [x] 4.2 Implement Pydantic message models and `BoundingBox` model
+- [x] 4.3 Write tests for serialize/deserialize: round-trip equality, type-based dispatch, malformed rejected, unknown type rejected
+- [x] 4.4 Implement discriminated-union serialization/deserialization
+- [x] 4.5 Write tests for frame encode/decode: encode produces image+id+shape+timestamp, decode recovers equivalent image, encode failure raises
+- [x] 4.6 Implement JPEG encode/decode (base64-in-JSON) for frame messages
+- [x] 4.7 Write tests for error and ping/pong: error carries context, ping answered by pong echoing timestamp
+- [x] 4.8 Implement error and ping/pong helpers
 
 ## 5. Configuration (configuration)
 
