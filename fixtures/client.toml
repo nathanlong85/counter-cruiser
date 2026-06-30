@@ -1,0 +1,18 @@
+# Example counter-cruiser client configuration.
+# Copy to config/client.toml and adjust for your setup.
+
+[counter_cruiser]
+server_host = "192.168.1.100"
+server_port = 8765
+camera_index = 0
+frame_width = 640
+frame_height = 480
+jpeg_quality = 85
+frame_skip = 3
+min_size_ratio = 0.25
+
+[[counter_cruiser.zones]]
+id = "counter"
+name = "Kitchen Counter"
+enabled = true
+polygon = [[100, 80], [540, 80], [540, 360], [100, 360]]
