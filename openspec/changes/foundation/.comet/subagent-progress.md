@@ -1,8 +1,8 @@
 # Comet Subagent Progress — foundation
 
 ## Current Task
-Plan task: Task 8 — Server: websocket frame processing
-OpenSpec tasks: tasks.md 7.1–7.3
+Plan task: Task 9 — Client: capture & frame skipping
+OpenSpec tasks: tasks.md 8.1–8.4
 Stage: not started
 
 ## Implementation
@@ -20,6 +20,7 @@ Review-fix round: 0 / 3
 Task 2 (zone-analysis/geometry: check_zones, analyze_dog_position, analyze_detections — plan Steps 2.1-3.7) was skipped in the prior session; Tasks 3, 4, and 6 were completed out of order. Per user decision (2026-06-30): Task 6 checked off (commit 6ca1b83), Task 2 checked off (commit ca0d9dd), Task 3 checked off (commit pending this update). Plan order is now restored — proceeding forward sequentially from Task 7.
 
 ## History
+- Task 8 (websocket handler & entrypoint): complete, commits c760856..a4dca04 (c760856 impl, b8b8649 fix, a4dca04 coordinator ruff-format fix), 1 review-fix round (Critical: __main__.py 0% coverage + untested ConnectionClosed branch; Important: inner except swallowed ConnectionClosed during send), checked off, final review approved (minor: _configure_logging lacks docstring, private fn, not spec-required)
 - Task 1 (scaffolding): complete, commits 635258b..8513e42, review clean
 - Task 4 (debouncing): complete, commits 57ffa06..c6538d1, review clean (minor findings recorded)
 - Task 5 (protocol): complete, commits 72f118f..081c338, review clean (minor: serialize type inconsistency, decode_frame None guard)

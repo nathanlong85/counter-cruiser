@@ -1642,7 +1642,7 @@ git commit -m "feat: DetectionModel ABC, YOLOAdapter, and auto device selection"
 - Consumes: `handle_connection(websocket, model: DetectionModel) -> None`; uses `deserialize`, `serialize`, `decode_frame`, `make_error`, `make_pong`, `DetectionMessage`
 - Produces: `handle_connection` coroutine; `main()` server entrypoint
 
-- [ ] **Step 8.1 — Write failing handler tests**
+- [x] **Step 8.1 — Write failing handler tests**
 
 `tests/server/test_handler.py`:
 ```python
@@ -1745,7 +1745,7 @@ class TestHandleConnection:
         assert ws.send.call_count == 3
 ```
 
-- [ ] **Step 8.2 — Run to confirm failures**
+- [x] **Step 8.2 — Run to confirm failures**
 
 ```bash
 pytest tests/server/test_handler.py -v
@@ -1753,7 +1753,7 @@ pytest tests/server/test_handler.py -v
 
 Expected: ModuleNotFoundError.
 
-- [ ] **Step 8.3 — Implement handler.py**
+- [x] **Step 8.3 — Implement handler.py**
 
 `counter_cruiser/server/handler.py`:
 ```python
@@ -1807,7 +1807,7 @@ async def handle_connection(websocket, model: DetectionModel) -> None:
         logger.info('Client disconnected: %s', websocket.remote_address)
 ```
 
-- [ ] **Step 8.4 — Implement server entrypoint**
+- [x] **Step 8.4 — Implement server entrypoint**
 
 `counter_cruiser/server/__main__.py`:
 ```python
@@ -1858,7 +1858,7 @@ if __name__ == '__main__':  # pragma: no cover
     main()
 ```
 
-- [ ] **Step 8.5 — Run handler tests**
+- [x] **Step 8.5 — Run handler tests**
 
 ```bash
 pytest tests/server/ -v
@@ -1866,7 +1866,7 @@ pytest tests/server/ -v
 
 Expected: all tests pass.
 
-- [ ] **Step 8.6 — Commit**
+- [x] **Step 8.6 — Commit**
 
 ```bash
 git add counter_cruiser/server/handler.py counter_cruiser/server/__main__.py tests/server/test_handler.py

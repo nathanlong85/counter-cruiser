@@ -50,9 +50,9 @@
 
 ## 7. Server: websocket frame processing (detection-pipeline)
 
-- [ ] 7.1 Write tests: valid frame → detection referencing frame id, processing error → error message + connection survives, multi-client isolation, ping→pong
-- [ ] 7.2 Implement the connection handler and frame-processing flow (model injected)
-- [ ] 7.3 Implement the server entrypoint (config-driven host/port/device, logging)
+- [x] 7.1 Write tests: valid frame → detection referencing frame id, processing error → error message + connection survives, multi-client isolation, ping→pong
+- [x] 7.2 Implement the connection handler and frame-processing flow (model injected)
+- [x] 7.3 Implement the server entrypoint (config-driven host/port/device, logging)
 
 ## 8. Client: capture & frame skipping (detection-pipeline)
 
