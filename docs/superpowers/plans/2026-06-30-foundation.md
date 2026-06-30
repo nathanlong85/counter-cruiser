@@ -578,7 +578,7 @@ git commit -m "feat: implement elevated-dog decision and frame-level aggregation
 - Produces:
   - `class DetectionHistory`: `add(frame_id: int, is_elevated: bool) -> None`, `is_consecutive_elevated(max_gap: int = 2) -> bool`
 
-- [ ] **Step 4.1 — Write failing tests**
+- [x] **Step 4.1 — Write failing tests**
 
 `tests/shared/test_debounce.py`:
 ```python
@@ -640,7 +640,7 @@ class TestDetectionHistory:
         assert h.is_consecutive_elevated() is True
 ```
 
-- [ ] **Step 4.2 — Run to confirm failure**
+- [x] **Step 4.2 — Run to confirm failure**
 
 ```bash
 pytest tests/shared/test_debounce.py -v
@@ -648,7 +648,7 @@ pytest tests/shared/test_debounce.py -v
 
 Expected: ModuleNotFoundError.
 
-- [ ] **Step 4.3 — Implement DetectionHistory**
+- [x] **Step 4.3 — Implement DetectionHistory**
 
 `counter_cruiser/shared/debounce.py`:
 ```python
@@ -699,7 +699,7 @@ class DetectionHistory:
         )
 ```
 
-- [ ] **Step 4.4 — Run tests**
+- [x] **Step 4.4 — Run tests**
 
 ```bash
 pytest tests/shared/test_debounce.py -v
@@ -707,7 +707,7 @@ pytest tests/shared/test_debounce.py -v
 
 Expected: all 8 tests pass.
 
-- [ ] **Step 4.5 — Commit**
+- [x] **Step 4.5 — Commit**
 
 ```bash
 git add counter_cruiser/shared/debounce.py tests/shared/test_debounce.py

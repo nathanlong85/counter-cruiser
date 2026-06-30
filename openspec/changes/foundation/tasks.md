@@ -17,8 +17,8 @@
 
 ## 3. Consecutive-detection debouncing (zone-analysis)
 
-- [ ] 3.1 Write tests: two-in-window meets, single does not, too-far-apart does not, out-of-order ordered by frame id, history bounded
-- [ ] 3.2 Implement bounded detection history + consecutive-elevated check
+- [x] 3.1 Write tests: two-in-window meets, single does not, too-far-apart does not, out-of-order ordered by frame id, history bounded
+- [x] 3.2 Implement bounded detection history + consecutive-elevated check
 
 ## 4. Protocol (detection-protocol)
 
