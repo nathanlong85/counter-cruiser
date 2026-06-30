@@ -402,7 +402,7 @@ git commit -m "feat: implement check_zones with point-in-polygon containment"
   - `analyze_dog_position(box, zones, frame_height, min_size_ratio) -> tuple[bool, list[str]]`
   - `analyze_detections(boxes, zones, frame_height, min_size_ratio) -> FrameAnalysis`
 
-- [ ] **Step 3.1 — Write failing tests for analyze_dog_position**
+- [x] **Step 3.1 — Write failing tests for analyze_dog_position**
 
 Append to `tests/shared/test_geometry.py`:
 ```python
@@ -444,7 +444,7 @@ class TestAnalyzeDogPosition:
         assert elevated is False
 ```
 
-- [ ] **Step 3.2 — Run to confirm failure**
+- [x] **Step 3.2 — Run to confirm failure**
 
 ```bash
 pytest tests/shared/test_geometry.py::TestAnalyzeDogPosition -v
@@ -452,7 +452,7 @@ pytest tests/shared/test_geometry.py::TestAnalyzeDogPosition -v
 
 Expected: ImportError for `analyze_dog_position`.
 
-- [ ] **Step 3.3 — Implement analyze_dog_position**
+- [x] **Step 3.3 — Implement analyze_dog_position**
 
 Append to `counter_cruiser/shared/geometry.py`:
 ```python
@@ -473,7 +473,7 @@ def analyze_dog_position(
     return is_elevated, triggered
 ```
 
-- [ ] **Step 3.4 — Write failing tests for FrameAnalysis + analyze_detections**
+- [x] **Step 3.4 — Write failing tests for FrameAnalysis + analyze_detections**
 
 Append to `tests/shared/test_geometry.py`:
 ```python
@@ -517,7 +517,7 @@ class TestAnalyzeDetections:
         assert isinstance(result, FrameAnalysis)
 ```
 
-- [ ] **Step 3.5 — Implement FrameAnalysis and analyze_detections**
+- [x] **Step 3.5 — Implement FrameAnalysis and analyze_detections**
 
 Add at top of `counter_cruiser/shared/geometry.py` (after imports, before other functions):
 ```python
@@ -551,7 +551,7 @@ def analyze_detections(
     return FrameAnalysis(elevated=elevated, triggered_zones=all_zones)
 ```
 
-- [ ] **Step 3.6 — Run all geometry tests**
+- [x] **Step 3.6 — Run all geometry tests**
 
 ```bash
 pytest tests/shared/test_geometry.py -v
@@ -559,7 +559,7 @@ pytest tests/shared/test_geometry.py -v
 
 Expected: all tests pass.
 
-- [ ] **Step 3.7 — Commit**
+- [x] **Step 3.7 — Commit**
 
 ```bash
 git add counter_cruiser/shared/geometry.py tests/shared/test_geometry.py

@@ -10,10 +10,10 @@
 
 - [x] 2.1 Write tests for point-in-polygon containment: point inside, point outside, disabled zones ignored, multiple zones triggered
 - [x] 2.2 Implement `check_zones(box, zones)` using corners+center against enabled polygons
-- [ ] 2.3 Write tests for the elevated decision: large+in-zone, large+outside, small+in-zone, size-ratio computation
-- [ ] 2.4 Implement `analyze_dog_position` (size ratio vs. min, AND in-zone)
-- [ ] 2.5 Write tests for aggregate frame analysis: any-elevated, zone union, no-detections
-- [ ] 2.6 Implement `analyze_detections` aggregating per-frame results
+- [x] 2.3 Write tests for the elevated decision: large+in-zone, large+outside, small+in-zone, size-ratio computation
+- [x] 2.4 Implement `analyze_dog_position` (size ratio vs. min, AND in-zone)
+- [x] 2.5 Write tests for aggregate frame analysis: any-elevated, zone union, no-detections
+- [x] 2.6 Implement `analyze_detections` aggregating per-frame results
 
 ## 3. Consecutive-detection debouncing (zone-analysis)
 
