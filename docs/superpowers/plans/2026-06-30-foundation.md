@@ -2083,7 +2083,7 @@ git commit -m "feat: CameraCapture protocol and OpenCV implementation"
   - `class ClientSession`: `__init__(capture, config, on_result, reconnect_interval=5.0)`, `async run() -> None`, `stop() -> None`
   - `on_result` type: `Callable[[DetectionMessage, float], None]`
 
-- [ ] **Step 10.1 — Write failing transport tests**
+- [x] **Step 10.1 — Write failing transport tests**
 
 `tests/client/test_transport.py`:
 ```python
@@ -2295,7 +2295,7 @@ class TestClientSessionSendReceive:
         assert capture.released is True
 ```
 
-- [ ] **Step 10.2 — Run to confirm failures**
+- [x] **Step 10.2 — Run to confirm failures**
 
 ```bash
 pytest tests/client/test_transport.py -v
@@ -2303,7 +2303,7 @@ pytest tests/client/test_transport.py -v
 
 Expected: ModuleNotFoundError.
 
-- [ ] **Step 10.3 — Implement transport.py**
+- [x] **Step 10.3 — Implement transport.py**
 
 `counter_cruiser/client/transport.py`:
 ```python
@@ -2432,7 +2432,7 @@ class ClientSession:
         self._running = False
 ```
 
-- [ ] **Step 10.4 — Implement client entrypoint**
+- [x] **Step 10.4 — Implement client entrypoint**
 
 `counter_cruiser/client/__main__.py`:
 ```python
@@ -2497,7 +2497,7 @@ if __name__ == '__main__':  # pragma: no cover
     main()
 ```
 
-- [ ] **Step 10.5 — Run transport tests**
+- [x] **Step 10.5 — Run transport tests**
 
 ```bash
 pytest tests/client/ -v
@@ -2505,7 +2505,7 @@ pytest tests/client/ -v
 
 Expected: all tests pass.
 
-- [ ] **Step 10.6 — Commit**
+- [x] **Step 10.6 — Commit**
 
 ```bash
 git add counter_cruiser/client/transport.py counter_cruiser/client/__main__.py tests/client/test_transport.py

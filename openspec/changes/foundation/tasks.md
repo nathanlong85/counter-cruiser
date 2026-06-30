@@ -58,16 +58,16 @@
 
 - [x] 8.1 Write tests (fake camera): opens+reads+records dims, open failure raises before loop, transient read failure continues
 - [x] 8.2 Implement the camera capture interface and a real OpenCV implementation
-- [ ] 8.3 Write tests for frame skipping: every Nth sent, skip=1 sends all
-- [ ] 8.4 Implement the capture/send loop with frame skipping
+- [x] 8.3 Write tests for frame skipping: every Nth sent, skip=1 sends all
+- [x] 8.4 Implement the capture/send loop with frame skipping
 
 ## 9. Client: transport, results & resilience (detection-pipeline)
 
-- [ ] 9.1 Write tests: frame sent & detection matched, latency measured, server error handled
-- [ ] 9.2 Implement the send + concurrent receive loops with frame/result matching and latency tracking
-- [ ] 9.3 Write tests for resilience: initial-connect retry, mid-session reconnect resumes, graceful shutdown releases camera+socket
-- [ ] 9.4 Implement the reconnect supervisor and graceful shutdown
-- [ ] 9.5 Implement the client entrypoint wiring config, camera, transport, and zone analysis
+- [x] 9.1 Write tests: frame sent & detection matched, latency measured, server error handled
+- [x] 9.2 Implement the send + concurrent receive loops with frame/result matching and latency tracking
+- [x] 9.3 Write tests for resilience: initial-connect retry, mid-session reconnect resumes, graceful shutdown releases camera+socket
+- [x] 9.4 Implement the reconnect supervisor and graceful shutdown
+- [x] 9.5 Implement the client entrypoint wiring config, camera, transport, and zone analysis
 
 ## 10. End-to-end pipeline reporting (detection-pipeline)
 
