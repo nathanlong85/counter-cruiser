@@ -28,11 +28,11 @@
 
 ## 5. Recording: snapshot (alert-recording)
 
-- [ ] 5.1 Write tests (tmp_path) for snapshot save: timestamped JPEG written to the configured dir; JSON sidecar records timestamp, triggered zones, detection count, frame id
-- [ ] 5.2 Write tests for annotation: boxes + zones + timestamp overlaid when enabled; triggered zones drawn distinctly from idle zones; no overlay when both disabled
-- [ ] 5.3 Write tests for max-count cleanup: oldest images and their sidecars deleted when over cap; no deletion when under cap
-- [ ] 5.4 Write tests for missing-frame handling: logs and returns without writing or raising
-- [ ] 5.5 Implement the reusable annotation helper at `client/annotation.py` (pure cv2 drawing over plain data, no globals — this is the shared component the web-ui change consumes) and the `SnapshotHandler` that uses it
+- [x] 5.1 Write tests (tmp_path) for snapshot save: timestamped JPEG written to the configured dir; JSON sidecar records timestamp, triggered zones, detection count, frame id
+- [x] 5.2 Write tests for annotation: boxes + zones + timestamp overlaid when enabled; triggered zones drawn distinctly from idle zones; no overlay when both disabled
+- [x] 5.3 Write tests for max-count cleanup: oldest images and their sidecars deleted when over cap; no deletion when under cap
+- [x] 5.4 Write tests for missing-frame handling: logs and returns without writing or raising
+- [x] 5.5 Implement the reusable annotation helper at `client/annotation.py` (pure cv2 drawing over plain data, no globals — this is the shared component the web-ui change consumes) and the `SnapshotHandler` that uses it
 
 ## 6. Recording: log (alert-recording)
 

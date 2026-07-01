@@ -1407,7 +1407,7 @@ git commit -m "feat(alert-system): add ntfy.sh/Pushover notification providers a
 
 ## Task 7: Shared annotation helper + snapshot handler
 
-- [ ] **Task 7 complete**
+- [x] **Task 7 complete**
 
 **Files:**
 - Create: `counter_cruiser/client/annotation.py`
