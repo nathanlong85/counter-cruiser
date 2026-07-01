@@ -2,6 +2,7 @@
 change: foundation
 design-doc: openspec/changes/foundation/design.md
 base-ref: 88ab427e765f43596797aa157bcc5af1b21d1a19
+archived-with: 2026-07-01-foundation
 ---
 
 # Foundation Implementation Plan
@@ -28,6 +29,7 @@ base-ref: 88ab427e765f43596797aa157bcc5af1b21d1a19
 - Every public module, class, and function has a docstring.
 - `DOG_CLASS_ID = 16` (COCO dataset index for "dog").
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## File Map
@@ -81,6 +83,7 @@ fixtures/
 └── server.toml             # example server config (also used as test fixture)
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 1: Project scaffolding & quality gates
@@ -250,6 +253,7 @@ git add pyproject.toml counter_cruiser/ tests/ fixtures/
 git commit -m "feat: initialize counter_cruiser package skeleton with quality gate config"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 2: Shared geometry — containment (tasks.md 2.1–2.2)
@@ -388,6 +392,7 @@ git add counter_cruiser/shared/geometry.py tests/shared/test_geometry.py
 git commit -m "feat: implement check_zones with point-in-polygon containment"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 3: Shared geometry — elevated decision & aggregate (tasks.md 2.3–2.6)
@@ -566,6 +571,7 @@ git add counter_cruiser/shared/geometry.py tests/shared/test_geometry.py
 git commit -m "feat: implement elevated-dog decision and frame-level aggregation"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 4: Consecutive-detection debouncing (tasks.md 3.1–3.2)
@@ -714,6 +720,7 @@ git add counter_cruiser/shared/debounce.py tests/shared/test_debounce.py
 git commit -m "feat: implement bounded detection history with consecutive-elevated debouncing"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 5: Protocol — models, serialization, frame codec, helpers (tasks.md 4.1–4.8)
@@ -1060,6 +1067,7 @@ git add counter_cruiser/shared/protocol.py tests/shared/test_protocol.py
 git commit -m "feat: implement typed WebSocket protocol models, serialization, and frame codec"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 6: Configuration — Zone, ClientSettings, ServerSettings, TOML loader (tasks.md 5.1–5.7)
@@ -1408,6 +1416,7 @@ git add counter_cruiser/config/ tests/config/ fixtures/
 git commit -m "feat: typed pydantic-settings config with TOML loading and env-var overrides"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 7: Server — model abstraction & device selection (tasks.md 6.1–6.4)
@@ -1629,6 +1638,7 @@ git add counter_cruiser/server/model.py tests/server/test_model.py
 git commit -m "feat: DetectionModel ABC, YOLOAdapter, and auto device selection"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 8: Server — WebSocket handler & entrypoint (tasks.md 7.1–7.3)
@@ -1873,6 +1883,7 @@ git add counter_cruiser/server/handler.py counter_cruiser/server/__main__.py tes
 git commit -m "feat: websocket connection handler and server entrypoint"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 9: Client — camera capture & frame skipping (tasks.md 8.1–8.4)
@@ -2068,6 +2079,7 @@ git add counter_cruiser/client/capture.py tests/client/test_capture.py
 git commit -m "feat: CameraCapture protocol and OpenCV implementation"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 10: Client — transport, resilience & entrypoint (tasks.md 9.1–9.5)
@@ -2512,6 +2524,7 @@ git add counter_cruiser/client/transport.py counter_cruiser/client/__main__.py t
 git commit -m "feat: ClientSession with send/receive loops, frame skipping, and reconnect supervisor"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 11: End-to-end pipeline reporting (tasks.md 10.1–10.2)
@@ -2690,6 +2703,7 @@ git add tests/test_integration.py
 git commit -m "test: integration tests for elevated and floor dog pipeline reporting"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Task 12: Finalization (tasks.md 11.1–11.4)
@@ -2775,6 +2789,7 @@ git add CLAUDE.md
 git commit -m "docs: update CLAUDE.md architecture and commands for foundation release"
 ```
 
+archived-with: 2026-07-01-foundation
 ---
 
 ## Self-Review Checklist
