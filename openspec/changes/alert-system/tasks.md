@@ -2,7 +2,7 @@
 
 - [x] 1.1 Create `counter_cruiser/client/alerts/` package and matching `tests/client/alerts/` tree
 - [x] 1.2 Add an optional `RPi.GPIO` extra (e.g. `pi`/`gpio`) and an HTTP client dep (`requests` or `httpx`) to `pyproject.toml`; keep them out of the base client install
-- [ ] 1.3 Define the typed `AlertContext` (frame, detections as `BoundingBox` list, zone polygons, triggered zones, frame id) and the `AlertHandler` interface (`trigger`, `cleanup`)
+- [x] 1.3 Define the typed `AlertContext` (frame, detections as `BoundingBox` list, zone polygons, triggered zones, frame id) and the `AlertHandler` interface (`trigger`, `cleanup`)
 
 ## 2. Alert configuration (configuration capability)
 
