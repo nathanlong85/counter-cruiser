@@ -1,5 +1,5 @@
 workflow: full
-phase: build
+phase: verify
 context_compression: off
 build_mode: subagent-driven-development
 build_pause: null
@@ -20,3 +20,4 @@ verified_at: null
 archived: false
 handoff_context: openspec/changes/alert-system/.comet/handoff/design-context.json
 handoff_hash: 7abe71d8ce258e86b6b4b9616c2cb607d4cc1fbcd005b5e792f2c0b63d34f5c2
+build_command: uv run pytest -q
