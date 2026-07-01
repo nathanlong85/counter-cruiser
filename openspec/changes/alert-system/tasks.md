@@ -36,8 +36,8 @@
 
 ## 6. Recording: log (alert-recording)
 
-- [ ] 6.1 Write tests (tmp_path) for structured log append: record includes triggered zones, frame id, detection count; write failure is logged and does not raise
-- [ ] 6.2 Implement `LogHandler` using the logging facade
+- [x] 6.1 Write tests (tmp_path) for structured log append: record includes triggered zones, frame id, detection count; write failure is logged and does not raise
+- [x] 6.2 Implement `LogHandler` using the logging facade
 
 ## 7. Alert dispatch (alert-dispatch)
 
