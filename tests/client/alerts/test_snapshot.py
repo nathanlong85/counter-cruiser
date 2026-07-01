@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 import pytest
@@ -102,3 +103,55 @@ class TestSnapshotCleanup:
     def test_cleanup_is_a_noop(self, tmp_path: Path) -> None:
         handler = SnapshotHandler(SnapshotConfig(enabled=True, dir=str(tmp_path)))
         handler.cleanup()  # must not raise
+
+
+class TestSnapshotWriteFailure:
+    def test_imwrite_false_logs_warning_and_skips_sidecar(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        config = SnapshotConfig(enabled=True, dir=str(tmp_path))
+        handler = SnapshotHandler(config)
+        frame = np.zeros((5, 5, 3), dtype=np.uint8)
+        with (
+            caplog.at_level('WARNING'),
+            patch(
+                'counter_cruiser.client.alerts.snapshot.cv2.imwrite',
+                return_value=False,
+            ),
+        ):
+            handler.trigger(_context(frame))  # must not raise
+        assert list(tmp_path.glob('*.jpg')) == []
+        assert list(tmp_path.glob('*.json')) == []
+        assert 'Failed to write snapshot image' in caplog.text
+
+    def test_oserror_during_write_is_caught_and_logged(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        config = SnapshotConfig(enabled=True, dir=str(tmp_path))
+        handler = SnapshotHandler(config)
+        frame = np.zeros((5, 5, 3), dtype=np.uint8)
+        with (
+            caplog.at_level('ERROR'),
+            patch(
+                'counter_cruiser.client.alerts.snapshot.cv2.imwrite',
+                side_effect=OSError('disk full'),
+            ),
+        ):
+            handler.trigger(_context(frame))  # must not raise
+        assert 'Failed to write snapshot' in caplog.text
+
+    def test_oserror_during_sidecar_write_is_caught_and_logged(
+        self, tmp_path: Path, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        config = SnapshotConfig(enabled=True, dir=str(tmp_path))
+        handler = SnapshotHandler(config)
+        frame = np.zeros((5, 5, 3), dtype=np.uint8)
+        with (
+            caplog.at_level('ERROR'),
+            patch(
+                'counter_cruiser.client.alerts.snapshot.Path.write_text',
+                side_effect=OSError('read-only file system'),
+            ),
+        ):
+            handler.trigger(_context(frame))  # must not raise
+        assert 'Failed to write snapshot' in caplog.text

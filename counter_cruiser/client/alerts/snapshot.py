@@ -44,18 +44,28 @@ class SnapshotHandler:
         stem = f'{now.strftime("%Y%m%dT%H%M%S%f")}_frame{context.frame_id}'
         image_path = Path(self._config.dir) / f'{stem}.jpg'
         sidecar_path = Path(self._config.dir) / f'{stem}.json'
-        cv2.imwrite(str(image_path), annotated)
-        sidecar_path.write_text(
-            json.dumps(
-                {
-                    'timestamp': now.isoformat(),
-                    'triggered_zones': sorted(context.triggered_zones),
-                    'detection_count': len(context.detections),
-                    'frame_id': context.frame_id,
-                }
+        try:
+            if not cv2.imwrite(str(image_path), annotated):
+                logger.warning(
+                    'Failed to write snapshot image to %s; skipping sidecar',
+                    image_path,
+                )
+                return
+            sidecar_path.write_text(
+                json.dumps(
+                    {
+                        'timestamp': now.isoformat(),
+                        'triggered_zones': sorted(context.triggered_zones),
+                        'detection_count': len(context.detections),
+                        'frame_id': context.frame_id,
+                    }
+                )
             )
-        )
-        self._enforce_max_count()
+            self._enforce_max_count()
+        except OSError:
+            logger.exception(
+                'Failed to write snapshot for frame_id=%s', context.frame_id
+            )
 
     def _enforce_max_count(self) -> None:
         images = sorted(Path(self._config.dir).glob('*.jpg'))
