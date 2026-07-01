@@ -12,11 +12,11 @@
 
 ## 3. Deterrent control (deterrent-control)
 
-- [ ] 3.1 Write tests (GPIO seam mocked): burst starts PWM at duty cycle, holds duration, then stops; uses configured pin/frequency
-- [ ] 3.2 Write tests for must-not-fire-continuously: PWM stopped after a normal burst and stopped + error logged when the burst raises mid-way
-- [ ] 3.3 Write tests for graceful degradation: missing/uninitializable `RPi.GPIO` disables the handler with a clear log and does not raise; disabled handler triggers are no-ops
-- [ ] 3.4 Write tests for cleanup: releases GPIO after init; safe when disabled/uninitialized
-- [ ] 3.5 Implement `DeterrentHandler` (isolated GPIO import seam, timed-burst PWM with always-stop guarantee, self-disable, cleanup)
+- [x] 3.1 Write tests (GPIO seam mocked): burst drives pin HIGH then LOW for the configured duration, using the configured pin (corrected during design: button-press simulation, not PWM/duty-cycle/frequency)
+- [x] 3.2 Write tests for must-not-fire-continuously: pin driven LOW after a normal burst and after the burst raises mid-way (error logged); trigger()/cleanup() never raise even when the underlying GPIO call fails
+- [x] 3.3 Write tests for graceful degradation: missing/uninitializable `RPi.GPIO` disables the handler with a clear log and does not raise; disabled handler triggers are no-ops
+- [x] 3.4 Write tests for cleanup: releases GPIO after init; safe when disabled/uninitialized
+- [x] 3.5 Implement `DeterrentHandler` (isolated GPIO import seam, timed HIGH/LOW burst with always-stop guarantee, self-disable, cleanup)
 
 ## 4. Notifications (alert-notifications)
 

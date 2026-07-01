@@ -824,7 +824,7 @@ git commit -m "feat(alert-system): add bounded frame ring buffer to ClientSessio
 
 ## Task 5: Deterrent handler (GPIO button-press simulation)
 
-- [ ] **Task 5 complete**
+- [x] **Task 5 complete**
 
 **Files:**
 - Create: `counter_cruiser/client/alerts/deterrent.py`
