@@ -76,6 +76,8 @@ client deps), ruff (lint + format).
 
 ## Task 1: Package scaffolding & dependencies
 
+- [x] **Task 1 complete**
+
 **Files:**
 - Create: `counter_cruiser/client/alerts/__init__.py`
 - Create: `tests/client/alerts/__init__.py`
@@ -161,6 +163,8 @@ git commit -m "chore(alert-system): scaffold alerts package and add requests/gpi
 ---
 
 ## Task 2: `AlertContext` and `AlertHandler` interface
+
+- [ ] **Task 2 complete**
 
 **Files:**
 - Create: `counter_cruiser/client/alerts/context.py`
@@ -301,6 +305,8 @@ git commit -m "feat(alert-system): add AlertContext and AlertHandler protocol"
 ---
 
 ## Task 3: Alert configuration models
+
+- [ ] **Task 3 complete**
 
 **Files:**
 - Modify: `counter_cruiser/config/models.py`
@@ -643,6 +649,8 @@ git commit -m "feat(alert-system): add typed alert config models to ClientSettin
 
 ## Task 4: Frame ring buffer on `ClientSession`
 
+- [ ] **Task 4 complete**
+
 **Files:**
 - Modify: `counter_cruiser/client/transport.py`
 - Modify: `tests/client/test_transport.py`
@@ -815,6 +823,8 @@ git commit -m "feat(alert-system): add bounded frame ring buffer to ClientSessio
 ---
 
 ## Task 5: Deterrent handler (GPIO button-press simulation)
+
+- [ ] **Task 5 complete**
 
 **Files:**
 - Create: `counter_cruiser/client/alerts/deterrent.py`
@@ -1109,6 +1119,8 @@ git commit -m "feat(alert-system): add DeterrentHandler (GPIO button-press simul
 
 ## Task 6: Push notifications (ntfy.sh and Pushover)
 
+- [ ] **Task 6 complete**
+
 **Files:**
 - Create: `counter_cruiser/client/alerts/notifications.py`
 - Test: `tests/client/alerts/test_notifications.py`
@@ -1394,6 +1406,8 @@ git commit -m "feat(alert-system): add ntfy.sh/Pushover notification providers a
 ---
 
 ## Task 7: Shared annotation helper + snapshot handler
+
+- [ ] **Task 7 complete**
 
 **Files:**
 - Create: `counter_cruiser/client/annotation.py`
@@ -1773,6 +1787,8 @@ git commit -m "feat(alert-system): add shared annotation helper and SnapshotHand
 
 ## Task 8: Structured log handler
 
+- [ ] **Task 8 complete**
+
 **Files:**
 - Create: `counter_cruiser/client/alerts/log.py`
 - Test: `tests/client/alerts/test_log.py`
@@ -1916,6 +1932,8 @@ git commit -m "feat(alert-system): add LogHandler for structured alert records"
 ---
 
 ## Task 9: `AlertManager` (cooldown, deterrent-first fan-out, isolation)
+
+- [ ] **Task 9 complete**
 
 **Files:**
 - Create: `counter_cruiser/client/alerts/manager.py`
@@ -2179,6 +2197,8 @@ git commit -m "feat(alert-system): add AlertManager with cooldown and deterrent-
 ---
 
 ## Task 10: Wire the client orchestration to `AlertManager`
+
+- [ ] **Task 10 complete**
 
 **Files:**
 - Modify: `counter_cruiser/client/__main__.py`
@@ -2499,6 +2519,8 @@ git commit -m "feat(alert-system): wire AlertManager into the client orchestrati
 ---
 
 ## Task 11: Finalization
+
+- [ ] **Task 11 complete**
 
 **Files:**
 - Modify: `CLAUDE.md`
