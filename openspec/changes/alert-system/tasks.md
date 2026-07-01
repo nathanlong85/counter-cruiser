@@ -58,3 +58,8 @@
 - [x] 9.2 Run `ruff check` and `ruff format`; resolve all findings
 - [x] 9.3 Verify docstrings on all new public modules/classes/functions
 - [x] 9.4 Update root `CLAUDE.md` Architecture/Commands sections to reflect the alert system
+
+### Final whole-branch review — accepted non-blocking findings
+
+- **Stale PWM/frequency/duty-cycle wording in `design.md`/`proposal.md`**: these OpenSpec artifacts predate this branch and are not synced to main specs at archive (delta specs under `specs/*/spec.md` are already corrected and clean). Accepted as-is; recommend a wording sweep of `design.md`/`proposal.md`/`.comet/handoff/*` before archive so the archived record isn't self-contradictory, but this does not affect shipped code or archived specs.
+- **`tests/client/alerts/test_integration.py` reimplements `on_result` rather than driving the real closure**: it hand-writes a parallel `on_result(msg)` (missing the real `latency` param) to isolate debounce→AlertContext wiring. End-to-end coverage of the real closure is provided separately by `tests/client/test_main.py` (100% coverage including the `if actionable:` branch) and `tests/client/alerts/test_manager.py` (fan-out/cooldown). Accepted: coverage exists in aggregate; the parallel closure could drift from production but is low-risk given the other tests pin the real wiring.
