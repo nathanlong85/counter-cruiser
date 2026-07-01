@@ -88,13 +88,13 @@ client deps), ruff (lint + format).
   module for now — populated as later tasks land) and the `gpio` optional
   extra + `requests` base dependency other tasks import.
 
-- [ ] **Step 1: Create the package directories**
+- [x] **Step 1: Create the package directories**
 
 ```bash
 mkdir -p counter_cruiser/client/alerts tests/client/alerts
 ```
 
-- [ ] **Step 2: Add the package `__init__.py` files**
+- [x] **Step 2: Add the package `__init__.py` files**
 
 `counter_cruiser/client/alerts/__init__.py`:
 
@@ -108,7 +108,7 @@ mkdir -p counter_cruiser/client/alerts tests/client/alerts
 """Tests for the counter_cruiser.client.alerts package."""
 ```
 
-- [ ] **Step 3: Add the `gpio` extra and `requests` dependency to `pyproject.toml`**
+- [x] **Step 3: Add the `gpio` extra and `requests` dependency to `pyproject.toml`**
 
 Edit `[project]` `dependencies` to add `requests`, and add a new
 `[project.optional-dependencies]` entry:
@@ -147,13 +147,13 @@ client feature, not Pi-only) while `RPi.GPIO` stays Pi-only behind the
 succeeds on a non-Pi dev machine without ever attempting to build it.
 `requests-mock` is added to `dev` for HTTP-mocked notification tests.
 
-- [ ] **Step 4: Reinstall editable deps and confirm the environment resolves**
+- [x] **Step 4: Reinstall editable deps and confirm the environment resolves**
 
 Run: `uv pip install -e ".[dev]"`
 Expected: installs successfully, including `requests` and `requests-mock`;
 no attempt to install `RPi.GPIO` on the dev machine (marker excludes it).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add counter_cruiser/client/alerts/__init__.py tests/client/alerts/__init__.py pyproject.toml
@@ -181,7 +181,7 @@ git commit -m "chore(alert-system): scaffold alerts package and add requests/gpi
   protocol structurally (no explicit inheritance required, matching the
   `CameraCapture` protocol pattern in `client/capture.py`).
 
-- [ ] **Step 1: Write the failing test for `AlertContext` construction**
+- [x] **Step 1: Write the failing test for `AlertContext` construction**
 
 ```python
 """Tests for AlertContext and the AlertHandler protocol."""
@@ -243,13 +243,13 @@ class TestAlertHandlerProtocol:
         handler.cleanup()
 ```
 
-- [ ] **Step 2: Run the test to confirm it fails**
+- [x] **Step 2: Run the test to confirm it fails**
 
 Run: `pytest tests/client/alerts/test_context.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named
 'counter_cruiser.client.alerts.context'`
 
-- [ ] **Step 3: Implement `AlertContext` and `AlertHandler`**
+- [x] **Step 3: Implement `AlertContext` and `AlertHandler`**
 
 `counter_cruiser/client/alerts/context.py`:
 
@@ -290,12 +290,12 @@ class AlertHandler(Protocol):
         ...  # pragma: no cover
 ```
 
-- [ ] **Step 4: Run the test to confirm it passes**
+- [x] **Step 4: Run the test to confirm it passes**
 
 Run: `pytest tests/client/alerts/test_context.py -v`
 Expected: PASS (2 test classes, 3 tests)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add counter_cruiser/client/alerts/context.py tests/client/alerts/test_context.py
@@ -324,7 +324,7 @@ git commit -m "feat(alert-system): add AlertContext and AlertHandler protocol"
   `config.alerts.notification`) and `AlertManager` from
   `config.alerts.cooldown_seconds`.
 
-- [ ] **Step 1: Write the failing tests for the new config models**
+- [x] **Step 1: Write the failing tests for the new config models**
 
 Append to `tests/config/test_config.py`:
 
@@ -463,12 +463,12 @@ Note: `load_client_config` and `pytest` are already imported at the top of
 `tests/config/test_config.py`; only the new `counter_cruiser.config.models`
 names need adding to that existing import line.
 
-- [ ] **Step 2: Run the tests to confirm they fail**
+- [x] **Step 2: Run the tests to confirm they fail**
 
 Run: `pytest tests/config/test_config.py -v`
 Expected: FAIL — `ImportError: cannot import name 'AlertConfig'`
 
-- [ ] **Step 3: Implement the config models**
+- [x] **Step 3: Implement the config models**
 
 In `counter_cruiser/config/models.py`, add `ConfigDict` and
 `model_validator` to the pydantic import, then add the new models above
@@ -592,12 +592,12 @@ class ClientSettings(_BaseConfig):
 (add above the existing field validators — no other changes to
 `ClientSettings`).
 
-- [ ] **Step 4: Run the tests to confirm they pass**
+- [x] **Step 4: Run the tests to confirm they pass**
 
 Run: `pytest tests/config/test_config.py -v`
 Expected: PASS (all existing tests plus the new classes above)
 
-- [ ] **Step 5: Add an example alert TOML fixture to the loader tests**
+- [x] **Step 5: Add an example alert TOML fixture to the loader tests**
 
 Append one more test to `tests/config/test_config.py`'s
 `TestTomlLoading` class demonstrating a full alert section round-trips,
@@ -633,12 +633,12 @@ confirming the nested-table TOML shape end users will actually write:
 Run: `pytest tests/config/test_config.py -v`
 Expected: PASS
 
-- [ ] **Step 6: Run `ruff check` and `ruff format` on the touched files**
+- [x] **Step 6: Run `ruff check` and `ruff format` on the touched files**
 
 Run: `ruff check counter_cruiser/config/models.py tests/config/test_config.py && ruff format counter_cruiser/config/models.py tests/config/test_config.py`
 Expected: no findings; no reformatting needed after applying once
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add counter_cruiser/config/models.py tests/config/test_config.py
@@ -661,7 +661,7 @@ git commit -m "feat(alert-system): add typed alert config models to ClientSettin
   (integration wiring) calls `session.get_frame(msg.frame_id)` to build
   `AlertContext.frame`.
 
-- [ ] **Step 1: Write the failing tests for the ring buffer**
+- [x] **Step 1: Write the failing tests for the ring buffer**
 
 Add to `tests/client/test_transport.py` (new test class near the existing
 `TestClientSessionSendReceive`):
@@ -727,14 +727,14 @@ class TestFrameRingBuffer:
         assert session.get_frame(5) is not None
 ```
 
-- [ ] **Step 2: Run the tests to confirm they fail**
+- [x] **Step 2: Run the tests to confirm they fail**
 
 Run: `pytest tests/client/test_transport.py -k FrameRingBuffer -v`
 Expected: FAIL — `AttributeError: 'ClientSession' object has no attribute
 'get_frame'` (and `TypeError` for the unexpected `frame_buffer_capacity`
 kwarg in the third test)
 
-- [ ] **Step 3: Implement the ring buffer**
+- [x] **Step 3: Implement the ring buffer**
 
 In `counter_cruiser/client/transport.py`, extend `__init__`:
 
@@ -803,17 +803,17 @@ before encoding, with eviction at capacity:
         await ws.close()
 ```
 
-- [ ] **Step 4: Run the tests to confirm they pass**
+- [x] **Step 4: Run the tests to confirm they pass**
 
 Run: `pytest tests/client/test_transport.py -v`
 Expected: PASS (all existing transport tests plus the 3 new ones)
 
-- [ ] **Step 5: Run the full test suite to confirm coverage is unbroken**
+- [x] **Step 5: Run the full test suite to confirm coverage is unbroken**
 
 Run: `pytest`
 Expected: PASS, coverage still 100%
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/transport.py tests/client/test_transport.py
@@ -837,7 +837,7 @@ git commit -m "feat(alert-system): add bounded frame ring buffer to ClientSessio
   `deterrent` param; Task 10 (wiring) constructs it from
   `config.alerts.deterrent`.
 
-- [ ] **Step 1: Write the failing tests (GPIO seam mocked via a fake module)**
+- [x] **Step 1: Write the failing tests (GPIO seam mocked via a fake module)**
 
 `tests/client/alerts/test_deterrent.py`:
 
@@ -1008,13 +1008,13 @@ class TestDeterrentCleanup:
         handler.cleanup()  # must not raise
 ```
 
-- [ ] **Step 2: Run the tests to confirm they fail**
+- [x] **Step 2: Run the tests to confirm they fail**
 
 Run: `pytest tests/client/alerts/test_deterrent.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named
 'counter_cruiser.client.alerts.deterrent'`
 
-- [ ] **Step 3: Implement `DeterrentHandler`**
+- [x] **Step 3: Implement `DeterrentHandler`**
 
 `counter_cruiser/client/alerts/deterrent.py`:
 
@@ -1097,18 +1097,18 @@ class DeterrentHandler:
             self._enabled = False
 ```
 
-- [ ] **Step 4: Run the tests to confirm they pass**
+- [x] **Step 4: Run the tests to confirm they pass**
 
 Run: `pytest tests/client/alerts/test_deterrent.py -v`
 Expected: PASS (all 8 tests)
 
-- [ ] **Step 5: Run `ruff check`/`ruff format` on the new files**
+- [x] **Step 5: Run `ruff check`/`ruff format` on the new files**
 
 Run: `ruff check counter_cruiser/client/alerts/deterrent.py tests/client/alerts/test_deterrent.py && ruff format counter_cruiser/client/alerts/deterrent.py tests/client/alerts/test_deterrent.py`
 Expected: clean (the `# noqa: N814` on the `RPi.GPIO` import silences the
 non-lowercase-module-alias lint rule for the conventional `GPIO` name)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/alerts/deterrent.py tests/client/alerts/test_deterrent.py
@@ -1132,7 +1132,7 @@ git commit -m "feat(alert-system): add DeterrentHandler (GPIO button-press simul
   `AlertHandler` — Task 10 (wiring) constructs
   `NotificationHandler(config.alerts.notification)`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/client/alerts/test_notifications.py`:
 
@@ -1257,12 +1257,12 @@ class TestNotificationHandlerDelegation:
         handler.cleanup()  # must not raise
 ```
 
-- [ ] **Step 2: Run the tests to confirm they fail**
+- [x] **Step 2: Run the tests to confirm they fail**
 
 Run: `pytest tests/client/alerts/test_notifications.py -v`
 Expected: FAIL — `ModuleNotFoundError`
 
-- [ ] **Step 3: Implement providers and the handler**
+- [x] **Step 3: Implement providers and the handler**
 
 `counter_cruiser/client/alerts/notifications.py`:
 
@@ -1386,17 +1386,17 @@ class NotificationHandler:
         """No resources to release; HTTP is stateless per-call."""
 ```
 
-- [ ] **Step 4: Run the tests to confirm they pass**
+- [x] **Step 4: Run the tests to confirm they pass**
 
 Run: `pytest tests/client/alerts/test_notifications.py -v`
 Expected: PASS (all tests)
 
-- [ ] **Step 5: Run `ruff check`/`ruff format` on the new files**
+- [x] **Step 5: Run `ruff check`/`ruff format` on the new files**
 
 Run: `ruff check counter_cruiser/client/alerts/notifications.py tests/client/alerts/test_notifications.py && ruff format counter_cruiser/client/alerts/notifications.py tests/client/alerts/test_notifications.py`
 Expected: clean
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/alerts/notifications.py tests/client/alerts/test_notifications.py
@@ -1423,7 +1423,7 @@ git commit -m "feat(alert-system): add ntfy.sh/Pushover notification providers a
   pure function, no globals — reused later by the web-UI change) and
   `SnapshotHandler(config: SnapshotConfig)` implementing `AlertHandler`.
 
-- [ ] **Step 1: Write the failing annotation tests**
+- [x] **Step 1: Write the failing annotation tests**
 
 `tests/client/test_annotation.py`:
 
@@ -1491,13 +1491,13 @@ class TestAnnotateFrame:
         np.testing.assert_array_equal(frame, original)
 ```
 
-- [ ] **Step 2: Run the tests to confirm they fail**
+- [x] **Step 2: Run the tests to confirm they fail**
 
 Run: `pytest tests/client/test_annotation.py -v`
 Expected: FAIL — `ModuleNotFoundError: No module named
 'counter_cruiser.client.annotation'`
 
-- [ ] **Step 3: Implement `annotate_frame`**
+- [x] **Step 3: Implement `annotate_frame`**
 
 `counter_cruiser/client/annotation.py`:
 
@@ -1570,12 +1570,12 @@ def annotate_frame(
     return annotated
 ```
 
-- [ ] **Step 4: Run the annotation tests to confirm they pass**
+- [x] **Step 4: Run the annotation tests to confirm they pass**
 
 Run: `pytest tests/client/test_annotation.py -v`
 Expected: PASS (5 tests)
 
-- [ ] **Step 5: Write the failing snapshot handler tests**
+- [x] **Step 5: Write the failing snapshot handler tests**
 
 `tests/client/alerts/test_snapshot.py`:
 
@@ -1686,12 +1686,12 @@ class TestSnapshotCleanup:
         handler.cleanup()  # must not raise
 ```
 
-- [ ] **Step 6: Run the snapshot tests to confirm they fail**
+- [x] **Step 6: Run the snapshot tests to confirm they fail**
 
 Run: `pytest tests/client/alerts/test_snapshot.py -v`
 Expected: FAIL — `ModuleNotFoundError`
 
-- [ ] **Step 7: Implement `SnapshotHandler`**
+- [x] **Step 7: Implement `SnapshotHandler`**
 
 `counter_cruiser/client/alerts/snapshot.py`:
 
@@ -1766,17 +1766,17 @@ class SnapshotHandler:
         """No resources to release; each trigger opens and closes its own files."""
 ```
 
-- [ ] **Step 8: Run the snapshot tests to confirm they pass**
+- [x] **Step 8: Run the snapshot tests to confirm they pass**
 
 Run: `pytest tests/client/alerts/test_snapshot.py -v`
 Expected: PASS (all tests)
 
-- [ ] **Step 9: Run `ruff check`/`ruff format` on all touched files**
+- [x] **Step 9: Run `ruff check`/`ruff format` on all touched files**
 
 Run: `ruff check counter_cruiser/client/annotation.py counter_cruiser/client/alerts/snapshot.py tests/client/test_annotation.py tests/client/alerts/test_snapshot.py && ruff format counter_cruiser/client/annotation.py counter_cruiser/client/alerts/snapshot.py tests/client/test_annotation.py tests/client/alerts/test_snapshot.py`
 Expected: clean
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add counter_cruiser/client/annotation.py counter_cruiser/client/alerts/snapshot.py tests/client/test_annotation.py tests/client/alerts/test_snapshot.py
@@ -1797,7 +1797,7 @@ git commit -m "feat(alert-system): add shared annotation helper and SnapshotHand
 - Consumes: `AlertContext` (Task 2), `LogConfig` (Task 3).
 - Produces: `LogHandler(config: LogConfig)` implementing `AlertHandler`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/client/alerts/test_log.py`:
 
@@ -1863,12 +1863,12 @@ class TestLogCleanup:
         handler.cleanup()  # must not raise
 ```
 
-- [ ] **Step 2: Run the tests to confirm they fail**
+- [x] **Step 2: Run the tests to confirm they fail**
 
 Run: `pytest tests/client/alerts/test_log.py -v`
 Expected: FAIL — `ModuleNotFoundError`
 
-- [ ] **Step 3: Implement `LogHandler`**
+- [x] **Step 3: Implement `LogHandler`**
 
 `counter_cruiser/client/alerts/log.py`:
 
@@ -1912,17 +1912,17 @@ class LogHandler:
         """No resources to release; each trigger opens and closes its own file."""
 ```
 
-- [ ] **Step 4: Run the tests to confirm they pass**
+- [x] **Step 4: Run the tests to confirm they pass**
 
 Run: `pytest tests/client/alerts/test_log.py -v`
 Expected: PASS (5 tests)
 
-- [ ] **Step 5: Run `ruff check`/`ruff format`**
+- [x] **Step 5: Run `ruff check`/`ruff format`**
 
 Run: `ruff check counter_cruiser/client/alerts/log.py tests/client/alerts/test_log.py && ruff format counter_cruiser/client/alerts/log.py tests/client/alerts/test_log.py`
 Expected: clean
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/alerts/log.py tests/client/alerts/test_log.py
@@ -1947,7 +1947,7 @@ git commit -m "feat(alert-system): add LogHandler for structured alert records"
   Task 10 (wiring) constructs one instance from config and calls
   `maybe_alert` on the debounced elevated event.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 `tests/client/alerts/test_manager.py`:
 
@@ -2091,12 +2091,12 @@ class TestCleanup:
         assert ok.cleanup_calls == 1
 ```
 
-- [ ] **Step 2: Run the tests to confirm they fail**
+- [x] **Step 2: Run the tests to confirm they fail**
 
 Run: `pytest tests/client/alerts/test_manager.py -v`
 Expected: FAIL — `ModuleNotFoundError`
 
-- [ ] **Step 3: Implement `AlertManager`**
+- [x] **Step 3: Implement `AlertManager`**
 
 `counter_cruiser/client/alerts/manager.py`:
 
@@ -2176,18 +2176,18 @@ class AlertManager:
                 )
 ```
 
-- [ ] **Step 4: Run the tests to confirm they pass**
+- [x] **Step 4: Run the tests to confirm they pass**
 
 Run: `pytest tests/client/alerts/test_manager.py -v`
 Expected: PASS (all tests, including the deterrent-first ordering
 assertion)
 
-- [ ] **Step 5: Run `ruff check`/`ruff format`**
+- [x] **Step 5: Run `ruff check`/`ruff format`**
 
 Run: `ruff check counter_cruiser/client/alerts/manager.py tests/client/alerts/test_manager.py && ruff format counter_cruiser/client/alerts/manager.py tests/client/alerts/test_manager.py`
 Expected: clean
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/alerts/manager.py tests/client/alerts/test_manager.py
@@ -2214,7 +2214,7 @@ git commit -m "feat(alert-system): add AlertManager with cooldown and deterrent-
 - Produces: the wired `main()` — no new public interface for later tasks
   (this is the final integration point).
 
-- [ ] **Step 1: Write the failing integration test**
+- [x] **Step 1: Write the failing integration test**
 
 `tests/client/alerts/test_integration.py`:
 
@@ -2273,7 +2273,7 @@ class TestDebounceToAlertManagerWiring:
         assert context.frame_id == 2
 ```
 
-- [ ] **Step 2: Run the test to confirm the wiring shape is correct**
+- [x] **Step 2: Run the test to confirm the wiring shape is correct**
 
 Run: `pytest tests/client/alerts/test_integration.py -v`
 Expected: PASS. This test only exercises existing foundation code
@@ -2284,7 +2284,7 @@ confirm the debounce-to-`AlertContext`-to-`AlertManager` wiring shape is
 correct in isolation, so any failure here means the wiring approach itself
 is wrong, not "not yet implemented."
 
-- [ ] **Step 3: Implement the wiring in `client/__main__.py`**
+- [x] **Step 3: Implement the wiring in `client/__main__.py`**
 
 Replace the full file:
 
@@ -2392,7 +2392,7 @@ if __name__ == '__main__':  # pragma: no cover
     main()
 ```
 
-- [ ] **Step 4: Update `tests/client/test_main.py` for the new wiring**
+- [x] **Step 4: Update `tests/client/test_main.py` for the new wiring**
 
 Add imports and a fixture-free patch of the alert manager builder so the
 existing `test_wires_session_and_runs` doesn't need real handlers:
@@ -2492,24 +2492,24 @@ class TestMainCallsAlertManagerCleanupOnShutdown:
             manager_instance.cleanup.assert_called_once_with()
 ```
 
-- [ ] **Step 5: Run the client tests to confirm they pass**
+- [x] **Step 5: Run the client tests to confirm they pass**
 
 Run: `pytest tests/client/test_main.py tests/client/alerts/test_integration.py -v`
 Expected: PASS
 
-- [ ] **Step 6: Run the full suite and confirm coverage**
+- [x] **Step 6: Run the full suite and confirm coverage**
 
 Run: `pytest`
 Expected: PASS, 100% coverage maintained (the `if actionable:` branch in
 `on_result` is now covered by the integration test's second call and by
 `TestMain`'s single-frame call for the non-actionable branch)
 
-- [ ] **Step 7: Run `ruff check`/`ruff format`**
+- [x] **Step 7: Run `ruff check`/`ruff format`**
 
 Run: `ruff check counter_cruiser/client/__main__.py tests/client/test_main.py tests/client/alerts/test_integration.py && ruff format counter_cruiser/client/__main__.py tests/client/test_main.py tests/client/alerts/test_integration.py`
 Expected: clean
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add counter_cruiser/client/__main__.py tests/client/test_main.py tests/client/alerts/test_integration.py
@@ -2526,13 +2526,13 @@ git commit -m "feat(alert-system): wire AlertManager into the client orchestrati
 - Modify: `CLAUDE.md`
 - No new source files — this task is verification + documentation only.
 
-- [ ] **Step 1: Run the full test suite with coverage**
+- [x] **Step 1: Run the full test suite with coverage**
 
 Run: `pytest`
 Expected: all tests pass; terminal coverage report shows 100% (branch
 included); `--cov-fail-under=100` does not fail the run
 
-- [ ] **Step 2: Fix any coverage gaps**
+- [x] **Step 2: Fix any coverage gaps**
 
 If any line/branch is uncovered, add the missing test case to the relevant
 task's test file (do not add blanket `pragma: no cover` to dodge real
@@ -2540,13 +2540,13 @@ gaps — only use it for genuinely unreachable code, consistent with the
 project's existing convention in `server/model.py` and `client/__main__.py`).
 Re-run `pytest` until 100% holds.
 
-- [ ] **Step 3: Run ruff across the whole repo**
+- [x] **Step 3: Run ruff across the whole repo**
 
 Run: `ruff check . && ruff format --check .`
 Expected: no findings. If `ruff format --check .` reports files needing
 formatting, run `ruff format .` and re-run the check.
 
-- [ ] **Step 4: Verify docstrings on all new public modules/classes/functions**
+- [x] **Step 4: Verify docstrings on all new public modules/classes/functions**
 
 Run: `grep -rL '"""' counter_cruiser/client/alerts counter_cruiser/client/annotation.py`
 Expected: empty output (every file has at least one docstring). Manually
@@ -2554,7 +2554,7 @@ confirm every public class/function defined in Tasks 2–10 has its own
 docstring (each code block above already includes one — this step is a
 final audit, not new work).
 
-- [ ] **Step 5: Update `CLAUDE.md`'s Architecture and Commands sections**
+- [x] **Step 5: Update `CLAUDE.md`'s Architecture and Commands sections**
 
 In the `## Architecture` section, extend the `client/` bullet and add a
 new line for the alerts package:
@@ -2579,7 +2579,7 @@ entrypoints or install extras beyond what Task 1 already documented via
 `pyproject.toml` (`gpio` extra is optional and Pi-only, not part of the
 documented base install flow).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add CLAUDE.md
