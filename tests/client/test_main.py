@@ -40,6 +40,7 @@ class TestMain:
             patch('counter_cruiser.client.__main__.asyncio.run') as run,
         ):
             session_instance = MagicMock()
+            session_instance.frame_height = config.frame_height
             session_cls.return_value = session_instance
 
             main()

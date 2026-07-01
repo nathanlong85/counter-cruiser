@@ -340,6 +340,49 @@ class TestClientSessionSendReceive:
 
         assert connect_count >= 2
 
+    async def test_frame_height_reflects_actual_camera_resolution(self) -> None:
+        """frame_height exposes the camera's negotiated height, not the configured one.
+
+        Cameras do not always honor the requested resolution; the elevated/floor
+        ratio decision must use what the camera actually negotiated.
+        """
+
+        class MismatchedCapture(FakeCapture):
+            def open(self, index: int, width: int, height: int) -> tuple[int, int]:
+                return (640, 720)  # camera ignores the configured height (480)
+
+        capture = MismatchedCapture([])
+        config = _default_config()
+        assert config.frame_height == 480
+
+        session = ClientSession(
+            capture=capture,
+            config=config,
+            on_result=lambda m, lat: None,
+            reconnect_interval=0.01,
+        )
+
+        assert session.frame_height == config.frame_height  # before open()
+
+        async def fake_connect(url, **kw):
+            raise OSError('refused')
+
+        with patch(
+            'counter_cruiser.client.transport.websockets.connect',
+            side_effect=fake_connect,
+        ):
+            task = asyncio.create_task(session.run())
+            deadline = asyncio.get_event_loop().time() + 2.0
+            while session.frame_height == config.frame_height and (
+                asyncio.get_event_loop().time() < deadline
+            ):
+                await asyncio.sleep(0.01)
+            session.stop()
+            await asyncio.wait_for(task, timeout=2.0)
+
+        assert session.frame_height == 720
+        assert session.frame_height != config.frame_height
+
     async def test_stop_during_reconnect_attempt_breaks_immediately(self) -> None:
         """Calling stop() while a reconnect attempt fails exits without sleeping."""
         capture = FakeCapture([])

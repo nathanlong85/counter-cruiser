@@ -31,7 +31,7 @@ def main() -> None:
 
     def on_result(msg: DetectionMessage, latency: float) -> None:
         analysis = analyze_detections(
-            msg.boxes, config.zones, config.frame_height, config.min_size_ratio
+            msg.boxes, config.zones, session.frame_height, config.min_size_ratio
         )
         history.add(msg.frame_id, analysis.elevated)
         actionable = history.is_consecutive_elevated()

@@ -44,18 +44,28 @@ class ClientSession:
         self._running = True
         self._pending: dict[int, float] = {}
         self._frame_id = 0
+        self._frame_height = config.frame_height
 
     @property
     def _url(self) -> str:
         return f'ws://{self._config.server_host}:{self._config.server_port}'
 
+    @property
+    def frame_height(self) -> int:
+        """Return the camera's actual negotiated frame height.
+
+        Falls back to the configured value until the camera is opened.
+        """
+        return self._frame_height
+
     async def run(self) -> None:
         """Open the camera, connect to the server, and run until stopped."""
-        self._capture.open(
+        _, actual_height = self._capture.open(
             self._config.camera_index,
             self._config.frame_width,
             self._config.frame_height,
         )
+        self._frame_height = actual_height
         try:
             while self._running:
                 try:
