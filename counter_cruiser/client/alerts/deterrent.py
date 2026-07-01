@@ -25,10 +25,10 @@ def _import_gpio() -> ModuleType | None:
     installed.
     """
     try:
-        import RPi.GPIO as GPIO  # noqa: N814
+        import RPi.GPIO as GPIO  # noqa: N814  # pragma: no cover
     except ImportError:
         return None
-    return GPIO
+    return GPIO  # pragma: no cover
 
 
 class DeterrentHandler:
