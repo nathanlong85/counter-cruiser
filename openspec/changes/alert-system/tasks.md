@@ -6,9 +6,9 @@
 
 ## 2. Alert configuration (configuration capability)
 
-- [ ] 2.1 Write tests for alert config models: cooldown/GPIO/snapshot/log/notification groups, range validators (duty cycle 0-100, positive duration), provider restricted to `ntfy.sh`/`Pushover`, `extra='forbid'`, env override
-- [ ] 2.2 Implement the alert config models and wire them into the client settings schema
-- [ ] 2.3 Add example alert config to the client TOML template/fixtures
+- [x] 2.1 Write tests for alert config models: cooldown/GPIO/snapshot/log/notification groups, range validators (duty cycle 0-100, positive duration), provider restricted to `ntfy.sh`/`Pushover`, `extra='forbid'`, env override
+- [x] 2.2 Implement the alert config models and wire them into the client settings schema
+- [x] 2.3 Add example alert config to the client TOML template/fixtures
 
 ## 3. Deterrent control (deterrent-control)
 
