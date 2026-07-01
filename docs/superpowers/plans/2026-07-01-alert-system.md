@@ -2,6 +2,7 @@
 change: alert-system
 design-doc: docs/superpowers/specs/2026-07-01-alert-system-design.md
 base-ref: 40407d85de51481bfae99033028bbbbb28c25f58
+archived-with: 2026-07-01-alert-system
 ---
 
 # Alert System Implementation Plan
@@ -72,6 +73,7 @@ client deps), ruff (lint + format).
   oldest evicted at capacity — comfortably larger than
   `DetectionHistory`'s default `max_size=20`.
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 1: Package scaffolding & dependencies
@@ -160,6 +162,7 @@ git add counter_cruiser/client/alerts/__init__.py tests/client/alerts/__init__.p
 git commit -m "chore(alert-system): scaffold alerts package and add requests/gpio deps"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 2: `AlertContext` and `AlertHandler` interface
@@ -302,6 +305,7 @@ git add counter_cruiser/client/alerts/context.py tests/client/alerts/test_contex
 git commit -m "feat(alert-system): add AlertContext and AlertHandler protocol"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 3: Alert configuration models
@@ -645,6 +649,7 @@ git add counter_cruiser/config/models.py tests/config/test_config.py
 git commit -m "feat(alert-system): add typed alert config models to ClientSettings"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 4: Frame ring buffer on `ClientSession`
@@ -820,6 +825,7 @@ git add counter_cruiser/client/transport.py tests/client/test_transport.py
 git commit -m "feat(alert-system): add bounded frame ring buffer to ClientSession"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 5: Deterrent handler (GPIO button-press simulation)
@@ -1115,6 +1121,7 @@ git add counter_cruiser/client/alerts/deterrent.py tests/client/alerts/test_dete
 git commit -m "feat(alert-system): add DeterrentHandler (GPIO button-press simulation)"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 6: Push notifications (ntfy.sh and Pushover)
@@ -1403,6 +1410,7 @@ git add counter_cruiser/client/alerts/notifications.py tests/client/alerts/test_
 git commit -m "feat(alert-system): add ntfy.sh/Pushover notification providers and handler"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 7: Shared annotation helper + snapshot handler
@@ -1783,6 +1791,7 @@ git add counter_cruiser/client/annotation.py counter_cruiser/client/alerts/snaps
 git commit -m "feat(alert-system): add shared annotation helper and SnapshotHandler"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 8: Structured log handler
@@ -1929,6 +1938,7 @@ git add counter_cruiser/client/alerts/log.py tests/client/alerts/test_log.py
 git commit -m "feat(alert-system): add LogHandler for structured alert records"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 9: `AlertManager` (cooldown, deterrent-first fan-out, isolation)
@@ -2194,6 +2204,7 @@ git add counter_cruiser/client/alerts/manager.py tests/client/alerts/test_manage
 git commit -m "feat(alert-system): add AlertManager with cooldown and deterrent-first fan-out"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 10: Wire the client orchestration to `AlertManager`
@@ -2516,6 +2527,7 @@ git add counter_cruiser/client/__main__.py tests/client/test_main.py tests/clien
 git commit -m "feat(alert-system): wire AlertManager into the client orchestration"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Task 11: Finalization
@@ -2586,6 +2598,7 @@ git add CLAUDE.md
 git commit -m "docs(alert-system): document the alerts package in CLAUDE.md"
 ```
 
+archived-with: 2026-07-01-alert-system
 ---
 
 ## Self-Review Notes
