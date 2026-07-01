@@ -176,6 +176,36 @@ the AlertManager when the debounce condition is met instead of only printing
 elevated/floor. Rollback is config-driven: disable individual handlers (or all of
 them) in the client TOML to revert to detection-only behavior.
 
+## Implementation Divergence
+
+**Deterrent mechanism corrected from PWM to GPIO button-press simulation.**
+This design.md (and `proposal.md`) describe the deterrent as an ultrasonic PWM
+buzzer with `pin`/`frequency`/`duration`/`duty_cycle` config fields. During the
+`/comet-design` brainstorming pass, this was corrected: the actual hardware is
+an existing ultrasonic trainer with a physical button, and the Pi's role is to
+simulate a momentary button press by driving a BCM GPIO pin **HIGH** for
+`burst_duration_seconds` then **LOW** — not to generate a PWM tone itself.
+`DeterrentConfig` therefore has `enabled`, `pin`, `burst_duration_seconds` only;
+there is no `frequency`, `duty_cycle`, or `active_low` field anywhere in the
+implementation.
+
+The authoritative technical design is
+`docs/superpowers/specs/2026-07-01-alert-system-design.md`, and the delta specs
+under `specs/deterrent-control/spec.md` (and the sibling capability specs) were
+written to match the corrected mechanism from the start — they were never
+PWM-based. Only this `design.md` and `proposal.md` retain the original,
+superseded PWM language, since they capture the pre-correction proposal as a
+historical record of how the idea evolved. All 11 implementation tasks, their
+tests, and the corrected delta specs consistently use the GPIO HIGH/LOW
+button-press mechanism; there is no PWM code, test, or behavior anywhere in
+`counter_cruiser/`.
+
+This divergence is intentional and does not require further action beyond this
+note: at archive time, this `design.md` and `proposal.md` are change-scoped
+artifacts (not merged into main specs) and will be marked
+`superseded-by-main-spec`, with the corrected `specs/*/spec.md` syncing to
+`openspec/specs/` as the durable record.
+
 ## Open Questions
 
 - **Arm/disarm mode** ("I'm cooking, don't alert"): raised but not confirmed by
