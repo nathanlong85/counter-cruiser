@@ -1,0 +1,17 @@
+{
+  "change": "alert-system",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "7abe71d8ce258e86b6b4b9616c2cb607d4cc1fbcd005b5e792f2c0b63d34f5c2",
+  "files": [
+    { "path": "openspec/changes/alert-system/proposal.md", "sha256": "30beaadbba3eece9c087559077d136877fe54fd318a64e4535ea85c6a666bebc" },
+    { "path": "openspec/changes/alert-system/design.md", "sha256": "5499707f2f8618385a3adcfed11f0a91bd8f65d893b2d805617a4782a12bf7a3" },
+    { "path": "openspec/changes/alert-system/tasks.md", "sha256": "b208a60a8195c3ec7c2a652328377b6c526cc6f46f599f6cd7de4aad5b49641b" },
+    { "path": "openspec/changes/alert-system/specs/alert-dispatch/spec.md", "sha256": "5cdc0ada970609da9bc5e8751f430537708ba4509a1b531b3f5ebb079e6217bc" },
+    { "path": "openspec/changes/alert-system/specs/alert-notifications/spec.md", "sha256": "c069a3d7360d6bffc3f05e4e0408fcabcf02cea2b2812845de6023a100ff5a71" },
+    { "path": "openspec/changes/alert-system/specs/alert-recording/spec.md", "sha256": "3b60200c58baca09381018e78815755e84a6a5f97a5514725cb8f37c4d0ab353" },
+    { "path": "openspec/changes/alert-system/specs/deterrent-control/spec.md", "sha256": "95bb112122d09dd384a25d62b694a86d38f8f83ddc60dde8e61f443c59c6569a" }
+  ]
+}
