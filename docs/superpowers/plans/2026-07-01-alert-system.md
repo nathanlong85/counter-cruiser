@@ -1933,7 +1933,7 @@ git commit -m "feat(alert-system): add LogHandler for structured alert records"
 
 ## Task 9: `AlertManager` (cooldown, deterrent-first fan-out, isolation)
 
-- [ ] **Task 9 complete**
+- [x] **Task 9 complete**
 
 **Files:**
 - Create: `counter_cruiser/client/alerts/manager.py`

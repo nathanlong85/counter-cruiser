@@ -41,11 +41,11 @@
 
 ## 7. Alert dispatch (alert-dispatch)
 
-- [ ] 7.1 Write tests for per-zone cooldown: proceed when any zone is outside its window (and record last-alert for all triggered zones), suppress + log when all zones are within window, independent per-zone tracking
-- [ ] 7.2 Write tests for fan-out: all enabled (injected) handlers run once; disabled handlers skipped
-- [ ] 7.3 Write tests for failure isolation: one handler raising still runs the others, failure logged with handler identity
-- [ ] 7.4 Write tests for cleanup: all handlers cleaned up; one failing cleanup does not block the rest
-- [ ] 7.5 Implement `AlertManager` (injected handlers, instance-level per-zone cooldown map, synchronous isolated fan-out, isolated cleanup)
+- [x] 7.1 Write tests for per-zone cooldown: proceed when any zone is outside its window (and record last-alert for all triggered zones), suppress + log when all zones are within window, independent per-zone tracking
+- [x] 7.2 Write tests for fan-out: all enabled (injected) handlers run once; disabled handlers skipped
+- [x] 7.3 Write tests for failure isolation: one handler raising still runs the others, failure logged with handler identity
+- [x] 7.4 Write tests for cleanup: all handlers cleaned up; one failing cleanup does not block the rest
+- [x] 7.5 Implement `AlertManager` (injected handlers, instance-level per-zone cooldown map, synchronous isolated fan-out, isolated cleanup)
 
 ## 8. Integration with the client pipeline
 
