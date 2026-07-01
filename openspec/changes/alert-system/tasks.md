@@ -20,11 +20,11 @@
 
 ## 4. Notifications (alert-notifications)
 
-- [ ] 4.1 Write tests for the `NotificationProvider` interface and message building (message identifies triggered zones)
-- [ ] 4.2 Write tests for `NtfyProvider` (HTTP mocked): posts message to configured topic; success path
-- [ ] 4.3 Write tests for `PushoverProvider` (HTTP mocked): posts message with user key + API token
-- [ ] 4.4 Write tests for failure tolerance: network error and non-success status are logged and do not raise; missing credentials/topic logs and skips delivery
-- [ ] 4.5 Implement the provider interface, `NtfyProvider`, `PushoverProvider`, and the config-selecting `NotificationHandler`
+- [x] 4.1 Write tests for the `NotificationProvider` interface and message building (message identifies triggered zones)
+- [x] 4.2 Write tests for `NtfyProvider` (HTTP mocked): posts message to configured topic; success path
+- [x] 4.3 Write tests for `PushoverProvider` (HTTP mocked): posts message with user key + API token
+- [x] 4.4 Write tests for failure tolerance: network error and non-success status are logged and do not raise; missing credentials/topic logs and skips delivery
+- [x] 4.5 Implement the provider interface, `NtfyProvider`, `PushoverProvider`, and the config-selecting `NotificationHandler`
 
 ## 5. Recording: snapshot (alert-recording)
 

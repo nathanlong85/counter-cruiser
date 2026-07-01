@@ -1119,7 +1119,7 @@ git commit -m "feat(alert-system): add DeterrentHandler (GPIO button-press simul
 
 ## Task 6: Push notifications (ntfy.sh and Pushover)
 
-- [ ] **Task 6 complete**
+- [x] **Task 6 complete**
 
 **Files:**
 - Create: `counter_cruiser/client/alerts/notifications.py`
