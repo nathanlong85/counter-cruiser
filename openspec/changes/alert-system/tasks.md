@@ -49,8 +49,8 @@
 
 ## 8. Integration with the client pipeline
 
-- [ ] 8.1 Write an integration-style test: when the debounce condition is met, the AlertManager is invoked with triggered zones + context and dispatches; a single elevated frame (debounce not met) does not invoke it
-- [ ] 8.2 Wire the client orchestration to construct enabled handlers from config and call the AlertManager on the debounced elevated event (replacing print-only), with cleanup on shutdown
+- [x] 8.1 Write an integration-style test: when the debounce condition is met, the AlertManager is invoked with triggered zones + context and dispatches; a single elevated frame (debounce not met) does not invoke it
+- [x] 8.2 Wire the client orchestration to construct enabled handlers from config and call the AlertManager on the debounced elevated event (replacing print-only), with cleanup on shutdown
 
 ## 9. Finalization
 

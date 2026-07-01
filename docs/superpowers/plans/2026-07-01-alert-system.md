@@ -2198,7 +2198,7 @@ git commit -m "feat(alert-system): add AlertManager with cooldown and deterrent-
 
 ## Task 10: Wire the client orchestration to `AlertManager`
 
-- [ ] **Task 10 complete**
+- [x] **Task 10 complete**
 
 **Files:**
 - Modify: `counter_cruiser/client/__main__.py`
