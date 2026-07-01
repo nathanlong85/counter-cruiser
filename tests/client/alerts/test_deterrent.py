@@ -169,3 +169,60 @@ class TestDeterrentCleanup:
         config = DeterrentConfig(enabled=False)
         handler = DeterrentHandler(config)
         handler.cleanup()  # must not raise
+
+    def test_cleanup_does_not_raise_when_gpio_cleanup_raises(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """cleanup() must not raise even if self._gpio.cleanup() raises.
+
+        Per AlertHandler contract, cleanup() must be safe to call even on
+        failure of the underlying GPIO cleanup call.
+        """
+        gpio = _fake_gpio()
+        gpio.cleanup.side_effect = RuntimeError('GPIO release failed')
+        config = DeterrentConfig(enabled=True, pin=17)
+        with (
+            patch(
+                'counter_cruiser.client.alerts.deterrent._import_gpio',
+                return_value=gpio,
+            ),
+            caplog.at_level('ERROR'),
+        ):
+            handler = DeterrentHandler(config)
+            # This must not raise, even though gpio.cleanup() will raise.
+            handler.cleanup()
+        # Verify state was reset despite the exception.
+        assert handler._gpio is None
+        assert handler._enabled is False
+        # Verify the error was logged.
+        log_msg = caplog.text.lower()
+        assert 'error during gpio cleanup' in log_msg or 'exception' in log_msg
+
+
+class TestDeterrentProtocol:
+    def test_trigger_does_not_raise_when_final_gpio_output_raises(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """trigger() must not raise if the final gpio.output(pin, LOW) raises.
+
+        Per AlertHandler contract, trigger() must never raise, even if the
+        pin-reset call in the finally block fails.
+        """
+        gpio = _fake_gpio()
+        # The HIGH call succeeds, but the LOW call in finally block raises.
+        gpio.output.side_effect = [None, RuntimeError('GPIO already released')]
+        config = DeterrentConfig(enabled=True, pin=17, burst_duration_seconds=0.01)
+        with (
+            patch(
+                'counter_cruiser.client.alerts.deterrent._import_gpio',
+                return_value=gpio,
+            ),
+            patch('counter_cruiser.client.alerts.deterrent.time.sleep'),
+            caplog.at_level('ERROR'),
+        ):
+            handler = DeterrentHandler(config)
+            # This must not raise, even though gpio.output(pin, LOW) will.
+            handler.trigger(_context())
+        # Verify the error was logged.
+        log_msg = caplog.text.lower()
+        assert 'error resetting pin' in log_msg or 'exception' in log_msg

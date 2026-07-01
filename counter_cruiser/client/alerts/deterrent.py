@@ -66,11 +66,18 @@ class DeterrentHandler:
         except Exception:
             logger.exception('Deterrent burst failed on pin %s', pin)
         finally:
-            gpio.output(pin, gpio.LOW)
+            try:
+                gpio.output(pin, gpio.LOW)
+            except Exception:
+                logger.exception('Error resetting pin %s to LOW', pin)
 
     def cleanup(self) -> None:
         """Release the GPIO resource; safe to call even if never set up."""
         if self._gpio is not None:
-            self._gpio.cleanup()
-            self._gpio = None
-            self._enabled = False
+            try:
+                self._gpio.cleanup()
+            except Exception:
+                logger.exception('Error during GPIO cleanup')
+            finally:
+                self._gpio = None
+                self._enabled = False
