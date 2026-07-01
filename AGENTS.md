@@ -51,10 +51,10 @@ Project wins on conflicts. For each registry found:
   c. Prefer: exact verified → adapt template → closest intent.
   d. If retrying after a failure, re-scan `anti_patterns` in the matched entry before changing command shape.
 
-After a command succeeds that is not in the registry: use `creg add` to record it that turn.
+**After any command succeeds that is not in the registry: `creg add` IMMEDIATELY — before your next action.**
   - Contains project-specific path/host/script → project registry (no -g)
   - Generic, works across repos → global registry (creg add ... -g)
-  Print one line to the user: `Command registry: added <id>` or `Command registry: updated <id>`.
+  - **Print one line to the user: `Command registry: added <id>` or `Command registry: updated <id>`**
 
 Extend existing entries. Avoid near-duplicates across topic files.
 Registry wins for command shape. Project rules win for policy.

@@ -1,3 +1,9 @@
+---
+comet_change: foundation
+role: technical-design
+canonical_spec: openspec
+---
+
 ## Context
 
 counter-cruiser replaces the `no-diggity` POC. The POC worked but accreted bad
