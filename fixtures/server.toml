@@ -1,0 +1,9 @@
+# Example counter-cruiser server configuration.
+# Copy to config/server.toml and adjust for your setup.
+
+[counter_cruiser]
+host = "0.0.0.0"
+port = 8765
+model_name = "yolov8n.pt"
+device = "auto"
+confidence_threshold = 0.5
