@@ -54,7 +54,7 @@
 
 ## 9. Finalization
 
-- [ ] 9.1 Run the full test suite; confirm 100% coverage (`--cov-fail-under=100`)
-- [ ] 9.2 Run `ruff check` and `ruff format`; resolve all findings
-- [ ] 9.3 Verify docstrings on all new public modules/classes/functions
-- [ ] 9.4 Update root `CLAUDE.md` Architecture/Commands sections to reflect the alert system
+- [x] 9.1 Run the full test suite; confirm 100% coverage (`--cov-fail-under=100`)
+- [x] 9.2 Run `ruff check` and `ruff format`; resolve all findings
+- [x] 9.3 Verify docstrings on all new public modules/classes/functions
+- [x] 9.4 Update root `CLAUDE.md` Architecture/Commands sections to reflect the alert system
