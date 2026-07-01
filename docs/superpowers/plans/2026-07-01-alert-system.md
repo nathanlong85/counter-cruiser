@@ -649,7 +649,7 @@ git commit -m "feat(alert-system): add typed alert config models to ClientSettin
 
 ## Task 4: Frame ring buffer on `ClientSession`
 
-- [ ] **Task 4 complete**
+- [x] **Task 4 complete**
 
 **Files:**
 - Modify: `counter_cruiser/client/transport.py`
