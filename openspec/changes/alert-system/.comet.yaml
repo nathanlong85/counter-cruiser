@@ -7,7 +7,7 @@ subagent_dispatch: confirmed
 tdd_mode: tdd
 review_mode: off
 isolation: branch
-verify_mode: null
+verify_mode: full
 auto_transition: true
 base_ref: 7376f819206fbcc22530abdb0d765c72e3232dd8
 design_doc: docs/superpowers/specs/2026-07-01-alert-system-design.md
