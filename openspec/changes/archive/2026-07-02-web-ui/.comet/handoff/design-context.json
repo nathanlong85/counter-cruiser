@@ -1,0 +1,16 @@
+{
+  "change": "web-ui",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "6b16f72fab184781e7313280e8f27f50b6a92b8a7e2f5a11faf25a5df6db0aeb",
+  "files": [
+    { "path": "openspec/changes/web-ui/proposal.md", "sha256": "9f8674b140a354b29560d6099e905470bbd30d3bba86276471dafb9622b40054" },
+    { "path": "openspec/changes/web-ui/design.md", "sha256": "8198cb84d7b357bf7445d0bafec20a26e701b82e742e7a103201adf16d44aaaa" },
+    { "path": "openspec/changes/web-ui/tasks.md", "sha256": "727093e95d67a53f1ef9d8fe3dc01ee2d1d8d0dc2a84d12bc0f9f8f118ba1e8a" },
+    { "path": "openspec/changes/web-ui/specs/live-feed/spec.md", "sha256": "eacc627e746dbf0477cf3d2ea12cb7ff9992e3b4d7b9dd173a08a23faf92d681" },
+    { "path": "openspec/changes/web-ui/specs/status-dashboard/spec.md", "sha256": "ee3000c55177e3ecb61cb4c9d7457d88f36c5f99a5b1cddf9cbe6e8c432d43d1" },
+    { "path": "openspec/changes/web-ui/specs/zone-calibration/spec.md", "sha256": "39005adb4a0654e7939caedbe264564b3dbac99418a2cd5df438de953c8fdda3" }
+  ]
+}

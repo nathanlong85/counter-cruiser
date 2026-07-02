@@ -2,6 +2,8 @@
 comet_change: web-ui
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-02-web-ui
+status: final
 ---
 
 # Web UI — Technical Design
