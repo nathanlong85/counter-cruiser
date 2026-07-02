@@ -151,6 +151,9 @@ class ClientSettings(_BaseConfig):
     min_size_ratio: float = 0.25
     zones: list[Zone] = []
     alerts: AlertConfig = AlertConfig()
+    web_host: str = '0.0.0.0'
+    web_port: int = 8080
+    web_stream_fps: float = 5.0
 
     @field_validator('jpeg_quality')
     @classmethod
@@ -174,6 +177,14 @@ class ClientSettings(_BaseConfig):
         """Enforce frame_skip >= 1."""
         if v < 1:
             raise ValueError('frame_skip must be >= 1')
+        return v
+
+    @field_validator('web_stream_fps')
+    @classmethod
+    def positive_stream_fps(cls, v: float) -> float:
+        """Enforce a strictly positive MJPEG stream frame rate."""
+        if v <= 0:
+            raise ValueError('web_stream_fps must be positive')
         return v
 
 
