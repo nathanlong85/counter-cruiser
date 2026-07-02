@@ -52,5 +52,5 @@ def _register_all_routes(
     introduces the corresponding route module.
     """
     register_dashboard_routes(app, state)
-    register_live_feed_routes(app, state, settings)
+    register_live_feed_routes(app, state, settings, zone_store)
     register_zone_routes(app, zone_store)

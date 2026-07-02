@@ -9,6 +9,7 @@ import threading
 import time
 from collections import deque
 from collections.abc import Callable
+from datetime import UTC, datetime
 
 from werkzeug.serving import make_server
 
@@ -21,7 +22,7 @@ from counter_cruiser.client.alerts.snapshot import SnapshotHandler
 from counter_cruiser.client.capture import OpenCVCapture
 from counter_cruiser.client.transport import ClientSession
 from counter_cruiser.client.web.app import create_app
-from counter_cruiser.client.web.state import DashboardState
+from counter_cruiser.client.web.state import AlertHistoryEntry, DashboardState
 from counter_cruiser.client.web.zone_store import ZoneStore
 from counter_cruiser.config.loader import load_client_config, resolve_client_config_path
 from counter_cruiser.config.models import ClientSettings
@@ -42,9 +43,16 @@ def _configure_logging() -> None:
     )
 
 
-def _run_web_server(app, host: str, port: int) -> None:  # pragma: no cover
-    """Serve *app* forever on (host, port) via werkzeug's dev server."""
-    make_server(host, port, app).serve_forever()
+def _run_web_server(app, host: str, port: int) -> None:
+    """Serve *app* forever on (host, port) via werkzeug's dev server.
+
+    ``threaded=True`` is required: the dashboard embeds ``/video_feed``, an
+    infinite MJPEG generator that only returns when the client disconnects,
+    alongside ``/api/status``/``/api/alerts`` polling. A single-threaded
+    server (werkzeug's default) would let the stream connection permanently
+    starve every other endpoint.
+    """
+    make_server(host, port, app, threaded=True).serve_forever()
 
 
 class _FpsTracker:
@@ -108,13 +116,14 @@ def main() -> None:
     web_thread.start()
 
     def on_result(msg: DetectionMessage, latency: float) -> None:
+        zones, _ = zone_store.list_zones()
         analysis = analyze_detections(
-            msg.boxes, config.zones, session.frame_height, config.min_size_ratio
+            msg.boxes, zones, session.frame_height, config.min_size_ratio
         )
         history.add(msg.frame_id, analysis.elevated)
         actionable = history.is_consecutive_elevated()
         status = 'ELEVATED' if actionable else 'floor'
-        zones = (
+        triggered = (
             ', '.join(sorted(analysis.triggered_zones))
             if analysis.triggered_zones
             else 'none'
@@ -124,7 +133,7 @@ def main() -> None:
             msg.frame_id,
             latency * 1000.0,
             status,
-            zones,
+            triggered,
         )
         frame = session.get_frame(msg.frame_id)
         if frame is not None:
@@ -140,13 +149,25 @@ def main() -> None:
             context = AlertContext(
                 frame=session.get_frame(msg.frame_id),
                 detections=msg.boxes,
-                zones=config.zones,
+                zones=zones,
                 triggered_zones=analysis.triggered_zones,
                 frame_id=msg.frame_id,
             )
             alert_manager.maybe_alert(context)
+            dashboard_state.record_alert(
+                AlertHistoryEntry(
+                    time=datetime.now(UTC),
+                    triggered_zones=frozenset(analysis.triggered_zones),
+                    frame_id=msg.frame_id,
+                )
+            )
 
-    session = ClientSession(capture=OpenCVCapture(), config=config, on_result=on_result)
+    session = ClientSession(
+        capture=OpenCVCapture(),
+        config=config,
+        on_result=on_result,
+        on_connection_change=dashboard_state.set_server_connected,
+    )
 
     def _shutdown(signum, frame):  # pragma: no cover
         logger.info('Shutdown signal received')

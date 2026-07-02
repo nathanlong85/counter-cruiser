@@ -105,6 +105,21 @@ class DashboardState:
         with self._lock:
             return self._stats
 
+    def set_server_connected(self, connected: bool) -> None:
+        """Update only the ``server_connected`` flag, preserving fps/latency.
+
+        Called from the transport's connection-state callback, which fires
+        independently of ``update_stats`` (only invoked from a successful
+        detection response). A read-modify-write from the caller would race
+        against concurrent writers; doing it under this one lock call does not.
+        """
+        with self._lock:
+            self._stats = StatsSnapshot(
+                fps=self._stats.fps,
+                latency_ms=self._stats.latency_ms,
+                server_connected=connected,
+            )
+
     def record_alert(self, entry: AlertHistoryEntry) -> None:
         """Append *entry* to the bounded alert history (newest at the front)."""
         with self._lock:

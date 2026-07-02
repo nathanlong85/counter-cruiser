@@ -6,8 +6,19 @@ import numpy as np
 
 from counter_cruiser.client.web.mjpeg import generate_mjpeg_stream
 from counter_cruiser.client.web.state import DashboardState
+from counter_cruiser.client.web.zone_store import ZoneStore
 from counter_cruiser.config.models import ClientSettings, Zone
 from counter_cruiser.shared.protocol import BoundingBox
+
+
+class FakeZoneStore:
+    """Zone-store double: returns a fixed zone list, no persistence."""
+
+    def __init__(self, zones: list[Zone] | None = None) -> None:
+        self._zones = zones or []
+
+    def list_zones(self) -> tuple[list[Zone], int]:
+        return list(self._zones), 0
 
 
 class FakeClock:
@@ -31,7 +42,12 @@ def test_no_frame_yet_serves_placeholder() -> None:
     clock = FakeClock()
     parts = list(
         generate_mjpeg_stream(
-            state, settings, clock=clock.time, sleep=clock.sleep, max_frames=1
+            state,
+            settings,
+            FakeZoneStore(),
+            clock=clock.time,
+            sleep=clock.sleep,
+            max_frames=1,
         )
     )
     assert len(parts) == 1
@@ -45,13 +61,23 @@ def test_serves_real_frame_once_available() -> None:
     clock = FakeClock()
     placeholder_parts = list(
         generate_mjpeg_stream(
-            state, settings, clock=clock.time, sleep=clock.sleep, max_frames=1
+            state,
+            settings,
+            FakeZoneStore(),
+            clock=clock.time,
+            sleep=clock.sleep,
+            max_frames=1,
         )
     )
     state.update_frame(np.ones((10, 10, 3), dtype=np.uint8) * 200)
     real_parts = list(
         generate_mjpeg_stream(
-            state, settings, clock=clock.time, sleep=clock.sleep, max_frames=1
+            state,
+            settings,
+            FakeZoneStore(),
+            clock=clock.time,
+            sleep=clock.sleep,
+            max_frames=1,
         )
     )
     assert placeholder_parts[0] != real_parts[0]
@@ -64,7 +90,12 @@ def test_emission_rate_is_bounded_by_configured_fps() -> None:
     clock = FakeClock()
     list(
         generate_mjpeg_stream(
-            state, settings, clock=clock.time, sleep=clock.sleep, max_frames=3
+            state,
+            settings,
+            FakeZoneStore(),
+            clock=clock.time,
+            sleep=clock.sleep,
+            max_frames=3,
         )
     )
     assert len(clock.sleep_calls) == 3
@@ -89,6 +120,7 @@ def test_no_sleep_when_processing_exceeds_the_frame_interval() -> None:
         generate_mjpeg_stream(
             state,
             settings,
+            FakeZoneStore(),
             clock=lambda: next(times),
             sleep=sleep_calls.append,
             max_frames=1,
@@ -111,6 +143,7 @@ def test_annotation_invoked_with_current_frame_detections_zones_status() -> None
         id='z2', name='Off', enabled=False, polygon=[(0, 0), (9, 0), (9, 9)]
     )
     settings = ClientSettings(zones=[zone, disabled_zone])
+    zone_store = FakeZoneStore([zone, disabled_zone])
     clock = FakeClock()
 
     calls = []
@@ -123,6 +156,7 @@ def test_annotation_invoked_with_current_frame_detections_zones_status() -> None
         generate_mjpeg_stream(
             state,
             settings,
+            zone_store,
             clock=clock.time,
             sleep=clock.sleep,
             annotate_fn=spy_annotate,
@@ -136,3 +170,68 @@ def test_annotation_invoked_with_current_frame_detections_zones_status() -> None
     assert zones == [zone]  # only the enabled zone is passed
     assert triggered_zones == {'z1'}
     assert elevated is True
+
+
+def test_zones_are_read_through_zone_store_not_raw_settings() -> None:
+    """Regression test for the settings.zones/zone_store data race fix.
+
+    The generator must read zones via ``zone_store.list_zones()`` — a
+    lock-guarded snapshot — rather than ``settings.zones`` directly, since
+    the zone list is mutated concurrently from the Flask zone-CRUD thread.
+    """
+    state = DashboardState()
+    state.update_frame(np.zeros((10, 10, 3), dtype=np.uint8))
+    stale_zone = Zone(
+        id='stale', name='Stale', enabled=True, polygon=[(0, 0), (9, 0), (9, 9)]
+    )
+    fresh_zone = Zone(
+        id='fresh', name='Fresh', enabled=True, polygon=[(0, 0), (9, 0), (9, 9)]
+    )
+    # settings.zones deliberately differs from the zone store's zones: if the
+    # generator reads settings.zones directly, this assertion catches it.
+    settings = ClientSettings(zones=[stale_zone])
+    zone_store = FakeZoneStore([fresh_zone])
+    clock = FakeClock()
+
+    calls = []
+
+    def spy_annotate(frame_arg, detections, zones, triggered_zones, elevated):
+        calls.append(zones)
+        return frame_arg
+
+    list(
+        generate_mjpeg_stream(
+            state,
+            settings,
+            zone_store,
+            clock=clock.time,
+            sleep=clock.sleep,
+            annotate_fn=spy_annotate,
+            max_frames=1,
+        )
+    )
+    assert calls == [[fresh_zone]]
+
+
+def test_zone_store_is_used_via_the_zonestore_class(tmp_path) -> None:
+    """Confirm the real ZoneStore (not just a fake) satisfies the generator."""
+    zone = Zone(id='z1', name='Counter', enabled=True, polygon=[(0, 0), (9, 0), (9, 9)])
+    config_path = tmp_path / 'client.toml'
+    config_path.write_text('')
+    settings = ClientSettings(zones=[zone])
+    zone_store = ZoneStore(settings, config_path)
+    state = DashboardState()
+    state.update_frame(np.zeros((10, 10, 3), dtype=np.uint8))
+    clock = FakeClock()
+
+    parts = list(
+        generate_mjpeg_stream(
+            state,
+            settings,
+            zone_store,
+            clock=clock.time,
+            sleep=clock.sleep,
+            max_frames=1,
+        )
+    )
+    assert len(parts) == 1

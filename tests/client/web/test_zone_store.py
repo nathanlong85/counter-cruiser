@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import threading
 import tomllib
+import unittest.mock
 
 import pytest
 
@@ -125,6 +127,71 @@ class TestDeleteZone:
         _, version = store.list_zones()
         with pytest.raises(ZoneNotFoundError):
             store.delete_zone('unknown', version)
+
+
+class TestThreadSafety:
+    """Regression tests for the settings.zones data-race fix.
+
+    ``ZoneStore`` mutates ``settings.zones`` in place from Flask request
+    threads while other threads (the asyncio pipeline, the MJPEG generator)
+    read it concurrently via ``list_zones()``. A single internal lock must
+    guard every read and mutation so no thread ever observes a torn list.
+    """
+
+    def test_list_zones_and_mutating_methods_share_one_lock(self, tmp_path) -> None:
+        store, _, _ = _store(tmp_path)
+        real_lock = store._lock
+        spy_lock = unittest.mock.MagicMock(wraps=real_lock)
+        store._lock = spy_lock
+
+        _, version = store.list_zones()
+        assert spy_lock.__enter__.call_count == 1
+
+        store.create_zone(_zone(), version)
+        assert spy_lock.__enter__.call_count == 2
+
+        _, version = store.list_zones()
+        store.edit_zone('z1', version, name='Renamed')
+        assert spy_lock.__enter__.call_count == 4
+
+        _, version = store.list_zones()
+        store.delete_zone('z1', version)
+        assert spy_lock.__enter__.call_count == 6
+
+    def test_concurrent_reads_and_writes_do_not_raise(self, tmp_path) -> None:
+        """Hammer list_zones() from reader threads while a writer thread
+        creates zones; without the shared lock this can raise (mutating a
+        list while another thread iterates it) or produce a torn read."""
+        store, _, _ = _store(tmp_path)
+        errors: list[BaseException] = []
+        stop = threading.Event()
+
+        def reader() -> None:
+            while not stop.is_set():
+                try:
+                    store.list_zones()
+                except BaseException as exc:  # noqa: BLE001
+                    errors.append(exc)
+
+        def writer() -> None:
+            for i in range(25):
+                _, version = store.list_zones()
+                try:
+                    store.create_zone(_zone(f'z{i}'), version)
+                except Exception as exc:  # noqa: BLE001
+                    errors.append(exc)
+
+        readers = [threading.Thread(target=reader) for _ in range(4)]
+        for t in readers:
+            t.start()
+        writer_thread = threading.Thread(target=writer)
+        writer_thread.start()
+        writer_thread.join(timeout=10.0)
+        stop.set()
+        for t in readers:
+            t.join(timeout=10.0)
+
+        assert errors == []
 
 
 class TestPersistenceRoundTrip:

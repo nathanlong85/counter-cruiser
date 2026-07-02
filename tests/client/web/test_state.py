@@ -72,6 +72,23 @@ class TestStats:
         assert stats.latency_ms == 42.0
         assert stats.server_connected is True
 
+    def test_set_server_connected_preserves_fps_and_latency(self) -> None:
+        state = DashboardState()
+        state.update_stats(fps=12.5, latency_ms=42.0, server_connected=True)
+        state.set_server_connected(False)
+        stats = state.get_stats()
+        assert stats.fps == 12.5
+        assert stats.latency_ms == 42.0
+        assert stats.server_connected is False
+
+    def test_set_server_connected_true_from_default(self) -> None:
+        state = DashboardState()
+        state.set_server_connected(True)
+        stats = state.get_stats()
+        assert stats.server_connected is True
+        assert stats.fps == 0.0
+        assert stats.latency_ms == 0.0
+
 
 class TestAlertHistory:
     def test_no_alerts_returns_empty_list(self) -> None:

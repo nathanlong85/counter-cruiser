@@ -5,6 +5,14 @@ immediately, then writes the updated zone set back to the client TOML
 config file. Optimistic concurrency: every mutating call must supply the
 ``version`` (the config file's mtime, in nanoseconds) it last read; a
 mismatch means the file changed since the caller last read it.
+
+``settings.zones`` is read from multiple threads (the Flask request thread
+via this store, the asyncio pipeline thread via ``config.zones``, and the
+MJPEG generator via the store's ``list_zones()``). A single internal lock
+guards every read and mutation here so no thread ever iterates the list
+while another thread is mid-mutation; callers on other threads must read
+zones exclusively through :meth:`ZoneStore.list_zones` rather than the raw
+``settings.zones`` attribute to share that guarantee.
 """
 
 from __future__ import annotations
@@ -12,6 +20,7 @@ from __future__ import annotations
 import contextlib
 import os
 import tempfile
+import threading
 from pathlib import Path
 
 import tomlkit
@@ -34,14 +43,23 @@ class ZoneStore:
         """Store the shared settings object and the file it should be persisted to."""
         self._settings = settings
         self._config_path = config_path
+        self._lock = threading.Lock()
 
     def current_version(self) -> int:
         """Return the config file's current mtime in nanoseconds."""
         return self._config_path.stat().st_mtime_ns
 
     def list_zones(self) -> tuple[list[Zone], int]:
-        """Return (current zones, current version)."""
-        return list(self._settings.zones), self.current_version()
+        """Return (current zones, current version) as a thread-safe snapshot.
+
+        This is the sanctioned read path for ``settings.zones`` from any
+        thread other than the one that owns this store's mutations — it
+        acquires the same lock guarding ``create_zone``/``edit_zone``/
+        ``delete_zone`` so the returned list is never a partial view of an
+        in-progress mutation.
+        """
+        with self._lock:
+            return list(self._settings.zones), self.current_version()
 
     def _check_version(self, version: int) -> None:
         """Raise VersionConflictError if *version* does not match the current file."""
@@ -61,11 +79,12 @@ class ZoneStore:
 
     def create_zone(self, zone: Zone, version: int) -> None:
         """Add *zone*; rejects duplicate ids or a stale *version*."""
-        self._check_version(version)
-        if any(existing.id == zone.id for existing in self._settings.zones):
-            raise ValueError(f'zone {zone.id!r} already exists')
-        self._settings.zones.append(zone)
-        self._write_toml()
+        with self._lock:
+            self._check_version(version)
+            if any(existing.id == zone.id for existing in self._settings.zones):
+                raise ValueError(f'zone {zone.id!r} already exists')
+            self._settings.zones.append(zone)
+            self._write_toml()
 
     def edit_zone(
         self,
@@ -82,26 +101,28 @@ class ZoneStore:
         zone through the :class:`Zone` model before touching the in-memory
         list or the file, so an invalid polygon leaves both unchanged.
         """
-        self._check_version(version)
-        existing = self._find(zone_id)
-        data = existing.model_dump()
-        if name is not None:
-            data['name'] = name
-        if polygon is not None:
-            data['polygon'] = polygon
-        if enabled is not None:
-            data['enabled'] = enabled
-        updated = Zone(**data)  # raises ValueError (pydantic) on invalid polygon
-        idx = self._settings.zones.index(existing)
-        self._settings.zones[idx] = updated
-        self._write_toml()
+        with self._lock:
+            self._check_version(version)
+            existing = self._find(zone_id)
+            data = existing.model_dump()
+            if name is not None:
+                data['name'] = name
+            if polygon is not None:
+                data['polygon'] = polygon
+            if enabled is not None:
+                data['enabled'] = enabled
+            updated = Zone(**data)  # raises ValueError (pydantic) on invalid polygon
+            idx = self._settings.zones.index(existing)
+            self._settings.zones[idx] = updated
+            self._write_toml()
 
     def delete_zone(self, zone_id: str, version: int) -> None:
         """Remove an existing zone; rejects an unknown id or a stale *version*."""
-        self._check_version(version)
-        existing = self._find(zone_id)
-        self._settings.zones.remove(existing)
-        self._write_toml()
+        with self._lock:
+            self._check_version(version)
+            existing = self._find(zone_id)
+            self._settings.zones.remove(existing)
+            self._write_toml()
 
     def _write_toml(self) -> None:
         """Atomically rewrite only the zones section of the config file.
