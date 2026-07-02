@@ -43,7 +43,7 @@ def register_zone_routes(app: Flask, zone_store: ZoneStore) -> None:
             zone_store.create_zone(zone, body['version'])
         except VersionConflictError as exc:
             return jsonify({'error': str(exc)}), 409
-        except (ValidationError, ValueError, KeyError) as exc:
+        except (ValidationError, ValueError, KeyError, TypeError) as exc:
             return jsonify({'error': str(exc)}), 400
         return jsonify(_zone_to_dict(zone)), 201
 
@@ -62,7 +62,7 @@ def register_zone_routes(app: Flask, zone_store: ZoneStore) -> None:
             return jsonify({'error': str(exc)}), 409
         except ZoneNotFoundError as exc:
             return jsonify({'error': str(exc)}), 404
-        except (ValidationError, ValueError, KeyError) as exc:
+        except (ValidationError, ValueError, KeyError, TypeError) as exc:
             return jsonify({'error': str(exc)}), 400
         zones, _ = zone_store.list_zones()
         updated = next(z for z in zones if z.id == zone_id)

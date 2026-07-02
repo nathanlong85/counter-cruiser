@@ -61,6 +61,11 @@ class TestCreateZone:
         response = client.post('/api/zones', json={**_zone_payload(), 'version': -1})
         assert response.status_code == 409
 
+    def test_json_array_body_returns_400(self, tmp_path) -> None:
+        client, _ = _client(tmp_path)
+        response = client.post('/api/zones', json=[1, 2, 3])
+        assert response.status_code == 400
+
 
 class TestEditZone:
     def test_valid_edit_returns_200(self, tmp_path) -> None:
@@ -90,6 +95,23 @@ class TestEditZone:
         version = client.get('/api/zones').get_json()['version']
         response = client.put('/api/zones/z1', json={'polygon': [[1, 1]], 'version': version})
         assert response.status_code == 400
+
+    def test_json_array_body_returns_400(self, tmp_path) -> None:
+        zone = Zone(id='z1', name='Counter', enabled=True, polygon=[(0, 0), (10, 0), (10, 10)])
+        client, _ = _client(tmp_path, zones=[zone])
+        response = client.put('/api/zones/z1', json=[1, 2, 3])
+        assert response.status_code == 400
+
+    def test_toggle_enabled_preserves_polygon(self, tmp_path) -> None:
+        original_polygon = [(0, 0), (10, 0), (10, 10)]
+        zone = Zone(id='z1', name='Counter', enabled=True, polygon=original_polygon)
+        client, _ = _client(tmp_path, zones=[zone])
+        version = client.get('/api/zones').get_json()['version']
+        response = client.put('/api/zones/z1', json={'enabled': False, 'version': version})
+        assert response.status_code == 200
+        body = response.get_json()
+        assert body['enabled'] is False
+        assert body['polygon'] == [[0, 0], [10, 0], [10, 10]]
 
 
 class TestDeleteZone:
