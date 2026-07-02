@@ -213,3 +213,17 @@ injected state and writes the (already file-backed) zone config.
   deque assumed for now.
 - Coordination policy if a hand-edit and a web-edit race (currently
   last-writer-wins).
+
+## Implementation Divergence
+
+**Concurrent edit coordination (resolved, supersedes "last-writer-wins" above):**
+During deep technical design (`docs/superpowers/specs/2026-07-01-web-ui-design.md`),
+the "last-writer-wins" approach and the open question above were superseded by
+**mtime-based optimistic concurrency control**: the get-zones endpoint returns a
+`version` token (the config file's `st_mtime_ns`); every mutating request must
+submit the version it read; the server rejects the request with a conflict error
+(no write) if the file's current mtime doesn't match. This is implemented in
+`ZoneStore` (`counter_cruiser/client/web/zone_store.py`) and reflected in the
+`zone-calibration` delta spec's "Conflicting edit is rejected" requirement. The
+"last-writer-wins" text and the open question immediately above are stale and
+should be read in light of this resolution.
