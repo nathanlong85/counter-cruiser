@@ -43,8 +43,8 @@
 - [x] 7.4 Implement create/edit/toggle/delete handlers validating via the foundation `Zone` model
 - [x] 7.5 Write tests for TOML write-back (temp config file): valid edit persists and reloads identically; rejected edit leaves file unchanged; write is atomic
 - [x] 7.6 Implement the atomic write-back of the zones section to the client TOML config (temp-then-rename), preserving other settings
-- [ ] 7.7 Write a test that the calibration page is served with the live frame as backdrop
-- [ ] 7.8 Implement the calibration page template (draw/edit polygons over the live frame, calling the zone endpoints)
+- [x] 7.7 Write a test that the calibration page is served with the live frame as backdrop
+- [x] 7.8 Implement the calibration page template (draw/edit polygons over the live frame, calling the zone endpoints)
 
 ## 8. Client integration
 
