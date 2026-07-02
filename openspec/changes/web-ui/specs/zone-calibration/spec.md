@@ -3,13 +3,14 @@
 ### Requirement: View current zones
 
 The web server SHALL expose the current zone definitions (identifier, display
-name, enabled flag, and polygon points) so the calibration UI can render them
-over the live frame for editing.
+name, enabled flag, and polygon points) plus a config version token, so the
+calibration UI can render them over the live frame for editing and submit
+that version with subsequent edit requests.
 
 #### Scenario: Current zones are returned
 
 - **WHEN** the calibration UI requests the current zones
-- **THEN** the server returns each configured zone with its identifier, display name, enabled flag, and polygon points
+- **THEN** the server returns each configured zone with its identifier, display name, enabled flag, and polygon points, together with a version token identifying the current state of the config file
 
 #### Scenario: No zones configured
 
@@ -47,6 +48,19 @@ be validated to contain at least three points, consistent with the foundation
 
 - **WHEN** a request edits or deletes a zone identifier that does not exist
 - **THEN** the server rejects the request with a not-found error and makes no change
+
+### Requirement: Conflicting edit is rejected
+
+The web server SHALL reject a create, edit, delete, or toggle request whose
+submitted version token does not match the config file's current version,
+without modifying the config file. This detects the config file having
+changed (by a hand-edit or another web request) since the client last read
+the zone set.
+
+#### Scenario: Stale version is rejected
+
+- **WHEN** a create, edit, delete, or toggle request submits a version token that does not match the config file's current version
+- **THEN** the server rejects the request with a conflict error and does not modify the config file
 
 ### Requirement: Delete zones
 
