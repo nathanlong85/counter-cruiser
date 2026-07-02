@@ -15,6 +15,7 @@ from flask import Flask
 
 from counter_cruiser.client.web.routes_dashboard import register_dashboard_routes
 from counter_cruiser.client.web.routes_live_feed import register_live_feed_routes
+from counter_cruiser.client.web.routes_zones import register_zone_routes
 from counter_cruiser.client.web.state import DashboardState
 from counter_cruiser.config.models import ClientSettings, Zone
 
@@ -49,3 +50,4 @@ def _register_all_routes(
     """
     register_dashboard_routes(app, state)
     register_live_feed_routes(app, state, settings)
+    register_zone_routes(app, zone_store)
