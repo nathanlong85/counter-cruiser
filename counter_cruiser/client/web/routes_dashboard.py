@@ -40,8 +40,3 @@ def register_dashboard_routes(app: Flask, state: DashboardState) -> None:
                 for entry in state.get_alerts()
             ]
         )
-
-    @app.get('/calibrate', endpoint='calibrate')
-    def calibrate_stub():
-        """Temporary placeholder to be replaced by Task 13."""
-        return ''

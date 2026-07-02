@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 from pydantic import ValidationError
 
 from counter_cruiser.client.web.zone_store import (
@@ -78,3 +78,7 @@ def register_zone_routes(app: Flask, zone_store: ZoneStore) -> None:
         except ZoneNotFoundError as exc:
             return jsonify({'error': str(exc)}), 404
         return jsonify({'deleted': zone_id}), 200
+
+    @app.get('/calibrate')
+    def calibrate():
+        return render_template('calibration.html')

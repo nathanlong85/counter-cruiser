@@ -102,11 +102,3 @@ class TestDashboardPage:
         response = client.get('/')
         assert response.status_code == 200
         assert b'<html' in response.data
-
-
-class TestStubRoutes:
-    def test_calibrate_stub_returns_empty_string(self) -> None:
-        client, _ = _client()
-        response = client.get('/calibrate')
-        assert response.status_code == 200
-        assert response.data == b''

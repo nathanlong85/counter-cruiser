@@ -133,3 +133,11 @@ class TestDeleteZone:
         client, _ = _client(tmp_path, zones=[zone])
         response = client.delete(f'/api/zones/z1?version=-1')
         assert response.status_code == 409
+
+
+class TestCalibrationPage:
+    def test_calibration_page_is_served_with_live_frame_backdrop(self, tmp_path) -> None:
+        client, _ = _client(tmp_path)
+        response = client.get('/calibrate')
+        assert response.status_code == 200
+        assert b'/video_feed' in response.data
