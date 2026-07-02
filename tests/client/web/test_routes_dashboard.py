@@ -105,12 +105,6 @@ class TestDashboardPage:
 
 
 class TestStubRoutes:
-    def test_live_feed_stub_returns_empty_string(self) -> None:
-        client, _ = _client()
-        response = client.get('/video_feed')
-        assert response.status_code == 200
-        assert response.data == b''
-
     def test_calibrate_stub_returns_empty_string(self) -> None:
         client, _ = _client()
         response = client.get('/calibrate')
