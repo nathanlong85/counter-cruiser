@@ -37,8 +37,15 @@ class ClientSession:
         on_result: Callable[[DetectionMessage, float], None],
         reconnect_interval: float = 5.0,
         frame_buffer_capacity: int = 30,
+        on_connection_change: Callable[[bool], None] | None = None,
     ) -> None:
-        """Initialise the session without opening any resources."""
+        """Initialise the session without opening any resources.
+
+        *on_connection_change*, if given, is invoked with ``True`` right
+        after a successful connect and ``False`` when a connection drops and
+        a reconnect attempt is about to be scheduled — lets callers (e.g. the
+        entrypoint's ``DashboardState``) reflect live connection status.
+        """
         self._capture = capture
         self._config = config
         self._on_result = on_result
@@ -49,6 +56,7 @@ class ClientSession:
         self._frame_height = config.frame_height
         self._frame_buffer_capacity = frame_buffer_capacity
         self._frame_buffer: dict[int, np.ndarray] = {}
+        self._on_connection_change = on_connection_change
 
     @property
     def _url(self) -> str:
@@ -74,9 +82,13 @@ class ClientSession:
             while self._running:
                 try:
                     ws = await websockets.connect(self._url)
+                    if self._on_connection_change is not None:
+                        self._on_connection_change(True)
                     async with ws:
                         await self._run_connection(ws)
                 except (OSError, websockets.exceptions.WebSocketException) as exc:
+                    if self._on_connection_change is not None:
+                        self._on_connection_change(False)
                     if not self._running:
                         break
                     logger.warning(

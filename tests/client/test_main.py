@@ -2,9 +2,22 @@
 
 from __future__ import annotations
 
+import socket
+import threading
+import time
 from unittest.mock import MagicMock, patch
 
-from counter_cruiser.client.__main__ import _configure_logging, main
+import requests
+
+from counter_cruiser.client.__main__ import (
+    _configure_logging,
+    _FpsTracker,
+    _run_web_server,
+    main,
+)
+from counter_cruiser.client.web.app import create_app
+from counter_cruiser.client.web.state import DashboardState
+from counter_cruiser.client.web.zone_store import ZoneStore
 from counter_cruiser.config.models import ClientSettings, Zone
 from counter_cruiser.shared.protocol import BoundingBox, DetectionMessage
 
@@ -23,13 +36,17 @@ class TestConfigureLogging:
 class TestMain:
     """Tests for main(), the synchronous process entrypoint."""
 
-    def test_wires_session_and_runs(self) -> None:
+    def test_wires_session_and_runs(self, tmp_path) -> None:
         zone = Zone(
             id='counter',
             name='Counter',
             polygon=[(0, 0), (640, 0), (640, 480), (0, 480)],
         )
         config = ClientSettings(zones=[zone])
+        config_path = tmp_path / 'client.toml'
+        config_path.write_text('')
+
+        real_state = DashboardState()
 
         with (
             patch(
@@ -39,14 +56,30 @@ class TestMain:
                 'counter_cruiser.client.__main__.load_client_config',
                 return_value=config,
             ) as load_cfg,
+            patch(
+                'counter_cruiser.client.__main__.resolve_client_config_path',
+                return_value=config_path,
+            ),
+            patch(
+                'counter_cruiser.client.__main__.DashboardState',
+                return_value=real_state,
+            ),
             patch('counter_cruiser.client.__main__.OpenCVCapture') as capture_cls,
             patch('counter_cruiser.client.__main__.ClientSession') as session_cls,
             patch('counter_cruiser.client.__main__.signal.signal') as signal_signal,
             patch('counter_cruiser.client.__main__.asyncio.run') as run,
+            patch('counter_cruiser.client.__main__.threading.Thread') as thread_cls,
         ):
+            thread_cls.return_value = MagicMock()
             session_instance = MagicMock()
             session_instance.frame_height = config.frame_height
-            session_instance.get_frame.return_value = None
+            # frame_id=1 -> no frame available yet; frame_id=2 -> a frame is
+            # available, covering both branches of the `frame is not None`
+            # check in on_result.
+            fake_frame = MagicMock()
+            session_instance.get_frame.side_effect = lambda frame_id: (
+                None if frame_id == 1 else fake_frame
+            )
             session_cls.return_value = session_instance
 
             main()
@@ -59,6 +92,9 @@ class TestMain:
             assert kwargs['capture'] is capture_cls.return_value
             assert kwargs['config'] is config
             on_result = kwargs['on_result']
+            # ClientSession is wired to the real DashboardState's connection
+            # callback, so a transport-level drop updates server_connected.
+            assert kwargs['on_connection_change'] == real_state.set_server_connected
 
             assert signal_signal.call_count == 2
             run.assert_called_once_with(session_instance.run.return_value)
@@ -70,12 +106,82 @@ class TestMain:
         )
         msg = DetectionMessage(frame_id=1, boxes=[box], processing_time_ms=2.0)
         on_result(msg, 0.123)
+        assert real_state.get_alerts() == []  # debounce not yet met, no alert
 
         # Second consecutive elevated frame: debounce satisfied, exercising
-        # the alert-dispatch branch (AlertContext build + maybe_alert call).
+        # the alert-dispatch branch (AlertContext build + maybe_alert call)
+        # and the DashboardState.record_alert wiring.
         msg2 = DetectionMessage(frame_id=2, boxes=[box], processing_time_ms=2.0)
         on_result(msg2, 0.123)
         session_instance.get_frame.assert_called_with(2)
+
+        alerts = real_state.get_alerts()
+        assert len(alerts) == 1
+        assert alerts[0].frame_id == 2
+        assert alerts[0].triggered_zones == frozenset({'counter'})
+
+    def test_main_constructs_dashboard_state_and_starts_web_thread(
+        self, monkeypatch
+    ) -> None:
+        """main() builds DashboardState + the Flask app and starts a daemon
+        web thread, without ever starting real capture (asyncio.run mocked)."""
+        started_threads = []
+
+        class FakeThread:
+            def __init__(self, target, args, daemon):
+                self.target = target
+                self.args = args
+                self.daemon = daemon
+
+            def start(self):
+                started_threads.append(self)
+
+        config = ClientSettings()
+
+        with (
+            patch('counter_cruiser.client.__main__._configure_logging'),
+            patch(
+                'counter_cruiser.client.__main__.load_client_config',
+                return_value=config,
+            ),
+            patch('counter_cruiser.client.__main__.OpenCVCapture'),
+            patch('counter_cruiser.client.__main__.ClientSession') as session_cls,
+            monkeypatch.context() as m,
+        ):
+            session_cls.return_value.frame_height = config.frame_height
+            m.setattr('counter_cruiser.client.__main__.threading.Thread', FakeThread)
+            m.setattr('counter_cruiser.client.__main__.asyncio.run', lambda coro: None)
+            m.setattr(
+                'counter_cruiser.client.__main__.signal.signal', lambda *a, **k: None
+            )
+
+            main()
+
+        assert len(started_threads) == 1
+        assert started_threads[0].daemon is True
+
+
+class TestFpsTracker:
+    """Tests for _FpsTracker, a rolling-window FPS estimate."""
+
+    def test_fewer_than_two_samples_returns_zero(self) -> None:
+        clock = iter([0.0]).__next__
+        tracker = _FpsTracker(clock=clock)
+        assert tracker.tick() == 0.0
+
+    def test_two_samples_half_second_apart_returns_two_fps(self) -> None:
+        values = iter([0.0, 0.5])
+        tracker = _FpsTracker(clock=lambda: next(values))
+        tracker.tick()
+        assert tracker.tick() == 2.0
+
+    def test_samples_outside_window_are_evicted(self) -> None:
+        values = iter([0.0, 1.0, 10.0])
+        tracker = _FpsTracker(window_seconds=5.0, clock=lambda: next(values))
+        tracker.tick()  # t=0.0
+        tracker.tick()  # t=1.0 -> window [−4, 1], both kept, fps = 1/1.0 = 1.0
+        fps = tracker.tick()  # t=10.0 -> cutoff=5.0, evicts t=0.0 and t=1.0
+        assert fps == 0.0
 
 
 class TestBuildAlertManager:
@@ -120,10 +226,12 @@ class TestMainCallsAlertManagerCleanupOnShutdown:
             patch('counter_cruiser.client.__main__.ClientSession') as session_cls,
             patch('counter_cruiser.client.__main__.signal.signal'),
             patch('counter_cruiser.client.__main__.asyncio.run'),
+            patch('counter_cruiser.client.__main__.threading.Thread') as thread_cls,
             patch(
                 'counter_cruiser.client.__main__._build_alert_manager'
             ) as build_manager,
         ):
+            thread_cls.return_value = MagicMock()
             session_cls.return_value.frame_height = config.frame_height
             manager_instance = MagicMock()
             build_manager.return_value = manager_instance
@@ -131,3 +239,78 @@ class TestMainCallsAlertManagerCleanupOnShutdown:
             main()
 
             manager_instance.cleanup.assert_called_once_with()
+
+
+def _free_port() -> int:
+    """Return a currently-unused TCP port (best-effort; small race window)."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.bind(('127.0.0.1', 0))
+        return sock.getsockname()[1]
+
+
+class TestWebServerThreading:
+    """Regression test for the single-threaded werkzeug server finding.
+
+    Boots the *real* server via `_run_web_server` (not `test_client()`) on
+    an ephemeral port, in a background thread, exactly as `main()` does.
+    While a `/video_feed` MJPEG stream connection is held open, `/api/status`
+    must still respond promptly — proving `threaded=True` is in effect and
+    the stream isn't monopolizing the server's sole worker.
+    """
+
+    def test_video_feed_does_not_block_api_status(self, tmp_path) -> None:
+        host = '127.0.0.1'
+        port = _free_port()
+
+        config = ClientSettings(web_host=host, web_port=port, web_stream_fps=5.0)
+        config_path = tmp_path / 'client.toml'
+        config_path.write_text('')
+        state = DashboardState()
+        zone_store = ZoneStore(config, config_path)
+        app = create_app(state, config, zone_store)
+
+        server_thread = threading.Thread(
+            target=_run_web_server, args=(app, host, port), daemon=True
+        )
+        server_thread.start()
+
+        base_url = f'http://{host}:{port}'
+        deadline = time.monotonic() + 5.0
+        while time.monotonic() < deadline:
+            try:
+                requests.get(f'{base_url}/api/status', timeout=0.5)
+                break
+            except requests.exceptions.ConnectionError:
+                time.sleep(0.05)
+
+        # Hold a streaming /video_feed connection open on a background
+        # thread; the generator has no max_frames bound (production
+        # behaviour), so it keeps emitting until this thread closes it.
+        stop_streaming = threading.Event()
+
+        def hold_stream() -> None:
+            with requests.get(
+                f'{base_url}/video_feed', stream=True, timeout=10
+            ) as resp:
+                for _ in resp.iter_content(chunk_size=1024):
+                    if stop_streaming.is_set():
+                        break
+
+        stream_thread = threading.Thread(target=hold_stream, daemon=True)
+        stream_thread.start()
+        time.sleep(0.2)  # let the stream connection establish and start emitting
+
+        try:
+            start = time.monotonic()
+            status_response = requests.get(f'{base_url}/api/status', timeout=2.0)
+            elapsed = time.monotonic() - start
+        finally:
+            stop_streaming.set()
+            stream_thread.join(timeout=2.0)
+
+        assert status_response.status_code == 200
+        assert status_response.json()['server_connected'] is False
+        # A single-threaded server would have queued this behind the
+        # still-open /video_feed connection; a threaded one answers almost
+        # immediately.
+        assert elapsed < 1.0

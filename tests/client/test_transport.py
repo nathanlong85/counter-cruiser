@@ -410,6 +410,136 @@ class TestClientSessionSendReceive:
         assert capture.released is True
 
 
+class TestConnectionChangeCallback:
+    """Tests for the optional on_connection_change notification hook."""
+
+    async def test_called_true_after_successful_connect(self) -> None:
+        capture = FakeCapture([])
+        config = _default_config()
+        calls: list[bool] = []
+
+        class FakeWS:
+            async def send(self, data: str) -> None:
+                pass
+
+            def __aiter__(self):
+                return self._iter()
+
+            async def _iter(self):
+                await asyncio.sleep(1000)
+                if False:
+                    yield  # make this an async generator
+
+            async def close(self):
+                pass
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *_):
+                pass
+
+        async def fake_connect(url, **kw):
+            return FakeWS()
+
+        session = ClientSession(
+            capture=capture,
+            config=config,
+            on_result=lambda m, lat: None,
+            reconnect_interval=0.01,
+            on_connection_change=calls.append,
+        )
+        with patch(
+            'counter_cruiser.client.transport.websockets.connect',
+            side_effect=fake_connect,
+        ):
+            task = asyncio.create_task(session.run())
+            deadline = asyncio.get_event_loop().time() + 2.0
+            while not calls and asyncio.get_event_loop().time() < deadline:
+                await asyncio.sleep(0.01)
+            session.stop()
+            with contextlib.suppress(Exception):
+                await asyncio.wait_for(task, timeout=2.0)
+
+        assert calls == [True]
+
+    async def test_called_false_when_connection_drops(self) -> None:
+        capture = FakeCapture([_blank_frame()] * 50)
+        config = _default_config()
+        calls: list[bool] = []
+
+        class FakeWS:
+            async def send(self, data: str) -> None:
+                raise websockets.exceptions.ConnectionClosedOK(None, None)
+
+            def __aiter__(self):
+                return self._iter()
+
+            async def _iter(self):
+                await asyncio.sleep(1000)
+                if False:
+                    yield  # make this an async generator
+
+            async def close(self):
+                pass
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, *_):
+                pass
+
+        async def fake_connect(url, **kw):
+            return FakeWS()
+
+        session = ClientSession(
+            capture=capture,
+            config=config,
+            on_result=lambda m, lat: None,
+            reconnect_interval=0.01,
+            on_connection_change=calls.append,
+        )
+
+        with patch(
+            'counter_cruiser.client.transport.websockets.connect',
+            side_effect=fake_connect,
+        ):
+            task = asyncio.create_task(session.run())
+            deadline = asyncio.get_event_loop().time() + 2.0
+            while False not in calls and asyncio.get_event_loop().time() < deadline:
+                await asyncio.sleep(0.01)
+            session.stop()
+            await asyncio.wait_for(task, timeout=2.0)
+
+        assert True in calls
+        assert False in calls
+
+    async def test_no_callback_configured_does_not_raise(self) -> None:
+        """Default (None) callback: connect/drop still work without error."""
+        capture = FakeCapture([])
+        config = _default_config()
+
+        async def fake_connect(url, **kw):
+            raise OSError('refused')
+
+        session = ClientSession(
+            capture=capture,
+            config=config,
+            on_result=lambda m, lat: None,
+            reconnect_interval=0.01,
+        )
+        with patch(
+            'counter_cruiser.client.transport.websockets.connect',
+            side_effect=fake_connect,
+        ):
+            task = asyncio.create_task(session.run())
+            await asyncio.sleep(0.05)
+            session.stop()
+            await asyncio.wait_for(task, timeout=2.0)
+
+        assert capture.released is True
+
+
 class TestFrameRingBuffer:
     async def test_get_frame_returns_retained_frame(self) -> None:
         frame = _blank_frame()

@@ -68,3 +68,26 @@ class TestAnnotateFrame:
         original = frame.copy()
         annotate_frame(frame, [_box()], [_zone()], {'z1'})
         np.testing.assert_array_equal(frame, original)
+
+    def test_box_color_reflects_elevated_state(self) -> None:
+        elevated = annotate_frame(
+            _frame(), [_box()], [], set(), include_zones=False, elevated=True
+        )
+        floor = annotate_frame(
+            _frame(), [_box()], [], set(), include_zones=False, elevated=False
+        )
+        assert not np.array_equal(elevated, floor)
+
+    def test_elevated_box_is_red(self) -> None:
+        annotated = annotate_frame(
+            _frame(), [_box()], [], set(), include_zones=False, elevated=True
+        )
+        region = annotated[10:50, 10:50]
+        assert np.any(np.all(region == [0, 0, 255], axis=-1))
+
+    def test_floor_box_is_green(self) -> None:
+        annotated = annotate_frame(
+            _frame(), [_box()], [], set(), include_zones=False, elevated=False
+        )
+        region = annotated[10:50, 10:50]
+        assert np.any(np.all(region == [0, 200, 0], axis=-1))

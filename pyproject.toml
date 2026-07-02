@@ -9,6 +9,8 @@ dependencies = [
     "opencv-python>=4.10",
     "numpy>=1.26",
     "requests>=2.32",
+    "flask>=3.0",
+    "tomlkit>=0.13",
 ]
 
 [project.optional-dependencies]

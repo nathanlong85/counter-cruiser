@@ -7,7 +7,11 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from counter_cruiser.config.loader import load_client_config, load_server_config
+from counter_cruiser.config.loader import (
+    load_client_config,
+    load_server_config,
+    resolve_client_config_path,
+)
 from counter_cruiser.config.models import (
     AlertConfig,
     ClientSettings,
@@ -279,3 +283,15 @@ class TestClientSettingsAlerts:
         assert result.alerts.cooldown_seconds == pytest.approx(7.0)
         assert result.alerts.deterrent.enabled is True
         assert result.alerts.deterrent.pin == 27
+
+
+def test_resolve_client_config_path_uses_explicit_argument(tmp_path) -> None:
+    explicit = tmp_path / 'my.toml'
+    assert resolve_client_config_path(explicit) == explicit
+
+
+def test_resolve_client_config_path_falls_back_to_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv('COUNTER_CRUISER_CONFIG', raising=False)
+    assert resolve_client_config_path() == Path('config/client.toml')

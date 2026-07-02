@@ -31,6 +31,16 @@ def _resolve_path(explicit: Path | None, default: Path) -> Path:
     return Path(env) if env else default
 
 
+def resolve_client_config_path(path: Path | None = None) -> Path:
+    """Resolve the client config file path using the same rule as
+    :func:`load_client_config`.
+
+    Resolution order: *path* argument > ``COUNTER_CRUISER_CONFIG`` env var >
+    ``config/client.toml``.
+    """
+    return _resolve_path(path, _DEFAULT_CLIENT)
+
+
 def load_client_config(path: Path | None = None) -> ClientSettings:
     """Load and validate :class:`ClientSettings` from a TOML file.
 
