@@ -11,13 +11,13 @@
 
 ## 3. Encapsulated UI state object
 
-- [ ] 3.1 Write tests: update methods set frame/detections/stats/result; read methods return them; recent-alert history is bounded and newest-first; thread-safe copy-on-read of frame; "no frame yet" returns the no-frame sentinel
-- [ ] 3.2 Implement the injected `DashboardState` object (internal lock, bounded alert deque, frame/stats/result holders); no module-level mutable state
+- [x] 3.1 Write tests: update methods set frame/detections/stats/result; read methods return them; recent-alert history is bounded and newest-first; thread-safe copy-on-read of frame; "no frame yet" returns the no-frame sentinel
+- [x] 3.2 Implement the injected `DashboardState` object (internal lock, bounded alert deque, frame/stats/result holders); no module-level mutable state
 
 ## 4. App factory & test harness
 
-- [ ] 4.1 Write tests: `create_app(state, settings)` builds an app exercisable via `test_client()` with a fake state and no real camera/socket
-- [ ] 4.2 Implement `create_app(state, settings)` wiring the injected state into route handlers (app factory, no import-time side effects)
+- [x] 4.1 Write tests: `create_app(state, settings)` builds an app exercisable via `test_client()` with a fake state and no real camera/socket
+- [x] 4.2 Implement `create_app(state, settings)` wiring the injected state into route handlers (app factory, no import-time side effects)
 
 ## 5. Status dashboard (status-dashboard)
 

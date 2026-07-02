@@ -1,0 +1,2 @@
+build_command: uv run ruff check .
+verify_command: uv run pytest -q
