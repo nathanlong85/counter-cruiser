@@ -37,10 +37,10 @@
 
 ## 7. Zone calibration (zone-calibration)
 
-- [ ] 7.1 Write tests for the get-zones endpoint: returns id/name/enabled/polygon per zone; empty set when none configured
-- [ ] 7.2 Implement the get-zones endpoint reading current config zones
-- [ ] 7.3 Write tests for create/edit/toggle/delete: valid create, polygon edit, enabled toggle, delete; polygon < 3 points rejected; edit/delete of non-existent zone returns not-found
-- [ ] 7.4 Implement create/edit/toggle/delete handlers validating via the foundation `Zone` model
+- [x] 7.1 Write tests for the get-zones endpoint: returns id/name/enabled/polygon per zone; empty set when none configured
+- [x] 7.2 Implement the get-zones endpoint reading current config zones
+- [x] 7.3 Write tests for create/edit/toggle/delete: valid create, polygon edit, enabled toggle, delete; polygon < 3 points rejected; edit/delete of non-existent zone returns not-found
+- [x] 7.4 Implement create/edit/toggle/delete handlers validating via the foundation `Zone` model
 - [x] 7.5 Write tests for TOML write-back (temp config file): valid edit persists and reloads identically; rejected edit leaves file unchanged; write is atomic
 - [x] 7.6 Implement the atomic write-back of the zones section to the client TOML config (temp-then-rename), preserving other settings
 - [ ] 7.7 Write a test that the calibration page is served with the live frame as backdrop
