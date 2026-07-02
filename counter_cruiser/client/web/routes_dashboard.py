@@ -2,13 +2,17 @@
 
 from __future__ import annotations
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 
 from counter_cruiser.client.web.state import DashboardState
 
 
 def register_dashboard_routes(app: Flask, state: DashboardState) -> None:
     """Register the status JSON endpoint on *app*."""
+
+    @app.get('/')
+    def dashboard():
+        return render_template('dashboard.html')
 
     @app.get('/api/status')
     def status():
@@ -36,3 +40,13 @@ def register_dashboard_routes(app: Flask, state: DashboardState) -> None:
                 for entry in state.get_alerts()
             ]
         )
+
+    @app.get('/video_feed', endpoint='live_feed')
+    def live_feed_stub():
+        """Temporary placeholder to be replaced by Task 10."""
+        return ''
+
+    @app.get('/calibrate', endpoint='calibrate')
+    def calibrate_stub():
+        """Temporary placeholder to be replaced by Task 13."""
+        return ''

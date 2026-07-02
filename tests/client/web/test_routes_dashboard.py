@@ -94,3 +94,25 @@ class TestAlertsEndpoint:
         assert [entry['frame_id'] for entry in body] == [2, 1]
         assert body[0]['triggered_zones'] == ['z2']
         assert body[0]['time'] == '2026-01-01T12:00:05+00:00'
+
+
+class TestDashboardPage:
+    def test_dashboard_page_is_served(self) -> None:
+        client, _ = _client()
+        response = client.get('/')
+        assert response.status_code == 200
+        assert b'<html' in response.data
+
+
+class TestStubRoutes:
+    def test_live_feed_stub_returns_empty_string(self) -> None:
+        client, _ = _client()
+        response = client.get('/video_feed')
+        assert response.status_code == 200
+        assert response.data == b''
+
+    def test_calibrate_stub_returns_empty_string(self) -> None:
+        client, _ = _client()
+        response = client.get('/calibrate')
+        assert response.status_code == 200
+        assert response.data == b''

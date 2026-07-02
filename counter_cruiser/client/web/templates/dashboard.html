@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Counter Cruiser</title>
+</head>
+<body>
+  <h1>Counter Cruiser</h1>
+  <img src="{{ url_for('live_feed') }}" alt="Live feed" width="640" height="480">
+  <section id="status">
+    <p>State: <span id="detection-state">unknown</span></p>
+    <p>Triggered zones: <span id="triggered-zones"></span></p>
+    <p>FPS: <span id="fps"></span></p>
+    <p>Latency: <span id="latency-ms"></span> ms</p>
+    <p>Server: <span id="server-connected"></span></p>
+  </section>
+  <section id="alerts">
+    <h2>Recent alerts</h2>
+    <ul id="alert-list"></ul>
+  </section>
+  <p><a href="{{ url_for('calibrate') }}">Edit zones</a></p>
+  <script>
+    async function poll() {
+      const status = await (await fetch('/api/status')).json();
+      document.getElementById('detection-state').textContent = status.detection_state;
+      document.getElementById('triggered-zones').textContent = status.triggered_zones.join(', ');
+      document.getElementById('fps').textContent = status.fps.toFixed(1);
+      document.getElementById('latency-ms').textContent = status.latency_ms.toFixed(0);
+      document.getElementById('server-connected').textContent =
+        status.server_connected ? 'connected' : 'disconnected';
+
+      const alerts = await (await fetch('/api/alerts')).json();
+      const list = document.getElementById('alert-list');
+      list.innerHTML = '';
+      for (const alert of alerts) {
+        const li = document.createElement('li');
+        li.textContent = `${alert.time} — zones: ${alert.triggered_zones.join(', ')} (frame ${alert.frame_id})`;
+        list.appendChild(li);
+      }
+    }
+    poll();
+    setInterval(poll, 2000);
+  </script>
+</body>
+</html>
