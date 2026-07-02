@@ -48,8 +48,8 @@
 
 ## 8. Client integration
 
-- [ ] 8.1 Write a test that the client entrypoint constructs the `DashboardState`, builds the app, and starts the web server thread without starting real capture
-- [ ] 8.2 Wire the client pipeline to push latest frame/detections/stats/result/alerts into the injected `DashboardState`, and start the Flask server (bounded, single-process) alongside the capture loop
+- [x] 8.1 Write a test that the client entrypoint constructs the `DashboardState`, builds the app, and starts the web server thread without starting real capture
+- [x] 8.2 Wire the client pipeline to push latest frame/detections/stats/result/alerts into the injected `DashboardState`, and start the Flask server (bounded, single-process) alongside the capture loop
 
 ## 9. Finalization
 
