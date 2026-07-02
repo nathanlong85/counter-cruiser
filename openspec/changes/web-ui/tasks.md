@@ -23,8 +23,8 @@
 
 - [x] 5.1 Write tests for the status JSON endpoint: returns detection state/triggered zones/FPS/latency/server status; elevated vs floor reflected; disconnected server reflected
 - [x] 5.2 Implement the status JSON endpoint reading from the injected state
-- [ ] 5.3 Write tests for the alert-history endpoint: newest-first, bounded, empty-when-none
-- [ ] 5.4 Implement the alert-history endpoint reading the bounded deque
+- [x] 5.3 Write tests for the alert-history endpoint: newest-first, bounded, empty-when-none
+- [x] 5.4 Implement the alert-history endpoint reading the bounded deque
 - [ ] 5.5 Write a test that the dashboard HTML page is served
 - [ ] 5.6 Implement the dashboard page template (status + stats + recent alerts + embedded live feed) polling the JSON endpoints on an interval
 
