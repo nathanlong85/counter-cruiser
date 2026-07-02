@@ -53,7 +53,7 @@
 
 ## 9. Finalization
 
-- [ ] 9.1 Run the full test suite; confirm 100% coverage on the web package
-- [ ] 9.2 Run `ruff check` and `ruff format`; resolve all findings
-- [ ] 9.3 Verify docstrings on all public modules/classes/functions in `client/web/`
-- [ ] 9.4 Update root `CLAUDE.md` Commands/Architecture sections with how to run the web UI
+- [x] 9.1 Run the full test suite; confirm 100% coverage on the web package
+- [x] 9.2 Run `ruff check` and `ruff format`; resolve all findings
+- [x] 9.3 Verify docstrings on all public modules/classes/functions in `client/web/`
+- [x] 9.4 Update root `CLAUDE.md` Commands/Architecture sections with how to run the web UI
