@@ -6,7 +6,7 @@
 
 ## 2. Frame annotation (consumed from alert-system)
 
-- [ ] 2.1 Confirm the shared `annotate_frame(frame, detections, zones, status)` component from `client/annotation.py` (implemented in the alert-system change) exposes what the live feed needs; if alert-system has not yet landed it, that is a sequencing prerequisite for this change
+- [x] 2.1 Confirm the shared `annotate_frame(frame, detections, zones, status)` component from `client/annotation.py` (implemented in the alert-system change) exposes what the live feed needs; if alert-system has not yet landed it, that is a sequencing prerequisite for this change
 - [ ] 2.2 Write a test that the live feed calls the shared annotation component (asserts it is invoked with the current frame/detections/zones/status) rather than re-drawing — no second copy of the drawing logic in `client/web/`
 
 ## 3. Encapsulated UI state object
