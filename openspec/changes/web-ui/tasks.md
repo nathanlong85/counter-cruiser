@@ -1,8 +1,8 @@
 ## 1. Scaffolding & dependencies
 
-- [ ] 1.1 Add `flask` to the client dependencies in `pyproject.toml` (keep `flask-socketio` out unless polling is later rejected)
-- [ ] 1.2 Create the `client/web/` subpackage (app factory, state, routes, zone writer, templates) and matching `tests/client/web/` tree (frame annotation is owned by the alert-system change at `client/annotation.py` and is imported, not recreated here)
-- [ ] 1.3 Confirm pytest/coverage config covers the new package (`--cov-fail-under=100`, carried-over `exclude_lines`); no `print()`, logging facade only
+- [x] 1.1 Add `flask` to the client dependencies in `pyproject.toml` (keep `flask-socketio` out unless polling is later rejected)
+- [x] 1.2 Create the `client/web/` subpackage (app factory, state, routes, zone writer, templates) and matching `tests/client/web/` tree (frame annotation is owned by the alert-system change at `client/annotation.py` and is imported, not recreated here)
+- [x] 1.3 Confirm pytest/coverage config covers the new package (`--cov-fail-under=100`, carried-over `exclude_lines`); no `print()`, logging facade only
 
 ## 2. Frame annotation (consumed from alert-system)
 
