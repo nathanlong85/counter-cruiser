@@ -408,3 +408,67 @@ class TestClientSessionSendReceive:
             await asyncio.wait_for(task, timeout=2.0)
 
         assert capture.released is True
+
+
+class TestFrameRingBuffer:
+    async def test_get_frame_returns_retained_frame(self) -> None:
+        frame = _blank_frame()
+        capture = FakeCapture([frame])
+        config = _default_config()
+        session = ClientSession(
+            capture=capture, config=config, on_result=lambda *_: None
+        )
+
+        async def fake_ws_send(_data: str) -> None:
+            session.stop()
+
+        class FakeWS:
+            async def send(self, data: str) -> None:
+                await fake_ws_send(data)
+
+            async def close(self) -> None:
+                return None
+
+        await session._send_loop(FakeWS())
+
+        assert session.get_frame(1) is not None
+        np.testing.assert_array_equal(session.get_frame(1), frame)
+
+    async def test_get_frame_returns_none_for_unknown_id(self) -> None:
+        capture = FakeCapture([])
+        config = _default_config()
+        session = ClientSession(
+            capture=capture, config=config, on_result=lambda *_: None
+        )
+        assert session.get_frame(999) is None
+
+    async def test_ring_buffer_evicts_oldest_beyond_capacity(self) -> None:
+        frames = [_blank_frame() for _ in range(5)]
+        capture = FakeCapture(frames)
+        config = _default_config()
+        session = ClientSession(
+            capture=capture,
+            config=config,
+            on_result=lambda *_: None,
+            frame_buffer_capacity=3,
+        )
+
+        class FakeWS:
+            sent = 0
+
+            async def send(self, data: str) -> None:
+                FakeWS.sent += 1
+                if FakeWS.sent >= 5:
+                    session.stop()
+
+            async def close(self) -> None:
+                return None
+
+        await session._send_loop(FakeWS())
+
+        # Capacity 3, 5 frames sent: ids 1 and 2 evicted, 3/4/5 retained.
+        assert session.get_frame(1) is None
+        assert session.get_frame(2) is None
+        assert session.get_frame(3) is not None
+        assert session.get_frame(4) is not None
+        assert session.get_frame(5) is not None

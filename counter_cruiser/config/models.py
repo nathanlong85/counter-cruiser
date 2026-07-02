@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, field_validator
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 from pydantic_settings import (
     BaseSettings,
     PydanticBaseSettingsSource,
@@ -33,6 +35,7 @@ class _BaseConfig(BaseSettings):
     model_config = SettingsConfigDict(
         extra='forbid',
         env_prefix='COUNTER_CRUISER_',
+        env_nested_delimiter='__',
     )
 
     @classmethod
@@ -49,6 +52,92 @@ class _BaseConfig(BaseSettings):
         return (env_settings, init_settings)
 
 
+class DeterrentConfig(BaseModel):
+    """GPIO deterrent settings: simulate a button press on the trainer."""
+
+    model_config = ConfigDict(extra='forbid')
+
+    enabled: bool = False
+    pin: int | None = None
+    burst_duration_seconds: float = 1.5
+
+    @field_validator('burst_duration_seconds')
+    @classmethod
+    def positive_duration(cls, v: float) -> float:
+        """Enforce a strictly positive burst duration."""
+        if v <= 0:
+            raise ValueError('burst_duration_seconds must be positive')
+        return v
+
+    @model_validator(mode='after')
+    def pin_required_when_enabled(self) -> DeterrentConfig:
+        """Reject enabled=True without a configured BCM pin."""
+        if self.enabled and self.pin is None:
+            raise ValueError('pin is required when deterrent is enabled')
+        return self
+
+
+class SnapshotConfig(BaseModel):
+    """Annotated-snapshot recording settings."""
+
+    model_config = ConfigDict(extra='forbid')
+
+    enabled: bool = False
+    dir: str = './snapshots'
+    max_count: int = 200
+    include_boxes: bool = True
+    include_zones: bool = True
+
+    @field_validator('max_count')
+    @classmethod
+    def positive_max_count(cls, v: int) -> int:
+        """Enforce a strictly positive snapshot cap."""
+        if v <= 0:
+            raise ValueError('max_count must be positive')
+        return v
+
+
+class LogConfig(BaseModel):
+    """Structured alert-log recording settings."""
+
+    model_config = ConfigDict(extra='forbid')
+
+    enabled: bool = False
+    file: str = './alerts.log'
+
+
+class NotificationConfig(BaseModel):
+    """Push notification settings: config-selected provider + credentials."""
+
+    model_config = ConfigDict(extra='forbid')
+
+    enabled: bool = False
+    provider: Literal['ntfy', 'pushover'] | None = None
+    ntfy_topic: str | None = None
+    pushover_user_key: str | None = None
+    pushover_api_token: str | None = None
+
+
+class AlertConfig(BaseModel):
+    """Top-level alert settings: cooldown plus one group per handler."""
+
+    model_config = ConfigDict(extra='forbid')
+
+    cooldown_seconds: float = 5.0
+    deterrent: DeterrentConfig = DeterrentConfig()
+    snapshot: SnapshotConfig = SnapshotConfig()
+    log: LogConfig = LogConfig()
+    notification: NotificationConfig = NotificationConfig()
+
+    @field_validator('cooldown_seconds')
+    @classmethod
+    def non_negative_cooldown(cls, v: float) -> float:
+        """Enforce a non-negative cooldown window."""
+        if v < 0:
+            raise ValueError('cooldown_seconds must be >= 0')
+        return v
+
+
 class ClientSettings(_BaseConfig):
     """Configuration for the Pi-side client process."""
 
@@ -61,6 +150,7 @@ class ClientSettings(_BaseConfig):
     frame_skip: int = 3
     min_size_ratio: float = 0.25
     zones: list[Zone] = []
+    alerts: AlertConfig = AlertConfig()
 
     @field_validator('jpeg_quality')
     @classmethod

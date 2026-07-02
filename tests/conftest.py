@@ -2,6 +2,7 @@
 
 import numpy as np
 import pytest
+
 from counter_cruiser.config.models import Zone
 
 

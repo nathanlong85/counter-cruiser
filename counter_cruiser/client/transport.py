@@ -7,6 +7,7 @@ import logging
 import time
 from collections.abc import Callable
 
+import numpy as np
 import websockets
 import websockets.exceptions
 
@@ -35,6 +36,7 @@ class ClientSession:
         config: ClientSettings,
         on_result: Callable[[DetectionMessage, float], None],
         reconnect_interval: float = 5.0,
+        frame_buffer_capacity: int = 30,
     ) -> None:
         """Initialise the session without opening any resources."""
         self._capture = capture
@@ -45,6 +47,8 @@ class ClientSession:
         self._pending: dict[int, float] = {}
         self._frame_id = 0
         self._frame_height = config.frame_height
+        self._frame_buffer_capacity = frame_buffer_capacity
+        self._frame_buffer: dict[int, np.ndarray] = {}
 
     @property
     def _url(self) -> str:
@@ -112,6 +116,10 @@ class ClientSession:
             if count % skip != 0:
                 continue
             self._frame_id += 1
+            self._frame_buffer[self._frame_id] = frame
+            if len(self._frame_buffer) > self._frame_buffer_capacity:
+                oldest_id = next(iter(self._frame_buffer))
+                del self._frame_buffer[oldest_id]
             msg = encode_frame(frame, self._frame_id, self._config.jpeg_quality)
             self._pending[self._frame_id] = time.monotonic()
             await ws.send(serialize(msg))
@@ -132,6 +140,10 @@ class ClientSession:
                     msg.message,
                     msg.frame_id,
                 )
+
+    def get_frame(self, frame_id: int) -> np.ndarray | None:
+        """Return the retained frame for *frame_id*, or None if unknown/evicted."""
+        return self._frame_buffer.get(frame_id)
 
     def stop(self) -> None:
         """Signal the session to stop sending and exit after the current frame."""

@@ -217,6 +217,7 @@ dependencies = [
     { name = "opencv-python" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "requests" },
     { name = "websockets" },
 ]
 
@@ -225,7 +226,11 @@ dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
+    { name = "requests-mock" },
     { name = "ruff" },
+]
+gpio = [
+    { name = "rpi-gpio", marker = "platform_machine == 'aarch64' or platform_machine == 'armv7l'" },
 ]
 server = [
     { name = "torch" },
@@ -241,12 +246,15 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0" },
+    { name = "requests", specifier = ">=2.32" },
+    { name = "requests-mock", marker = "extra == 'dev'", specifier = ">=1.12" },
+    { name = "rpi-gpio", marker = "(platform_machine == 'aarch64' and extra == 'gpio') or (platform_machine == 'armv7l' and extra == 'gpio')", specifier = ">=0.7.1" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6" },
     { name = "torch", marker = "extra == 'server'", specifier = ">=2.3" },
     { name = "ultralytics", marker = "extra == 'server'", specifier = ">=8.2" },
     { name = "websockets", specifier = ">=12.0" },
 ]
-provides-extras = ["server", "dev"]
+provides-extras = ["server", "gpio", "dev"]
 
 [[package]]
 name = "coverage"
@@ -1535,6 +1543,24 @@ sdist = { url = "https://files.pythonhosted.org/packages/ac/c3/e2a2b89f2d3e2179a
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl", hash = "sha256:2a0d60c172f83ac6ab31e4554906c0f3b3588d37b5cb939b1c061f4907e278e0", size = 73075, upload-time = "2026-05-14T19:25:26.443Z" },
 ]
+
+[[package]]
+name = "requests-mock"
+version = "1.12.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/92/32/587625f91f9a0a3d84688bf9cfc4b2480a7e8ec327cefd0ff2ac891fd2cf/requests-mock-1.12.1.tar.gz", hash = "sha256:e9e12e333b525156e82a3c852f22016b9158220d2f47454de9cae8a77d371401", size = 60901, upload-time = "2024-03-29T03:54:29.446Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/97/ec/889fbc557727da0c34a33850950310240f2040f3b1955175fdb2b36a8910/requests_mock-1.12.1-py2.py3-none-any.whl", hash = "sha256:b1e37054004cdd5e56c84454cc7df12b25f90f382159087f4b6915aaeef39563", size = 27695, upload-time = "2024-03-29T03:54:27.64Z" },
+]
+
+[[package]]
+name = "rpi-gpio"
+version = "0.7.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c4/0f/10b524a12b3445af1c607c27b2f5ed122ef55756e29942900e5c950735f2/RPi.GPIO-0.7.1.tar.gz", hash = "sha256:cd61c4b03c37b62bba4a5acfea9862749c33c618e0295e7e90aa4713fb373b70", size = 29090, upload-time = "2022-02-06T15:15:06.022Z" }
 
 [[package]]
 name = "ruff"

@@ -16,3 +16,27 @@ id = "counter"
 name = "Kitchen Counter"
 enabled = true
 polygon = [[100, 80], [540, 80], [540, 360], [100, 360]]
+
+[counter_cruiser.alerts]
+cooldown_seconds = 5.0
+
+[counter_cruiser.alerts.deterrent]
+enabled = true
+pin = 17
+burst_duration_seconds = 1.5
+
+[counter_cruiser.alerts.snapshot]
+enabled = true
+dir = "./snapshots"
+max_count = 200
+include_boxes = true
+include_zones = true
+
+[counter_cruiser.alerts.log]
+enabled = true
+file = "./alerts.log"
+
+[counter_cruiser.alerts.notification]
+enabled = true
+provider = "ntfy"
+ntfy_topic = "counter-cruiser-alerts"

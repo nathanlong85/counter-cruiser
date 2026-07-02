@@ -8,7 +8,16 @@ import pytest
 from pydantic import ValidationError
 
 from counter_cruiser.config.loader import load_client_config, load_server_config
-from counter_cruiser.config.models import ClientSettings, ServerSettings, Zone
+from counter_cruiser.config.models import (
+    AlertConfig,
+    ClientSettings,
+    DeterrentConfig,
+    LogConfig,
+    NotificationConfig,
+    ServerSettings,
+    SnapshotConfig,
+    Zone,
+)
 
 
 class TestZoneModel:
@@ -124,3 +133,149 @@ class TestTomlLoading:
         monkeypatch.delenv('COUNTER_CRUISER_CONFIG', raising=False)
         result = load_client_config()
         assert isinstance(result, ClientSettings)
+
+    def test_full_alert_section_round_trips(self, tmp_path: Path) -> None:
+        cfg = tmp_path / 'client.toml'
+        cfg.write_text(
+            '[counter_cruiser.alerts]\n'
+            'cooldown_seconds = 5\n'
+            '[counter_cruiser.alerts.deterrent]\n'
+            'enabled = true\n'
+            'pin = 17\n'
+            'burst_duration_seconds = 1.5\n'
+            '[counter_cruiser.alerts.snapshot]\n'
+            'enabled = true\n'
+            'dir = "./snapshots"\n'
+            'max_count = 200\n'
+            '[counter_cruiser.alerts.log]\n'
+            'enabled = true\n'
+            'file = "./alerts.log"\n'
+            '[counter_cruiser.alerts.notification]\n'
+            'enabled = true\n'
+            'provider = "ntfy"\n'
+            'ntfy_topic = "counter-cruiser-alerts"\n'
+        )
+        result = load_client_config(cfg)
+        assert result.alerts.deterrent.pin == 17
+        assert result.alerts.notification.ntfy_topic == 'counter-cruiser-alerts'
+
+
+class TestDeterrentConfig:
+    def test_defaults(self) -> None:
+        c = DeterrentConfig()
+        assert c.enabled is False
+        assert c.pin is None
+        assert c.burst_duration_seconds == pytest.approx(1.5)
+
+    def test_pin_required_when_enabled(self) -> None:
+        with pytest.raises(ValidationError, match='pin'):
+            DeterrentConfig(enabled=True)
+
+    def test_pin_optional_when_disabled(self) -> None:
+        c = DeterrentConfig(enabled=False)
+        assert c.pin is None
+
+    def test_enabled_with_pin_is_valid(self) -> None:
+        c = DeterrentConfig(enabled=True, pin=17)
+        assert c.pin == 17
+
+    def test_non_positive_burst_duration_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            DeterrentConfig(enabled=True, pin=17, burst_duration_seconds=0)
+        with pytest.raises(ValidationError):
+            DeterrentConfig(enabled=True, pin=17, burst_duration_seconds=-1.0)
+
+    def test_unknown_key_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            DeterrentConfig(frequency=20000)
+
+
+class TestSnapshotConfig:
+    def test_defaults(self) -> None:
+        c = SnapshotConfig()
+        assert c.enabled is False
+        assert c.dir == './snapshots'
+        assert c.max_count == 200
+        assert c.include_boxes is True
+        assert c.include_zones is True
+
+    def test_non_positive_max_count_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            SnapshotConfig(max_count=0)
+
+    def test_unknown_key_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            SnapshotConfig(bogus=True)
+
+
+class TestLogConfig:
+    def test_defaults(self) -> None:
+        c = LogConfig()
+        assert c.enabled is False
+        assert c.file == './alerts.log'
+
+    def test_unknown_key_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            LogConfig(path='x')
+
+
+class TestNotificationConfig:
+    def test_defaults(self) -> None:
+        c = NotificationConfig()
+        assert c.enabled is False
+        assert c.provider is None
+
+    def test_provider_restricted_to_supported_values(self) -> None:
+        NotificationConfig(provider='ntfy')
+        NotificationConfig(provider='pushover')
+        with pytest.raises(ValidationError):
+            NotificationConfig(provider='telegram')
+
+    def test_unknown_key_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            NotificationConfig(email='x@example.com')
+
+
+class TestAlertConfig:
+    def test_defaults(self) -> None:
+        c = AlertConfig()
+        assert c.cooldown_seconds == pytest.approx(5.0)
+        assert isinstance(c.deterrent, DeterrentConfig)
+        assert isinstance(c.snapshot, SnapshotConfig)
+        assert isinstance(c.log, LogConfig)
+        assert isinstance(c.notification, NotificationConfig)
+
+    def test_negative_cooldown_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            AlertConfig(cooldown_seconds=-1.0)
+
+    def test_unknown_key_rejected(self) -> None:
+        with pytest.raises(ValidationError):
+            AlertConfig(bogus=1)
+
+
+class TestClientSettingsAlerts:
+    def test_alerts_default_to_disabled(self) -> None:
+        c = ClientSettings()
+        assert c.alerts.deterrent.enabled is False
+        assert c.alerts.snapshot.enabled is False
+        assert c.alerts.log.enabled is False
+        assert c.alerts.notification.enabled is False
+
+    def test_env_override_for_nested_alert_field(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv('COUNTER_CRUISER_ALERTS__COOLDOWN_SECONDS', '10')
+        c = ClientSettings()
+        assert c.alerts.cooldown_seconds == pytest.approx(10.0)
+
+    def test_alerts_from_toml(self, tmp_path) -> None:
+        cfg = tmp_path / 'client.toml'
+        cfg.write_text(
+            '[counter_cruiser.alerts]\ncooldown_seconds = 7\n'
+            '[counter_cruiser.alerts.deterrent]\nenabled = true\npin = 27\n'
+        )
+        result = load_client_config(cfg)
+        assert result.alerts.cooldown_seconds == pytest.approx(7.0)
+        assert result.alerts.deterrent.enabled is True
+        assert result.alerts.deterrent.pin == 27

@@ -2,6 +2,8 @@
 comet_change: alert-system
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-01-alert-system
+status: final
 ---
 
 # Alert System — Technical Design
