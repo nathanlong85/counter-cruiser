@@ -15,7 +15,8 @@ import numpy as np
 from counter_cruiser.config.models import Zone
 from counter_cruiser.shared.protocol import BoundingBox
 
-_BOX_COLOR = (0, 0, 255)  # BGR red
+_ELEVATED_BOX_COLOR = (0, 0, 255)  # BGR red
+_FLOOR_BOX_COLOR = (0, 200, 0)  # BGR green
 _TRIGGERED_ZONE_COLOR = (0, 0, 255)  # BGR red
 _IDLE_ZONE_COLOR = (0, 200, 0)  # BGR green
 _TEXT_COLOR = (255, 255, 255)  # BGR white
@@ -28,16 +29,19 @@ def annotate_frame(
     triggered_zones: set[str],
     include_boxes: bool = True,
     include_zones: bool = True,
+    elevated: bool = True,
 ) -> np.ndarray:
     """Return a copy of *frame* overlaid with boxes, zones, and a timestamp.
 
+    Detection boxes are drawn red when *elevated* is True, green otherwise.
     Triggered zones are drawn in red, idle zones in green. The timestamp is
     always drawn. *frame* itself is never mutated.
     """
     annotated = frame.copy()
     if include_boxes:
+        box_color = _ELEVATED_BOX_COLOR if elevated else _FLOOR_BOX_COLOR
         for box in detections:
-            cv2.rectangle(annotated, (box.x1, box.y1), (box.x2, box.y2), _BOX_COLOR, 2)
+            cv2.rectangle(annotated, (box.x1, box.y1), (box.x2, box.y2), box_color, 2)
             label = f'{box.class_name} {box.confidence:.2f}'
             cv2.putText(
                 annotated,
@@ -45,7 +49,7 @@ def annotate_frame(
                 (box.x1, max(box.y1 - 5, 0)),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.5,
-                _BOX_COLOR,
+                box_color,
                 1,
             )
     if include_zones:
