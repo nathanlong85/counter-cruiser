@@ -41,11 +41,6 @@ def register_dashboard_routes(app: Flask, state: DashboardState) -> None:
             ]
         )
 
-    @app.get('/video_feed', endpoint='live_feed')
-    def live_feed_stub():
-        """Temporary placeholder to be replaced by Task 10."""
-        return ''
-
     @app.get('/calibrate', endpoint='calibrate')
     def calibrate_stub():
         """Temporary placeholder to be replaced by Task 13."""
