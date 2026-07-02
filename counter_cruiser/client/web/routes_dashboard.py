@@ -23,3 +23,16 @@ def register_dashboard_routes(app: Flask, state: DashboardState) -> None:
                 'server_connected': stats.server_connected,
             }
         )
+
+    @app.get('/api/alerts')
+    def alerts():
+        return jsonify(
+            [
+                {
+                    'time': entry.time.isoformat(),
+                    'triggered_zones': sorted(entry.triggered_zones),
+                    'frame_id': entry.frame_id,
+                }
+                for entry in state.get_alerts()
+            ]
+        )

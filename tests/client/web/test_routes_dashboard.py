@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 from counter_cruiser.client.web.app import create_app
-from counter_cruiser.client.web.state import DashboardState
+from counter_cruiser.client.web.state import AlertHistoryEntry, DashboardState
 from counter_cruiser.config.models import ClientSettings
 from counter_cruiser.shared.protocol import BoundingBox
 
@@ -63,3 +65,32 @@ class TestStatusEndpoint:
         assert body['fps'] == 9.5
         assert body['latency_ms'] == 33.0
         assert body['server_connected'] is True
+
+
+class TestAlertsEndpoint:
+    def test_no_alerts_returns_empty_list(self) -> None:
+        client, _ = _client()
+        response = client.get('/api/alerts')
+        assert response.status_code == 200
+        assert response.get_json() == []
+
+    def test_alerts_returned_newest_first_with_expected_fields(self) -> None:
+        client, state = _client()
+        state.record_alert(
+            AlertHistoryEntry(
+                time=datetime(2026, 1, 1, 12, 0, 0, tzinfo=UTC),
+                triggered_zones=frozenset({'z1'}),
+                frame_id=1,
+            )
+        )
+        state.record_alert(
+            AlertHistoryEntry(
+                time=datetime(2026, 1, 1, 12, 0, 5, tzinfo=UTC),
+                triggered_zones=frozenset({'z2'}),
+                frame_id=2,
+            )
+        )
+        body = client.get('/api/alerts').get_json()
+        assert [entry['frame_id'] for entry in body] == [2, 1]
+        assert body[0]['triggered_zones'] == ['z2']
+        assert body[0]['time'] == '2026-01-01T12:00:05+00:00'
