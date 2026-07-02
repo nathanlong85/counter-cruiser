@@ -13,6 +13,7 @@ from typing import Protocol
 
 from flask import Flask
 
+from counter_cruiser.client.web.routes_dashboard import register_dashboard_routes
 from counter_cruiser.client.web.state import DashboardState
 from counter_cruiser.config.models import ClientSettings, Zone
 
@@ -45,3 +46,4 @@ def _register_all_routes(
     growing `create_app` itself — each import is added by the task that
     introduces the corresponding route module.
     """
+    register_dashboard_routes(app, state)
