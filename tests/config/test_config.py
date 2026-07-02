@@ -290,6 +290,8 @@ def test_resolve_client_config_path_uses_explicit_argument(tmp_path) -> None:
     assert resolve_client_config_path(explicit) == explicit
 
 
-def test_resolve_client_config_path_falls_back_to_default(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_resolve_client_config_path_falls_back_to_default(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     monkeypatch.delenv('COUNTER_CRUISER_CONFIG', raising=False)
     assert resolve_client_config_path() == Path('config/client.toml')

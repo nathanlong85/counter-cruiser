@@ -40,7 +40,10 @@ def create_app(
 
 
 def _register_all_routes(
-    app: Flask, state: DashboardState, settings: ClientSettings, zone_store: ZoneStoreProtocol
+    app: Flask,
+    state: DashboardState,
+    settings: ClientSettings,
+    zone_store: ZoneStoreProtocol,
 ) -> None:
     """Register every route module's handlers on *app*.
 

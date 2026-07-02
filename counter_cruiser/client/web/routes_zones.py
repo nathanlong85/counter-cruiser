@@ -14,6 +14,7 @@ from counter_cruiser.config.models import Zone
 
 
 def _zone_to_dict(zone: Zone) -> dict:
+    """Serialize *zone* to a JSON-safe dict."""
     return {
         'id': zone.id,
         'name': zone.name,
@@ -55,7 +56,9 @@ def register_zone_routes(app: Flask, zone_store: ZoneStore) -> None:
                 zone_id,
                 body['version'],
                 name=body.get('name'),
-                polygon=[tuple(point) for point in body['polygon']] if 'polygon' in body else None,
+                polygon=[tuple(point) for point in body['polygon']]
+                if 'polygon' in body
+                else None,
                 enabled=body.get('enabled'),
             )
         except VersionConflictError as exc:

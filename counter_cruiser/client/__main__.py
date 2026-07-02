@@ -35,6 +35,7 @@ _FPS_WINDOW_SECONDS = 5.0
 
 
 def _configure_logging() -> None:
+    """Configure root logging: INFO level with a timestamped format."""
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s %(name)s %(levelname)s %(message)s',
@@ -54,6 +55,7 @@ class _FpsTracker:
         window_seconds: float = _FPS_WINDOW_SECONDS,
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
+        """Track arrivals over a rolling *window_seconds* using the injected *clock*."""
         self._window_seconds = window_seconds
         self._clock = clock
         self._timestamps: deque[float] = deque()

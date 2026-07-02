@@ -32,7 +32,8 @@ def _resolve_path(explicit: Path | None, default: Path) -> Path:
 
 
 def resolve_client_config_path(path: Path | None = None) -> Path:
-    """Resolve the client config file path using the same rule as :func:`load_client_config`.
+    """Resolve the client config file path using the same rule as
+    :func:`load_client_config`.
 
     Resolution order: *path* argument > ``COUNTER_CRUISER_CONFIG`` env var >
     ``config/client.toml``.

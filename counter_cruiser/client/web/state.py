@@ -55,7 +55,9 @@ class DashboardState:
     methods.
     """
 
-    def __init__(self, alert_history_capacity: int = _DEFAULT_ALERT_HISTORY_CAPACITY) -> None:
+    def __init__(
+        self, alert_history_capacity: int = _DEFAULT_ALERT_HISTORY_CAPACITY
+    ) -> None:
         """Initialise empty frame/detection/stats state and an empty history."""
         self._lock = threading.Lock()
         self._frame: np.ndarray | None = None
@@ -89,7 +91,9 @@ class DashboardState:
         with self._lock:
             return self._detection
 
-    def update_stats(self, fps: float, latency_ms: float, server_connected: bool) -> None:
+    def update_stats(
+        self, fps: float, latency_ms: float, server_connected: bool
+    ) -> None:
         """Store the latest pipeline stats."""
         with self._lock:
             self._stats = StatsSnapshot(

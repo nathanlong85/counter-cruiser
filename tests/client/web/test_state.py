@@ -81,10 +81,14 @@ class TestAlertHistory:
     def test_alerts_are_returned_newest_first(self) -> None:
         state = DashboardState()
         first = AlertHistoryEntry(
-            time=datetime(2026, 1, 1, tzinfo=UTC), triggered_zones=frozenset({'z1'}), frame_id=1
+            time=datetime(2026, 1, 1, tzinfo=UTC),
+            triggered_zones=frozenset({'z1'}),
+            frame_id=1,
         )
         second = AlertHistoryEntry(
-            time=datetime(2026, 1, 2, tzinfo=UTC), triggered_zones=frozenset({'z2'}), frame_id=2
+            time=datetime(2026, 1, 2, tzinfo=UTC),
+            triggered_zones=frozenset({'z2'}),
+            frame_id=2,
         )
         state.record_alert(first)
         state.record_alert(second)

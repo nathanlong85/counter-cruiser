@@ -44,13 +44,16 @@ class ZoneStore:
         return list(self._settings.zones), self.current_version()
 
     def _check_version(self, version: int) -> None:
+        """Raise VersionConflictError if *version* does not match the current file."""
         current = self.current_version()
         if version != current:
             raise VersionConflictError(
-                f'config file changed since read (expected version {version}, got {current})'
+                f'config file changed since read '
+                f'(expected version {version}, got {current})'
             )
 
     def _find(self, zone_id: str) -> Zone:
+        """Return the zone with *zone_id*; raises ZoneNotFoundError if absent."""
         for zone in self._settings.zones:
             if zone.id == zone_id:
                 return zone

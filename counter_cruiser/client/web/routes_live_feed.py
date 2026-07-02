@@ -9,7 +9,9 @@ from counter_cruiser.client.web.state import DashboardState
 from counter_cruiser.config.models import ClientSettings
 
 
-def register_live_feed_routes(app: Flask, state: DashboardState, settings: ClientSettings) -> None:
+def register_live_feed_routes(
+    app: Flask, state: DashboardState, settings: ClientSettings
+) -> None:
     """Register the MJPEG streaming endpoint on *app*."""
 
     @app.get('/video_feed')
