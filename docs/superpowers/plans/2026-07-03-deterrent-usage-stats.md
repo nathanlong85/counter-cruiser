@@ -694,7 +694,7 @@ git commit -m "feat(deterrent-usage-stats): add DeterrentStatus to DashboardStat
 
 This task only wires the JSON endpoint. `/training-progress`'s HTML page is added to this same module in Task 6, but the `create_app`/`stats_store` plumbing must land now since every route module needing `stats_store` shares the one injection point.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `tests/client/web/test_routes_deterrent_stats.py`:
 
@@ -777,12 +777,12 @@ class TestDeterrentStatsEndpoint:
         assert body['recent_failures'] == ['2026-01-02T00:00:00+00:00']
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `pytest tests/client/web/test_routes_deterrent_stats.py -v`
 Expected: FAIL with `TypeError: create_app() takes 3 positional arguments but 4 were given`
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `counter_cruiser/client/web/routes_deterrent_stats.py`:
 
@@ -897,17 +897,17 @@ class FakeStatsStore:
 ...and append `, FakeStatsStore()` to every `create_app(...)` call found by:
 `grep -n "create_app(" tests/client/web/test_app.py tests/client/web/test_routes_dashboard.py tests/client/web/test_routes_live_feed.py tests/client/web/test_routes_zones.py`
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest tests/client/web/ -v`
 Expected: PASS (all tests in `tests/client/web/`, including the four updated files and the new `test_routes_deterrent_stats.py`)
 
-- [ ] **Step 5: Confirm 100% coverage**
+- [x] **Step 5: Confirm 100% coverage**
 
 Run: `pytest tests/client/web/ --cov=counter_cruiser.client.web --cov-report=term-missing`
 Expected: 100% on `app.py` and `routes_deterrent_stats.py` (other modules' coverage unaffected by this task)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/web/routes_deterrent_stats.py counter_cruiser/client/web/app.py \
