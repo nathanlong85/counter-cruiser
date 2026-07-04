@@ -112,6 +112,18 @@ ISO 8601 text timestamps sort correctly with a plain string comparison
 (`>=`, `ORDER BY`), so no date-function gymnastics are needed for the
 cutoff/ordering queries above.
 
+**Implementation correction:** the code sample above, as written, leaks a
+connection on every call — `with self._connect() as conn:` only
+commits/rolls back the transaction on exit; it does not call
+`conn.close()`. This was caught by task review during the build phase and
+fixed in the actual implementation (`counter_cruiser/client/deterrent_stats.py`):
+every method explicitly closes its connection in a `finally` block after the
+`with conn:` block commits, e.g. `conn = self._connect(); try: ... finally: conn.close()`.
+Harmless in practice today (CPython's GC closes the connection almost
+immediately), but not a language guarantee, and worth doing correctly given
+the target hardware (Pi 3B) — treat the code above as illustrative of the
+query/schema shape only, not the exact connection-lifecycle code to copy.
+
 ## Recording Point: `DeterrentHandler.trigger()`
 
 `DeterrentHandler` gains a `DeterrentStatsStore` constructed alongside its
