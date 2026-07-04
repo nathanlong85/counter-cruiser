@@ -1,7 +1,7 @@
 ## 1. Persistent event store
 
-- [ ] 1.1 Write tests: recording an event persists it across a fresh connection (simulating restart); recorded events include timestamp and success flag; concurrent reads and writes (per design's WAL/per-access-connection approach) do not raise or corrupt data
-- [ ] 1.2 Implement a small SQLite-backed recorder (path resolved similarly to `SnapshotConfig.dir`/`LogConfig.file`) with WAL mode and a dedicated connection per access; no shared long-lived connection
+- [x] 1.1 Write tests: recording an event persists it across a fresh connection (simulating restart); recorded events include timestamp and success flag; concurrent reads and writes (per design's WAL/per-access-connection approach) do not raise or corrupt data
+- [x] 1.2 Implement a small SQLite-backed recorder (path resolved similarly to `SnapshotConfig.dir`/`LogConfig.file`) with WAL mode and a dedicated connection per access; no shared long-lived connection
 
 ## 2. Deterrent handler: operational status + recording
 

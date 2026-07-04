@@ -92,7 +92,7 @@ git commit -m "feat(deterrent-usage-stats): add DeterrentConfig.stats_db_path"
 
 This is the store from the design doc's "Storage" section, transcribed verbatim (design doc already gives full working code — this task adds the module, docstrings, and tests around it).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `tests/client/test_deterrent_stats.py`:
 
@@ -218,12 +218,12 @@ class TestConcurrency:
         assert len(events) == 20
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `pytest tests/client/test_deterrent_stats.py -v`
 Expected: FAIL with `ModuleNotFoundError: No module named 'counter_cruiser.client.deterrent_stats'`
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Create `counter_cruiser/client/deterrent_stats.py`:
 
@@ -300,17 +300,17 @@ class DeterrentStatsStore:
         return [ts for (ts,) in rows]
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest tests/client/test_deterrent_stats.py -v`
 Expected: PASS (all tests)
 
-- [ ] **Step 5: Run with coverage to confirm 100% on the new module**
+- [x] **Step 5: Run with coverage to confirm 100% on the new module**
 
 Run: `pytest tests/client/test_deterrent_stats.py --cov=counter_cruiser.client.deterrent_stats --cov-report=term-missing`
 Expected: `counter_cruiser/client/deterrent_stats.py` at 100%
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/deterrent_stats.py tests/client/test_deterrent_stats.py
