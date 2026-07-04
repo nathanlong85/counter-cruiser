@@ -26,6 +26,16 @@ def _fake_gpio() -> MagicMock:
     return gpio
 
 
+class _FakeStatsStore:
+    """Records .record() calls in-memory; stands in for DeterrentStatsStore."""
+
+    def __init__(self) -> None:
+        self.recorded: list[bool] = []
+
+    def record(self, succeeded: bool) -> None:
+        self.recorded.append(succeeded)
+
+
 class TestDeterrentBurst:
     def test_burst_drives_pin_high_then_low(self) -> None:
         gpio = _fake_gpio()
@@ -37,7 +47,7 @@ class TestDeterrentBurst:
             ),
             patch('counter_cruiser.client.alerts.deterrent.time.sleep'),
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
             handler.trigger(_context())
 
         gpio.setup.assert_called_once_with(17, gpio.OUT, initial=gpio.LOW)
@@ -56,7 +66,7 @@ class TestDeterrentBurst:
             ),
             patch('counter_cruiser.client.alerts.deterrent.time.sleep') as sleep,
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
             handler.trigger(_context())
 
         sleep.assert_called_once_with(2.5)
@@ -73,7 +83,7 @@ class TestDeterrentMustNotFireContinuously:
             ),
             patch('counter_cruiser.client.alerts.deterrent.time.sleep'),
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
             handler.trigger(_context())
 
         assert gpio.output.call_args_list[-1] == ((17, gpio.LOW),)
@@ -94,7 +104,7 @@ class TestDeterrentMustNotFireContinuously:
             ),
             caplog.at_level('ERROR'),
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
             handler.trigger(_context())
 
         assert gpio.output.call_args_list[-1] == ((17, gpio.LOW),)
@@ -113,7 +123,7 @@ class TestDeterrentGracefulDegradation:
             ),
             caplog.at_level('WARNING'),
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
         assert 'RPi.GPIO unavailable' in caplog.text
         # Trigger after disablement is a silent no-op.
         handler.trigger(_context())
@@ -131,7 +141,7 @@ class TestDeterrentGracefulDegradation:
             ),
             caplog.at_level('ERROR'),
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
         assert 'GPIO setup failed' in caplog.text
         handler.trigger(_context())
         gpio.output.assert_not_called()
@@ -141,7 +151,7 @@ class TestDeterrentGracefulDegradation:
         with patch(
             'counter_cruiser.client.alerts.deterrent._import_gpio'
         ) as import_gpio:
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
             handler.trigger(_context())
         import_gpio.assert_not_called()
 
@@ -161,13 +171,13 @@ class TestDeterrentCleanup:
             'counter_cruiser.client.alerts.deterrent._import_gpio',
             return_value=gpio,
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
             handler.cleanup()
         gpio.cleanup.assert_called_once_with()
 
     def test_cleanup_is_safe_when_disabled(self) -> None:
         config = DeterrentConfig(enabled=False)
-        handler = DeterrentHandler(config)
+        handler = DeterrentHandler(config, _FakeStatsStore())
         handler.cleanup()  # must not raise
 
     def test_cleanup_does_not_raise_when_gpio_cleanup_raises(
@@ -188,7 +198,7 @@ class TestDeterrentCleanup:
             ),
             caplog.at_level('ERROR'),
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
             # This must not raise, even though gpio.cleanup() will raise.
             handler.cleanup()
         # Verify state was reset despite the exception.
@@ -220,9 +230,102 @@ class TestDeterrentProtocol:
             patch('counter_cruiser.client.alerts.deterrent.time.sleep'),
             caplog.at_level('ERROR'),
         ):
-            handler = DeterrentHandler(config)
+            handler = DeterrentHandler(config, _FakeStatsStore())
             # This must not raise, even though gpio.output(pin, LOW) will.
             handler.trigger(_context())
         # Verify the error was logged.
         log_msg = caplog.text.lower()
         assert 'error resetting pin' in log_msg or 'exception' in log_msg
+
+
+class TestIsOperational:
+    def test_operational_after_successful_gpio_setup(self) -> None:
+        gpio = _fake_gpio()
+        config = DeterrentConfig(enabled=True, pin=17)
+        with patch(
+            'counter_cruiser.client.alerts.deterrent._import_gpio',
+            return_value=gpio,
+        ):
+            handler = DeterrentHandler(config, _FakeStatsStore())
+        assert handler.is_operational is True
+
+    def test_not_operational_when_gpio_unavailable(self) -> None:
+        config = DeterrentConfig(enabled=True, pin=17)
+        with patch(
+            'counter_cruiser.client.alerts.deterrent._import_gpio',
+            return_value=None,
+        ):
+            handler = DeterrentHandler(config, _FakeStatsStore())
+        assert handler.is_operational is False
+
+    def test_not_operational_when_setup_fails(self) -> None:
+        gpio = _fake_gpio()
+        gpio.setup.side_effect = RuntimeError('no such pin')
+        config = DeterrentConfig(enabled=True, pin=17)
+        with patch(
+            'counter_cruiser.client.alerts.deterrent._import_gpio',
+            return_value=gpio,
+        ):
+            handler = DeterrentHandler(config, _FakeStatsStore())
+        assert handler.is_operational is False
+
+    def test_not_operational_when_disabled_by_config(self) -> None:
+        config = DeterrentConfig(enabled=False)
+        handler = DeterrentHandler(config, _FakeStatsStore())
+        assert handler.is_operational is False
+
+
+class TestTriggerRecordsOutcome:
+    def test_successful_trigger_records_succeeded_true(self) -> None:
+        gpio = _fake_gpio()
+        config = DeterrentConfig(enabled=True, pin=17, burst_duration_seconds=0.01)
+        stats_store = _FakeStatsStore()
+        with (
+            patch(
+                'counter_cruiser.client.alerts.deterrent._import_gpio',
+                return_value=gpio,
+            ),
+            patch('counter_cruiser.client.alerts.deterrent.time.sleep'),
+        ):
+            handler = DeterrentHandler(config, stats_store)
+            handler.trigger(_context())
+        assert stats_store.recorded == [True]
+
+    def test_erroring_burst_records_succeeded_false_and_still_drives_pin_low(
+        self,
+    ) -> None:
+        gpio = _fake_gpio()
+        config = DeterrentConfig(enabled=True, pin=17, burst_duration_seconds=0.01)
+        stats_store = _FakeStatsStore()
+        with (
+            patch(
+                'counter_cruiser.client.alerts.deterrent._import_gpio',
+                return_value=gpio,
+            ),
+            patch(
+                'counter_cruiser.client.alerts.deterrent.time.sleep',
+                side_effect=RuntimeError('boom'),
+            ),
+        ):
+            handler = DeterrentHandler(config, stats_store)
+            handler.trigger(_context())
+        assert stats_store.recorded == [False]
+        assert gpio.output.call_args_list[-1] == ((17, gpio.LOW),)
+
+    def test_disabled_handler_trigger_records_nothing(self) -> None:
+        config = DeterrentConfig(enabled=False)
+        stats_store = _FakeStatsStore()
+        handler = DeterrentHandler(config, stats_store)
+        handler.trigger(_context())
+        assert stats_store.recorded == []
+
+    def test_missing_gpio_trigger_records_nothing(self) -> None:
+        config = DeterrentConfig(enabled=True, pin=17)
+        stats_store = _FakeStatsStore()
+        with patch(
+            'counter_cruiser.client.alerts.deterrent._import_gpio',
+            return_value=None,
+        ):
+            handler = DeterrentHandler(config, stats_store)
+        handler.trigger(_context())
+        assert stats_store.recorded == []
