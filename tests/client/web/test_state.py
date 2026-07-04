@@ -6,7 +6,10 @@ from datetime import UTC, datetime
 
 import numpy as np
 
-from counter_cruiser.client.web.state import AlertHistoryEntry, DashboardState, DeterrentStatus
+from counter_cruiser.client.web.state import (
+    AlertHistoryEntry,
+    DashboardState,
+)
 from counter_cruiser.shared.protocol import BoundingBox
 
 
