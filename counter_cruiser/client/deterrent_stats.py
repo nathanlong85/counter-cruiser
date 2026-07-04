@@ -31,40 +31,56 @@ class DeterrentStatsStore:
 
     def _init_schema(self) -> None:
         """Create the deterrent_events table if it does not already exist."""
-        with self._connect() as conn:
-            conn.execute(
-                'CREATE TABLE IF NOT EXISTS deterrent_events ('
-                'id INTEGER PRIMARY KEY AUTOINCREMENT, '
-                'timestamp_utc TEXT NOT NULL, '
-                'succeeded INTEGER NOT NULL)'
-            )
+        conn = self._connect()
+        try:
+            with conn:
+                conn.execute(
+                    'CREATE TABLE IF NOT EXISTS deterrent_events ('
+                    'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+                    'timestamp_utc TEXT NOT NULL, '
+                    'succeeded INTEGER NOT NULL)'
+                )
+        finally:
+            conn.close()
 
     def record(self, succeeded: bool) -> None:
         """Insert one event row for the current UTC time."""
-        with self._connect() as conn:
-            conn.execute(
-                'INSERT INTO deterrent_events (timestamp_utc, succeeded) '
-                'VALUES (?, ?)',
-                (datetime.now(UTC).isoformat(), int(succeeded)),
-            )
+        conn = self._connect()
+        try:
+            with conn:
+                conn.execute(
+                    'INSERT INTO deterrent_events (timestamp_utc, succeeded) '
+                    'VALUES (?, ?)',
+                    (datetime.now(UTC).isoformat(), int(succeeded)),
+                )
+        finally:
+            conn.close()
 
     def recent_events(self, since_days: int) -> list[tuple[str, bool]]:
         """Return (timestamp_utc, succeeded) for events within the last *since_days*."""
         cutoff = (datetime.now(UTC) - timedelta(days=since_days)).isoformat()
-        with self._connect() as conn:
-            rows = conn.execute(
-                'SELECT timestamp_utc, succeeded FROM deterrent_events '
-                'WHERE timestamp_utc >= ? ORDER BY timestamp_utc ASC',
-                (cutoff,),
-            ).fetchall()
+        conn = self._connect()
+        try:
+            with conn:
+                rows = conn.execute(
+                    'SELECT timestamp_utc, succeeded FROM deterrent_events '
+                    'WHERE timestamp_utc >= ? ORDER BY timestamp_utc ASC',
+                    (cutoff,),
+                ).fetchall()
+        finally:
+            conn.close()
         return [(ts, bool(s)) for ts, s in rows]
 
     def recent_failures(self, limit: int) -> list[str]:
         """Return up to *limit* most recent failed-event timestamps, newest first."""
-        with self._connect() as conn:
-            rows = conn.execute(
-                'SELECT timestamp_utc FROM deterrent_events '
-                'WHERE succeeded = 0 ORDER BY timestamp_utc DESC LIMIT ?',
-                (limit,),
-            ).fetchall()
+        conn = self._connect()
+        try:
+            with conn:
+                rows = conn.execute(
+                    'SELECT timestamp_utc FROM deterrent_events '
+                    'WHERE succeeded = 0 ORDER BY timestamp_utc DESC LIMIT ?',
+                    (limit,),
+                ).fetchall()
+        finally:
+            conn.close()
         return [ts for (ts,) in rows]
