@@ -15,9 +15,17 @@ class FakeZoneStore:
         return [], 0
 
 
+class FakeStatsStore:
+    def recent_events(self, since_days: int):
+        return []
+
+    def recent_failures(self, limit: int):
+        return []
+
+
 def _client():
     state = DashboardState()
-    app = create_app(state, ClientSettings(), FakeZoneStore())
+    app = create_app(state, ClientSettings(), FakeZoneStore(), FakeStatsStore())
     return app.test_client(), state
 
 

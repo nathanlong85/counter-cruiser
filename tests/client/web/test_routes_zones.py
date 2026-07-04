@@ -8,6 +8,14 @@ from counter_cruiser.client.web.zone_store import ZoneStore
 from counter_cruiser.config.models import ClientSettings, Zone
 
 
+class FakeStatsStore:
+    def recent_events(self, since_days: int):
+        return []
+
+    def recent_failures(self, limit: int):
+        return []
+
+
 def _zone_payload(zone_id: str = 'z1') -> dict:
     return {
         'id': zone_id,
@@ -22,7 +30,7 @@ def _client(tmp_path, zones=None):
     config_path.write_text('')
     settings = ClientSettings(zones=zones or [])
     zone_store = ZoneStore(settings, config_path)
-    app = create_app(DashboardState(), settings, zone_store)
+    app = create_app(DashboardState(), settings, zone_store, FakeStatsStore())
     return app.test_client(), zone_store
 
 

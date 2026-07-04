@@ -22,6 +22,16 @@ from counter_cruiser.config.models import ClientSettings, Zone
 from counter_cruiser.shared.protocol import BoundingBox, DetectionMessage
 
 
+class FakeStatsStore:
+    """Minimal stand-in for the deterrent stats store in tests."""
+
+    def recent_events(self, since_days: int):
+        return []
+
+    def recent_failures(self, limit: int):
+        return []
+
+
 class TestConfigureLogging:
     """Tests for _configure_logging."""
 
@@ -267,7 +277,7 @@ class TestWebServerThreading:
         config_path.write_text('')
         state = DashboardState()
         zone_store = ZoneStore(config, config_path)
-        app = create_app(state, config, zone_store)
+        app = create_app(state, config, zone_store, FakeStatsStore())
 
         server_thread = threading.Thread(
             target=_run_web_server, args=(app, host, port), daemon=True
