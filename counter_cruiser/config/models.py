@@ -60,6 +60,7 @@ class DeterrentConfig(BaseModel):
     enabled: bool = False
     pin: int | None = None
     burst_duration_seconds: float = 1.5
+    stats_db_path: str = './deterrent_stats.db'
 
     @field_validator('burst_duration_seconds')
     @classmethod

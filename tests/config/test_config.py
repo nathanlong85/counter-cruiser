@@ -193,6 +193,14 @@ class TestDeterrentConfig:
         with pytest.raises(ValidationError):
             DeterrentConfig(frequency=20000)
 
+    def test_stats_db_path_default(self) -> None:
+        c = DeterrentConfig()
+        assert c.stats_db_path == './deterrent_stats.db'
+
+    def test_stats_db_path_overridable(self) -> None:
+        c = DeterrentConfig(stats_db_path='/data/stats.db')
+        assert c.stats_db_path == '/data/stats.db'
+
 
 class TestSnapshotConfig:
     def test_defaults(self) -> None:
