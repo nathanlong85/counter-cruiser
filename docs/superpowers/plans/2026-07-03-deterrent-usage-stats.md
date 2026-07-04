@@ -331,7 +331,7 @@ git commit -m "feat(deterrent-usage-stats): add DeterrentStatsStore SQLite recor
 
 `DeterrentHandler`'s constructor becomes a required two-argument call. Every existing call in `tests/client/alerts/test_deterrent.py` (`DeterrentHandler(config)`) must be updated to `DeterrentHandler(config, _fake_stats_store())`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add a fake store helper and new tests to `tests/client/alerts/test_deterrent.py`. First, add near the top (after `_fake_gpio`):
 
@@ -444,12 +444,12 @@ class TestTriggerRecordsOutcome:
         assert stats_store.recorded == []
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `pytest tests/client/alerts/test_deterrent.py -v`
 Expected: FAIL — `TypeError: DeterrentHandler.__init__() missing 1 required positional argument: 'stats_store'` on every updated call site, and `AttributeError: 'DeterrentHandler' object has no attribute 'is_operational'` on the new tests.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Replace `counter_cruiser/client/alerts/deterrent.py` in full:
 
@@ -557,17 +557,17 @@ class DeterrentHandler:
                 self._enabled = False
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest tests/client/alerts/test_deterrent.py -v`
 Expected: PASS (all tests)
 
-- [ ] **Step 5: Confirm 100% coverage on the modified module**
+- [x] **Step 5: Confirm 100% coverage on the modified module**
 
 Run: `pytest tests/client/alerts/test_deterrent.py --cov=counter_cruiser.client.alerts.deterrent --cov-report=term-missing`
 Expected: 100%
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/alerts/deterrent.py tests/client/alerts/test_deterrent.py

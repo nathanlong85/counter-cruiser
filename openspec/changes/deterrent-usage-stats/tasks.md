@@ -5,10 +5,10 @@
 
 ## 2. Deterrent handler: operational status + recording
 
-- [ ] 2.1 Write tests: `DeterrentHandler` reports operational after successful GPIO setup; reports not operational when GPIO unavailable/setup fails
-- [ ] 2.2 Implement an `is_operational` read-only property on `DeterrentHandler`
-- [ ] 2.3 Write tests: a successful trigger records a succeeded event; an erroring trigger records a failed event and still drives the pin LOW (existing requirement, must not regress)
-- [ ] 2.4 Wire the event store into `DeterrentHandler.trigger()` to record each attempt's outcome
+- [x] 2.1 Write tests: `DeterrentHandler` reports operational after successful GPIO setup; reports not operational when GPIO unavailable/setup fails
+- [x] 2.2 Implement an `is_operational` read-only property on `DeterrentHandler`
+- [x] 2.3 Write tests: a successful trigger records a succeeded event; an erroring trigger records a failed event and still drives the pin LOW (existing requirement, must not regress)
+- [x] 2.4 Wire the event store into `DeterrentHandler.trigger()` to record each attempt's outcome
 
 ## 3. Day/week bucketed retrieval
 
