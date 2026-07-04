@@ -586,7 +586,7 @@ git commit -m "feat(deterrent-usage-stats): add is_operational and trigger-outco
 - Consumes: nothing new.
 - Produces: `DeterrentStatus(configured: bool = False, operational: bool = False)` frozen dataclass; `DashboardState.set_deterrent_status(configured: bool, operational: bool) -> None`; `DashboardState.get_deterrent_status() -> DeterrentStatus`. Consumed by Task 5 (routes) and Task 9 (`__main__.py`).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add to `tests/client/web/test_state.py`:
 
@@ -616,12 +616,12 @@ class TestDeterrentStatus:
         assert status.operational is False
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `pytest tests/client/web/test_state.py::TestDeterrentStatus -v`
 Expected: FAIL with `ImportError: cannot import name 'DeterrentStatus'`
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 In `counter_cruiser/client/web/state.py`, add after `StatsSnapshot` (before `AlertHistoryEntry`):
 
@@ -661,17 +661,17 @@ Add new methods (placed after `get_alerts`):
             return self._deterrent_status
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest tests/client/web/test_state.py -v`
 Expected: PASS (all tests, including pre-existing ones)
 
-- [ ] **Step 5: Confirm 100% coverage**
+- [x] **Step 5: Confirm 100% coverage**
 
 Run: `pytest tests/client/web/test_state.py --cov=counter_cruiser.client.web.state --cov-report=term-missing`
 Expected: 100%
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/web/state.py tests/client/web/test_state.py
