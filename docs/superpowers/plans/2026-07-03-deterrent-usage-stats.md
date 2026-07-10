@@ -1044,7 +1044,7 @@ git commit -m "feat(deterrent-usage-stats): add /training-progress route and pag
 
 **Why this task has no automated test:** there is no JS test runner in this project (confirmed by `package.json` absence and every existing template — `dashboard.html`, `calibration.html` — using plain inline `<script>` with zero test coverage). This is a pre-existing gap in the project's otherwise-100%-Python-coverage discipline, not one this change should silently paper over. Verification here is **structural code review against a literal worked example**, specified in Step 2 below, plus a manual browser check in Step 3.
 
-- [ ] **Step 1: Implement the JS**
+- [x] **Step 1: Implement the JS**
 
 Replace the `<script>` block in `counter_cruiser/client/web/templates/training_progress.html` with:
 
@@ -1182,7 +1182,7 @@ Replace the `<script>` block in `counter_cruiser/client/web/templates/training_p
   </script>
 ```
 
-- [ ] **Step 2: Structural verification against a literal worked example**
+- [x] **Step 2: Structural verification against a literal worked example**
 
 By inspection (no test runner available for JS in this project — see rationale above), trace `bucketEvents` against this literal dataset and confirm the stated results by hand-evaluating the function body:
 
@@ -1210,12 +1210,14 @@ Run the client against a test config with `alerts.deterrent.enabled = true` and 
 - The failure count input changes how many entries appear in the failures panel without a network request (check the browser's network tab — no new `fetch` fires on input).
 - With an empty stats DB, the "No corrections recorded yet." message shows and the status line reads "not configured" or "configured — healthy"/"configured — not operational" as appropriate.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add counter_cruiser/client/web/templates/training_progress.html
 git commit -m "feat(deterrent-usage-stats): implement training-progress page JS (bucketing, SVG chart, failures panel)"
 ```
+
+> **Note:** Step 3 (manual browser verification) has not been checked off — no GUI browser is available in the agent execution environment used for this task. Verification to date is a structural code trace (Step 2) plus an HTTP-level smoke test (`GET /training-progress` and `GET /api/deterrent-stats` return 200 via Flask's test client). A human should run the actual Step 3 checklist (toggle buttons, tooltip hover, network-tab check, empty-DB state) in a real browser before this is considered fully verified.
 
 ---
 

@@ -20,7 +20,7 @@
 - [x] 4.1 Write tests for a JSON endpoint (or the page's data source) returning bucketed counts, operational status, and recent-failure context
 - [x] 4.2 Implement the endpoint reading from the event store and `DashboardState`'s deterrent-status field
 - [x] 4.3 Write a test that the training-progress page is served, including the no-events-yet empty state
-- [ ] 4.4 Implement the `/training-progress` page template: hand-rolled inline SVG bar chart for day/week counts, operational status indicator, recent-failure context
+- [x] 4.4 Implement the `/training-progress` page template: hand-rolled inline SVG bar chart for day/week counts, operational status indicator, recent-failure context
 
 ## 5. Dashboard summary
 
