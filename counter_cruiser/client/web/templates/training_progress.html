@@ -28,6 +28,7 @@
   </section>
   <script>
     let allEvents = [];
+    let allFailures = [];
     let currentView = 'day';
 
     function toLocalDate(timestampUtc) {
@@ -140,9 +141,10 @@
     async function load() {
       const data = await (await fetch('/api/deterrent-stats')).json();
       allEvents = data.events;
+      allFailures = data.recent_failures;
       renderStatus(data.configured, data.operational);
       renderCurrentView(data);
-      renderFailures(data.recent_failures);
+      renderFailures(allFailures);
     }
 
     document.getElementById('view-day').addEventListener('click', () => {
@@ -153,7 +155,7 @@
       currentView = 'week';
       renderCurrentView();
     });
-    document.getElementById('failure-count').addEventListener('input', load);
+    document.getElementById('failure-count').addEventListener('input', () => renderFailures(allFailures));
 
     load();
   </script>
