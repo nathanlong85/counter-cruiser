@@ -932,7 +932,7 @@ git commit -m "feat(deterrent-usage-stats): add /api/deterrent-stats endpoint"
 
 Per the design doc's "no server-side templating of the actual event data" — this task only needs to prove the route/template plumbing works, including the documented no-events-yet scenario (which is a page-serves-successfully assertion, not a specific rendered value, since rendering is client-side).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add to `tests/client/web/test_routes_deterrent_stats.py`:
 
@@ -954,12 +954,12 @@ class TestTrainingProgressPage:
         assert response.status_code == 200
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `pytest tests/client/web/test_routes_deterrent_stats.py::TestTrainingProgressPage -v`
 Expected: FAIL with 404 (`assert 404 == 200`) — no `/training-progress` route registered yet.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 In `counter_cruiser/client/web/routes_deterrent_stats.py`, add `render_template` to the Flask import and add the new route inside `register_deterrent_stats_routes`:
 
@@ -1012,17 +1012,17 @@ Create `counter_cruiser/client/web/templates/training_progress.html` (skeleton; 
 </html>
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest tests/client/web/test_routes_deterrent_stats.py -v`
 Expected: PASS (all tests, including the two new ones)
 
-- [ ] **Step 5: Confirm 100% coverage**
+- [x] **Step 5: Confirm 100% coverage**
 
 Run: `pytest tests/client/web/test_routes_deterrent_stats.py --cov=counter_cruiser.client.web.routes_deterrent_stats --cov-report=term-missing`
 Expected: 100%
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/web/routes_deterrent_stats.py \
