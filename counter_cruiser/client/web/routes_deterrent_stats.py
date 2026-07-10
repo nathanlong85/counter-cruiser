@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Protocol
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 
 from counter_cruiser.client.web.state import DashboardState
 
@@ -42,3 +42,7 @@ def register_deterrent_stats_routes(
                 'recent_failures': failures,
             }
         )
+
+    @app.get('/training-progress')
+    def training_progress():
+        return render_template('training_progress.html')

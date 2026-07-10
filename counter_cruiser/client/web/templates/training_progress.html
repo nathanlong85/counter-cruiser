@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Counter Cruiser — Training Progress</title>
+</head>
+<body>
+  <h1>Training Progress</h1>
+  <p><a href="{{ url_for('dashboard') }}">Back to dashboard</a></p>
+  <section id="operational-status">
+    <p>Deterrent: <span id="deterrent-status">loading…</span></p>
+  </section>
+  <section id="chart-controls">
+    <button id="view-day" type="button">Day view</button>
+    <button id="view-week" type="button">Week view</button>
+  </section>
+  <section id="chart-section">
+    <svg id="usage-chart" width="800" height="200"></svg>
+    <p id="no-events-message" hidden>No corrections recorded yet.</p>
+  </section>
+  <section id="failures-section">
+    <h2>Recent failures</h2>
+    <label>Show last
+      <input id="failure-count" type="number" min="1" value="5">
+      failures
+    </label>
+    <div id="failure-list" style="max-height: 200px; overflow-y: auto;"></div>
+  </section>
+  <script>
+    // Filled in by Task 7: fetch('/api/deterrent-stats'), local-time
+    // conversion, day/week bucketing, SVG bar rendering, failure list.
+  </script>
+</body>
+</html>

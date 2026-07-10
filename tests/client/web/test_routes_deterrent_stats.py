@@ -77,3 +77,20 @@ class TestDeterrentStatsEndpoint:
         client, _, _ = _client(stats_store=stats_store)
         body = client.get('/api/deterrent-stats').get_json()
         assert body['recent_failures'] == ['2026-01-02T00:00:00+00:00']
+
+
+class TestTrainingProgressPage:
+    def test_page_is_served(self) -> None:
+        client, _, _ = _client()
+        response = client.get('/training-progress')
+        assert response.status_code == 200
+        assert b'<html' in response.data
+
+    def test_page_renders_with_no_events_yet(self) -> None:
+        """The page must serve successfully even with zero recorded events —
+        the no-events-yet state is handled by the page's own JS, not the
+        server, but the route itself must never error on an empty store."""
+        stats_store = FakeStatsStore(events=[], failures=[])
+        client, _, _ = _client(stats_store=stats_store)
+        response = client.get('/training-progress')
+        assert response.status_code == 200
