@@ -19,7 +19,7 @@ server-side SQL `GROUP BY` day/week queries, the store exposes raw
 client-side in JS on `/training-progress`. Reworded below to describe what
 was actually delivered.
 
-- [x] 3.1 Write tests: raw event retrieval (`recent_events`/`recent_failures`) round-trips timestamps and success flags correctly across multiple events; empty result (no events) does not error — delivered under section 1 (`tests/client/test_deterrent_stats.py`); day/week grouping correctness is covered client-side by the `bucketEvents`/`isoWeekKey` logic in `training_progress.html`
+- [x] 3.1 Write tests: raw event retrieval (`recent_events`/`recent_failures`) round-trips timestamps and success flags correctly across multiple events; empty result (no events) does not error — delivered under section 1 (`tests/client/test_deterrent_stats.py`); day/week grouping correctness is implemented client-side by the `bucketEvents`/`isoWeekKey` logic in `training_progress.html` but has no automated test coverage (no JS test harness exists in this project)
 - [x] 3.2 Implement raw event retrieval (`DeterrentStatsStore.recent_events(since_days)`, `recent_failures(limit)`) against the event store; day/week bucketing is implemented client-side (`bucketEvents` in `training_progress.html`), not as server-side bucketed queries
 
 ## 4. Training-progress page
