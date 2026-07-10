@@ -29,8 +29,8 @@
 
 ## 6. Client integration
 
-- [ ] 6.1 Write a test that `main()` constructs the event store and pushes `DeterrentHandler.is_operational` (when a deterrent is configured) into `DashboardState` at startup
-- [ ] 6.2 Wire the event store and operational-status push into `counter_cruiser/client/__main__.py`
+- [x] 6.1 Write a test that `main()` constructs the event store and pushes `DeterrentHandler.is_operational` (when a deterrent is configured) into `DashboardState` at startup
+- [x] 6.2 Wire the event store and operational-status push into `counter_cruiser/client/__main__.py`
 
 ## 7. Finalization
 

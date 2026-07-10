@@ -1323,7 +1323,7 @@ git commit -m "feat(deterrent-usage-stats): add deterrent usage summary to the d
 
 This task threads the new store through `_build_alert_manager` (which currently constructs `DeterrentHandler(alerts.deterrent)`) and `main()` (which constructs `create_app` and must push `DeterrentStatus` before the web thread starts serving).
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add to `tests/client/test_main.py`:
 
@@ -1419,12 +1419,12 @@ class TestBuildAlertManagerWithDeterrent:
         assert deterrent.is_operational is False  # _import_gpio patched to None above
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `pytest tests/client/test_main.py -v`
 Expected: FAIL — `TypeError: _build_alert_manager() takes 1 positional argument but 2 were given` (new test), and `AttributeError`/assertion failures on `get_deterrent_status()` defaults not being pushed (wiring tests), since `main()` does not yet call `set_deterrent_status` or construct a `DeterrentStatsStore`.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Modify `counter_cruiser/client/__main__.py`:
 
@@ -1567,17 +1567,17 @@ Apply the same fix to `TestWebServerThreading.test_video_feed_does_not_block_api
         app = create_app(state, config, zone_store, stats_store)
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `pytest tests/client/test_main.py -v`
 Expected: PASS (all tests, including the new wiring tests and every updated pre-existing test)
 
-- [ ] **Step 5: Confirm 100% coverage**
+- [x] **Step 5: Confirm 100% coverage**
 
 Run: `pytest tests/client/test_main.py --cov=counter_cruiser.client.__main__ --cov-report=term-missing`
 Expected: 100%
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/__main__.py tests/client/test_main.py
