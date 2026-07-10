@@ -29,8 +29,7 @@ class TestRecordAndRetrieve:
         old_ts = (datetime.now(UTC) - timedelta(days=400)).isoformat()
         with sqlite3.connect(tmp_path / 'stats.db') as conn:
             conn.execute(
-                'INSERT INTO deterrent_events (timestamp_utc, succeeded) '
-                'VALUES (?, ?)',
+                'INSERT INTO deterrent_events (timestamp_utc, succeeded) VALUES (?, ?)',
                 (old_ts, 1),
             )
         store.record(succeeded=True)
@@ -82,7 +81,9 @@ class TestWalMode:
 
 
 class TestConcurrency:
-    def test_concurrent_writes_and_reads_do_not_raise_or_corrupt(self, tmp_path) -> None:
+    def test_concurrent_writes_and_reads_do_not_raise_or_corrupt(
+        self, tmp_path
+    ) -> None:
         """Regression guard: a writer thread and a reader thread hitting the
         same store concurrently must not raise or leave torn/duplicated
         rows, mirroring web-ui's ZoneStore concurrency test shape."""

@@ -12,8 +12,15 @@
 
 ## 3. Day/week bucketed retrieval
 
-- [ ] 3.1 Write tests: day-bucketed counts returned correctly across multiple days; week-bucketed counts returned correctly across multiple weeks; empty result (no events) does not error
-- [ ] 3.2 Implement bucketed-count queries against the event store (day and week granularity)
+Superseded by the design doc's explicit resolution (see
+`design.md`'s "Hand-rolled inline SVG bar chart" decision): rather than
+server-side SQL `GROUP BY` day/week queries, the store exposes raw
+`(timestamp_utc, succeeded)` events and day/week bucketing happens
+client-side in JS on `/training-progress`. Reworded below to describe what
+was actually delivered.
+
+- [x] 3.1 Write tests: raw event retrieval (`recent_events`/`recent_failures`) round-trips timestamps and success flags correctly across multiple events; empty result (no events) does not error — delivered under section 1 (`tests/client/test_deterrent_stats.py`); day/week grouping correctness is covered client-side by the `bucketEvents`/`isoWeekKey` logic in `training_progress.html`
+- [x] 3.2 Implement raw event retrieval (`DeterrentStatsStore.recent_events(since_days)`, `recent_failures(limit)`) against the event store; day/week bucketing is implemented client-side (`bucketEvents` in `training_progress.html`), not as server-side bucketed queries
 
 ## 4. Training-progress page
 
