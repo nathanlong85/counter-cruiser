@@ -16,14 +16,18 @@ Single `counter_cruiser` package managed with `uv`. Sub-packages:
   helper — boxes, zone polygons, timestamp, box color by elevated state —
   reused by the alert system and the web UI), `alerts/` (`AlertManager` —
   per-zone cooldown, deterrent-first isolated fan-out; `DeterrentHandler` —
-  GPIO button-press simulation on the existing ultrasonic trainer;
+  GPIO button-press simulation on the existing ultrasonic trainer, exposing an `is_operational` status and recording each attempt's outcome via the injected `DeterrentStatsStore`;
   `SnapshotHandler`, `LogHandler`, `NotificationHandler` — recording and
   ntfy.sh/Pushover push notifications), `web/` (`DashboardState` — injected,
-  thread-safe UI state; `create_app` — Flask app factory; `mjpeg.py` —
+  thread-safe UI state, including deterrent operational status;
+  `create_app` — Flask app factory; `mjpeg.py` —
   rate-limited MJPEG generator; `zone_store.py` — `ZoneStore`, zone CRUD
   with mtime-based optimistic concurrency and atomic TOML write-back;
-  `routes_dashboard.py`/`routes_live_feed.py`/`routes_zones.py` — route
-  registration; `templates/` — dashboard and calibration pages), `__main__.py`
+  `routes_dashboard.py`/`routes_live_feed.py`/`routes_zones.py`/
+  `routes_deterrent_stats.py` — route registration; `templates/` —
+  dashboard, calibration, and training-progress pages), `deterrent_stats.py`
+  (`DeterrentStatsStore` — SQLite-backed persistent recorder for deterrent
+  trigger attempts, one fresh connection per access, WAL mode), `__main__.py`
   (entrypoint wiring config, camera, transport, zone analysis, alert
   dispatch, and the web server thread)
 - `server/`: `model.py` (`DetectionModel` ABC, `YOLOAdapter`, `select_device` auto device selection), `handler.py` (`handle_connection` — per-connection WebSocket message dispatch), `__main__.py` (entrypoint)
@@ -49,7 +53,8 @@ ruff format .
 uv pip install -e ".[server]"
 python -m counter_cruiser.server
 
-# Run client (also starts the web UI on http://<web_host>:<web_port>/, default 0.0.0.0:8080)
+# Run client (also starts the web UI on http://<web_host>:<web_port>/, default
+# 0.0.0.0:8080; includes /training-progress for deterrent usage history)
 python -m counter_cruiser.client
 ```
 
