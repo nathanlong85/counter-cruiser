@@ -1233,7 +1233,7 @@ git commit -m "feat(deterrent-usage-stats): implement training-progress page JS 
 
 Per design.md: the dashboard route (`routes_dashboard.py`) itself needs **no** Python change — only the template gains a section that fetches the existing `/api/deterrent-stats` endpoint. The test only needs to confirm the static markup (link + summary container) is present in the served HTML; the "this week"/"last week" JS computation is exercised the same way as Task 7 (structural review, no JS test runner), scoped small here since it reuses Task 7's `isoWeekKey`/`dayKey` logic conceptually but does not need to duplicate the full bucketing implementation — it only needs a current-ISO-week count.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `tests/client/web/test_routes_dashboard.py`, inside `class TestDashboardPage:`:
 
@@ -1249,12 +1249,12 @@ Add to `tests/client/web/test_routes_dashboard.py`, inside `class TestDashboardP
         assert b'deterrent-summary' in response.data
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `pytest tests/client/web/test_routes_dashboard.py::TestDashboardPage -v`
 Expected: FAIL — neither `/training-progress` nor `deterrent-summary` appear in the current `dashboard.html` output.
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 Modify `counter_cruiser/client/web/templates/dashboard.html`: add a new section after the existing `<section id="alerts">` block and before the `<p><a href="{{ url_for('calibrate') }}">` line:
 
@@ -1292,17 +1292,17 @@ Add to the existing `<script>` block, inside `poll()` (after the existing alerts
 
 Note: `url_for('training_progress')` requires the Flask view function in Task 6 be named `training_progress` (confirmed — see Task 6's `def training_progress():`).
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/client/web/test_routes_dashboard.py -v`
 Expected: PASS (all tests, including the two new ones)
 
-- [ ] **Step 5: Confirm 100% coverage**
+- [x] **Step 5: Confirm 100% coverage**
 
 Run: `pytest tests/client/web/test_routes_dashboard.py --cov=counter_cruiser.client.web.routes_dashboard --cov-report=term-missing`
 Expected: 100% (the Python route itself is unchanged, so this reconfirms no regression)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add counter_cruiser/client/web/templates/dashboard.html tests/client/web/test_routes_dashboard.py

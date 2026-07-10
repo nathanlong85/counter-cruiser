@@ -24,8 +24,8 @@
 
 ## 5. Dashboard summary
 
-- [ ] 5.1 Write tests: dashboard page presents a brief usage summary and a link to the training-progress page; reflects "not configured" vs. "configured but broken" vs. healthy states
-- [ ] 5.2 Extend the dashboard page/route with the summary and link
+- [x] 5.1 Write tests: dashboard page presents a brief usage summary and a link to the training-progress page; reflects "not configured" vs. "configured but broken" vs. healthy states
+- [x] 5.2 Extend the dashboard page/route with the summary and link
 
 ## 6. Client integration
 
