@@ -1672,12 +1672,12 @@ git commit -m "docs(deterrent-usage-stats): document DeterrentStatsStore and tra
 - Consumes: the complete change from Tasks 1–10.
 - Produces: nothing (terminal task).
 
-- [ ] **Step 1: Run the full test suite with coverage**
+- [x] **Step 1: Run the full test suite with coverage**
 
 Run: `pytest --cov=counter_cruiser --cov-report=term-missing --cov-fail-under=100`
 Expected: all tests pass; coverage report shows 100% (or the command fails and any gap must be closed with an additional test before proceeding — do not add `# pragma: no cover` to close a gap unless the line is genuinely unreachable, matching the existing codebase's sparing use of that marker on `_import_gpio`'s real-hardware branches).
 
-- [ ] **Step 2: Run ruff**
+- [x] **Step 2: Run ruff**
 
 Run: `ruff check .`
 Expected: no findings. If findings appear, fix them (e.g. wrap long lines, remove unused imports) and re-run.
@@ -1685,7 +1685,7 @@ Expected: no findings. If findings appear, fix them (e.g. wrap long lines, remov
 Run: `ruff format .`
 Expected: no files reformatted (or, if files are reformatted, re-run `pytest` afterward to confirm formatting didn't change behavior, then amend the affected task's commit — or add a small follow-up formatting commit).
 
-- [ ] **Step 3: Verify docstrings**
+- [x] **Step 3: Verify docstrings**
 
 Manually confirm every new/modified public symbol has a docstring:
 - `DeterrentConfig.stats_db_path` (field, no docstring needed — covered by the class docstring)
@@ -1697,16 +1697,16 @@ Manually confirm every new/modified public symbol has a docstring:
 
 Run: `grep -c '"""' counter_cruiser/client/deterrent_stats.py counter_cruiser/client/web/routes_deterrent_stats.py` to spot-check docstring presence (each public def/class should contribute one `"""..."""` pair).
 
-- [ ] **Step 4: Confirm no `print()` calls were introduced**
+- [x] **Step 4: Confirm no `print()` calls were introduced**
 
 Run: `grep -rn "print(" counter_cruiser/client/deterrent_stats.py counter_cruiser/client/web/routes_deterrent_stats.py counter_cruiser/client/alerts/deterrent.py`
 Expected: no output (no matches).
 
-- [ ] **Step 5: Verify the OpenSpec tasks.md checkboxes match delivered scope**
+- [x] **Step 5: Verify the OpenSpec tasks.md checkboxes match delivered scope**
 
 Re-read `openspec/changes/deterrent-usage-stats/tasks.md` section 3 ("Day/week bucketed retrieval") against what was actually built: this plan implements section 3 as `DeterrentStatsStore.recent_events(since_days)` returning raw events (Task 2), with **client-side** JS bucketing (Task 7), not server-side SQL `GROUP BY` day/week counts — per the design doc's explicit resolution overriding tasks.md's older wording. Confirm this reconciliation is intentional and does not need a tasks.md edit before checking off section 3's boxes (or edit tasks.md's wording to match, at the implementer's/coordinator's discretion, since editing OpenSpec artifacts is a build-phase-appropriate small spec adjustment per the project's comet-phase-guard rules).
 
-- [ ] **Step 6: Final commit (if any cleanup was needed in Steps 2–4)**
+- [x] **Step 6: Final commit (if any cleanup was needed in Steps 2–4)**
 
 ```bash
 git add -A

@@ -41,7 +41,7 @@ was actually delivered.
 
 ## 7. Finalization
 
-- [ ] 7.1 Run the full test suite; confirm 100% coverage on all new/modified code
-- [ ] 7.2 Run `ruff check` and `ruff format`; resolve all findings
-- [ ] 7.3 Verify docstrings on all public modules/classes/functions added or modified
-- [ ] 7.4 Update root `CLAUDE.md` Architecture/Commands sections to document the new stats store and training-progress page
+- [x] 7.1 Run the full test suite; confirm 100% coverage on all new/modified code
+- [x] 7.2 Run `ruff check` and `ruff format`; resolve all findings
+- [x] 7.3 Verify docstrings on all public modules/classes/functions added or modified
+- [x] 7.4 Update root `CLAUDE.md` Architecture/Commands sections to document the new stats store and training-progress page
