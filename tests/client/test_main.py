@@ -18,7 +18,12 @@ from counter_cruiser.client.__main__ import (
 from counter_cruiser.client.web.app import create_app
 from counter_cruiser.client.web.state import DashboardState
 from counter_cruiser.client.web.zone_store import ZoneStore
-from counter_cruiser.config.models import ClientSettings, Zone
+from counter_cruiser.config.models import (
+    AlertConfig,
+    ClientSettings,
+    DeterrentConfig,
+    Zone,
+)
 from counter_cruiser.shared.protocol import BoundingBox, DetectionMessage
 
 
@@ -52,7 +57,12 @@ class TestMain:
             name='Counter',
             polygon=[(0, 0), (640, 0), (640, 480), (0, 480)],
         )
-        config = ClientSettings(zones=[zone])
+        config = ClientSettings(
+            zones=[zone],
+            alerts=AlertConfig(
+                deterrent=DeterrentConfig(stats_db_path=str(tmp_path / 'stats.db'))
+            ),
+        )
         config_path = tmp_path / 'client.toml'
         config_path.write_text('')
 
@@ -131,7 +141,7 @@ class TestMain:
         assert alerts[0].triggered_zones == frozenset({'counter'})
 
     def test_main_constructs_dashboard_state_and_starts_web_thread(
-        self, monkeypatch
+        self, monkeypatch, tmp_path
     ) -> None:
         """main() builds DashboardState + the Flask app and starts a daemon
         web thread, without ever starting real capture (asyncio.run mocked)."""
@@ -146,7 +156,11 @@ class TestMain:
             def start(self):
                 started_threads.append(self)
 
-        config = ClientSettings()
+        config = ClientSettings(
+            alerts=AlertConfig(
+                deterrent=DeterrentConfig(stats_db_path=str(tmp_path / 'stats.db'))
+            )
+        )
 
         with (
             patch('counter_cruiser.client.__main__._configure_logging'),
@@ -195,16 +209,20 @@ class TestFpsTracker:
 
 
 class TestBuildAlertManager:
-    def test_all_handlers_disabled_by_default(self) -> None:
+    def test_all_handlers_disabled_by_default(self, tmp_path) -> None:
         from counter_cruiser.client.__main__ import _build_alert_manager
+        from counter_cruiser.client.deterrent_stats import DeterrentStatsStore
 
-        manager = _build_alert_manager(ClientSettings())
+        stats_store = DeterrentStatsStore(tmp_path / 'stats.db')
+        manager, deterrent = _build_alert_manager(ClientSettings(), stats_store)
         # No handlers/deterrent constructed when everything is disabled.
         assert manager._handlers == []
         assert manager._deterrent is None
+        assert deterrent is None
 
-    def test_enabled_handlers_are_constructed(self) -> None:
+    def test_enabled_handlers_are_constructed(self, tmp_path) -> None:
         from counter_cruiser.client.__main__ import _build_alert_manager
+        from counter_cruiser.client.deterrent_stats import DeterrentStatsStore
         from counter_cruiser.config.models import (
             AlertConfig,
             LogConfig,
@@ -219,13 +237,40 @@ class TestBuildAlertManager:
                 notification=NotificationConfig(enabled=True),
             )
         )
-        manager = _build_alert_manager(config)
+        stats_store = DeterrentStatsStore(tmp_path / 'stats.db')
+        manager, deterrent = _build_alert_manager(config, stats_store)
         assert len(manager._handlers) == 3
+        assert deterrent is None
+
+
+class TestBuildAlertManagerWithDeterrent:
+    def test_deterrent_enabled_constructs_handler_with_stats_store(
+        self, tmp_path
+    ) -> None:
+        from counter_cruiser.client.__main__ import _build_alert_manager
+        from counter_cruiser.client.deterrent_stats import DeterrentStatsStore
+        from counter_cruiser.config.models import AlertConfig, DeterrentConfig
+
+        config = ClientSettings(
+            alerts=AlertConfig(deterrent=DeterrentConfig(enabled=True, pin=17))
+        )
+        stats_store = DeterrentStatsStore(tmp_path / 'stats.db')
+        with patch(
+            'counter_cruiser.client.alerts.deterrent._import_gpio', return_value=None
+        ):
+            manager, deterrent = _build_alert_manager(config, stats_store)
+        assert manager._deterrent is not None
+        assert deterrent is not None
+        assert deterrent.is_operational is False  # _import_gpio patched to None above
 
 
 class TestMainCallsAlertManagerCleanupOnShutdown:
-    def test_cleanup_called_after_run(self) -> None:
-        config = ClientSettings()
+    def test_cleanup_called_after_run(self, tmp_path) -> None:
+        config = ClientSettings(
+            alerts=AlertConfig(
+                deterrent=DeterrentConfig(stats_db_path=str(tmp_path / 'stats.db'))
+            )
+        )
         with (
             patch('counter_cruiser.client.__main__._configure_logging'),
             patch(
@@ -244,7 +289,7 @@ class TestMainCallsAlertManagerCleanupOnShutdown:
             thread_cls.return_value = MagicMock()
             session_cls.return_value.frame_height = config.frame_height
             manager_instance = MagicMock()
-            build_manager.return_value = manager_instance
+            build_manager.return_value = (manager_instance, None)
 
             main()
 
@@ -324,3 +369,80 @@ class TestWebServerThreading:
         # still-open /video_feed connection; a threaded one answers almost
         # immediately.
         assert elapsed < 1.0
+
+
+class TestDeterrentStatsWiring:
+    def test_deterrent_configured_and_operational_pushes_status(self, tmp_path) -> None:
+        from counter_cruiser.config.models import AlertConfig, DeterrentConfig
+
+        db_path = tmp_path / 'stats.db'
+        config = ClientSettings(
+            alerts=AlertConfig(
+                deterrent=DeterrentConfig(
+                    enabled=True, pin=17, stats_db_path=str(db_path)
+                )
+            )
+        )
+        real_state = DashboardState()
+
+        with (
+            patch('counter_cruiser.client.__main__._configure_logging'),
+            patch(
+                'counter_cruiser.client.__main__.load_client_config',
+                return_value=config,
+            ),
+            patch(
+                'counter_cruiser.client.__main__.DashboardState',
+                return_value=real_state,
+            ),
+            patch('counter_cruiser.client.__main__.OpenCVCapture'),
+            patch('counter_cruiser.client.__main__.ClientSession') as session_cls,
+            patch('counter_cruiser.client.__main__.signal.signal'),
+            patch('counter_cruiser.client.__main__.asyncio.run'),
+            patch('counter_cruiser.client.__main__.threading.Thread') as thread_cls,
+            patch(
+                'counter_cruiser.client.alerts.deterrent._import_gpio',
+                return_value=None,  # forces is_operational=False deterministically
+            ),
+        ):
+            thread_cls.return_value = MagicMock()
+            session_cls.return_value.frame_height = config.frame_height
+
+            main()
+
+        status = real_state.get_deterrent_status()
+        assert status.configured is True
+        assert status.operational is False  # _import_gpio returns None above
+
+    def test_deterrent_disabled_pushes_not_configured_status(self, tmp_path) -> None:
+        config = ClientSettings(
+            alerts=AlertConfig(
+                deterrent=DeterrentConfig(stats_db_path=str(tmp_path / 'stats.db'))
+            )
+        )  # deterrent disabled by default
+        real_state = DashboardState()
+
+        with (
+            patch('counter_cruiser.client.__main__._configure_logging'),
+            patch(
+                'counter_cruiser.client.__main__.load_client_config',
+                return_value=config,
+            ),
+            patch(
+                'counter_cruiser.client.__main__.DashboardState',
+                return_value=real_state,
+            ),
+            patch('counter_cruiser.client.__main__.OpenCVCapture'),
+            patch('counter_cruiser.client.__main__.ClientSession') as session_cls,
+            patch('counter_cruiser.client.__main__.signal.signal'),
+            patch('counter_cruiser.client.__main__.asyncio.run'),
+            patch('counter_cruiser.client.__main__.threading.Thread') as thread_cls,
+        ):
+            thread_cls.return_value = MagicMock()
+            session_cls.return_value.frame_height = config.frame_height
+
+            main()
+
+        status = real_state.get_deterrent_status()
+        assert status.configured is False
+        assert status.operational is False
