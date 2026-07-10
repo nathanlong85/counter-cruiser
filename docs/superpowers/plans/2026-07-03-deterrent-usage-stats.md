@@ -1595,7 +1595,7 @@ git commit -m "feat(deterrent-usage-stats): wire DeterrentStatsStore and Deterre
 - Consumes: nothing (documentation-only task).
 - Produces: nothing (terminal task besides finalization).
 
-- [ ] **Step 1: Update the Architecture section**
+- [x] **Step 1: Update the Architecture section**
 
 In `CLAUDE.md`, in the `client/` bullet's `web/` description, add mention of the new modules. Find the existing text (approximately):
 
@@ -1637,7 +1637,7 @@ Replace with:
 `DeterrentHandler` — GPIO button-press simulation on the existing ultrasonic trainer, exposing an `is_operational` status and recording each attempt's outcome via the injected `DeterrentStatsStore`;
 ```
 
-- [ ] **Step 2: Update the Commands section**
+- [x] **Step 2: Update the Commands section**
 
 Update the "Run client" comment to mention the new page:
 
@@ -1654,7 +1654,7 @@ Replace with:
 # 0.0.0.0:8080; includes /training-progress for deterrent usage history)
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add CLAUDE.md
