@@ -110,3 +110,13 @@ class TestDashboardPage:
         response = client.get('/')
         assert response.status_code == 200
         assert b'<html' in response.data
+
+    def test_dashboard_page_includes_training_progress_link(self) -> None:
+        client, _ = _client()
+        response = client.get('/')
+        assert b'/training-progress' in response.data
+
+    def test_dashboard_page_includes_deterrent_summary_section(self) -> None:
+        client, _ = _client()
+        response = client.get('/')
+        assert b'deterrent-summary' in response.data
