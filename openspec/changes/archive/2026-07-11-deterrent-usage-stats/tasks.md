@@ -1,0 +1,47 @@
+## 1. Persistent event store
+
+- [x] 1.1 Write tests: recording an event persists it across a fresh connection (simulating restart); recorded events include timestamp and success flag; concurrent reads and writes (per design's WAL/per-access-connection approach) do not raise or corrupt data
+- [x] 1.2 Implement a small SQLite-backed recorder (path resolved similarly to `SnapshotConfig.dir`/`LogConfig.file`) with WAL mode and a dedicated connection per access; no shared long-lived connection
+
+## 2. Deterrent handler: operational status + recording
+
+- [x] 2.1 Write tests: `DeterrentHandler` reports operational after successful GPIO setup; reports not operational when GPIO unavailable/setup fails
+- [x] 2.2 Implement an `is_operational` read-only property on `DeterrentHandler`
+- [x] 2.3 Write tests: a successful trigger records a succeeded event; an erroring trigger records a failed event and still drives the pin LOW (existing requirement, must not regress)
+- [x] 2.4 Wire the event store into `DeterrentHandler.trigger()` to record each attempt's outcome
+
+## 3. Day/week bucketed retrieval
+
+Superseded by the design doc's explicit resolution (see
+`design.md`'s "Hand-rolled inline SVG bar chart" decision): rather than
+server-side SQL `GROUP BY` day/week queries, the store exposes raw
+`(timestamp_utc, succeeded)` events and day/week bucketing happens
+client-side in JS on `/training-progress`. Reworded below to describe what
+was actually delivered.
+
+- [x] 3.1 Write tests: raw event retrieval (`recent_events`/`recent_failures`) round-trips timestamps and success flags correctly across multiple events; empty result (no events) does not error — delivered under section 1 (`tests/client/test_deterrent_stats.py`); day/week grouping correctness is implemented client-side by the `bucketEvents`/`isoWeekKey` logic in `training_progress.html` but has no automated test coverage (no JS test harness exists in this project)
+- [x] 3.2 Implement raw event retrieval (`DeterrentStatsStore.recent_events(since_days)`, `recent_failures(limit)`) against the event store; day/week bucketing is implemented client-side (`bucketEvents` in `training_progress.html`), not as server-side bucketed queries
+
+## 4. Training-progress page
+
+- [x] 4.1 Write tests for a JSON endpoint (or the page's data source) returning bucketed counts, operational status, and recent-failure context
+- [x] 4.2 Implement the endpoint reading from the event store and `DashboardState`'s deterrent-status field
+- [x] 4.3 Write a test that the training-progress page is served, including the no-events-yet empty state
+- [x] 4.4 Implement the `/training-progress` page template: hand-rolled inline SVG bar chart for day/week counts, operational status indicator, recent-failure context
+
+## 5. Dashboard summary
+
+- [x] 5.1 Write tests: dashboard page presents a brief usage summary and a link to the training-progress page; reflects "not configured" vs. "configured but broken" vs. healthy states
+- [x] 5.2 Extend the dashboard page/route with the summary and link
+
+## 6. Client integration
+
+- [x] 6.1 Write a test that `main()` constructs the event store and pushes `DeterrentHandler.is_operational` (when a deterrent is configured) into `DashboardState` at startup
+- [x] 6.2 Wire the event store and operational-status push into `counter_cruiser/client/__main__.py`
+
+## 7. Finalization
+
+- [x] 7.1 Run the full test suite; confirm 100% coverage on all new/modified code
+- [x] 7.2 Run `ruff check` and `ruff format`; resolve all findings
+- [x] 7.3 Verify docstrings on all public modules/classes/functions added or modified
+- [x] 7.4 Update root `CLAUDE.md` Architecture/Commands sections to document the new stats store and training-progress page

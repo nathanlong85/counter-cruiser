@@ -6,7 +6,10 @@ from datetime import UTC, datetime
 
 import numpy as np
 
-from counter_cruiser.client.web.state import AlertHistoryEntry, DashboardState
+from counter_cruiser.client.web.state import (
+    AlertHistoryEntry,
+    DashboardState,
+)
 from counter_cruiser.shared.protocol import BoundingBox
 
 
@@ -124,3 +127,25 @@ class TestAlertHistory:
         alerts = state.get_alerts()
         assert len(alerts) == 2
         assert [a.frame_id for a in alerts] == [2, 1]
+
+
+class TestDeterrentStatus:
+    def test_default_status_is_not_configured_not_operational(self) -> None:
+        state = DashboardState()
+        status = state.get_deterrent_status()
+        assert status.configured is False
+        assert status.operational is False
+
+    def test_set_and_get_round_trips(self) -> None:
+        state = DashboardState()
+        state.set_deterrent_status(configured=True, operational=True)
+        status = state.get_deterrent_status()
+        assert status.configured is True
+        assert status.operational is True
+
+    def test_configured_but_not_operational(self) -> None:
+        state = DashboardState()
+        state.set_deterrent_status(configured=True, operational=False)
+        status = state.get_deterrent_status()
+        assert status.configured is True
+        assert status.operational is False

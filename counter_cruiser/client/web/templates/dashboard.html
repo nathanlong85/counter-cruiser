@@ -18,6 +18,12 @@
     <h2>Recent alerts</h2>
     <ul id="alert-list"></ul>
   </section>
+  <section id="deterrent-summary">
+    <h2>Training Progress</h2>
+    <p>Deterrent: <span id="deterrent-summary-status">loading…</span></p>
+    <p>This week: <span id="deterrent-summary-count">0</span> corrections</p>
+    <p><a href="{{ url_for('training_progress') }}">View full training progress</a></p>
+  </section>
   <p><a href="{{ url_for('calibrate') }}">Edit zones</a></p>
   <script>
     async function poll() {
@@ -37,6 +43,25 @@
         li.textContent = `${alert.time} — zones: ${alert.triggered_zones.join(', ')} (frame ${alert.frame_id})`;
         list.appendChild(li);
       }
+
+      const deterrentStats = await (await fetch('/api/deterrent-stats')).json();
+      const statusEl = document.getElementById('deterrent-summary-status');
+      if (!deterrentStats.configured) {
+        statusEl.textContent = 'not configured';
+      } else if (deterrentStats.operational) {
+        statusEl.textContent = 'configured — healthy';
+      } else {
+        statusEl.textContent = 'configured — not operational';
+      }
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      const dayNum = (startOfWeek.getDay() + 6) % 7;
+      startOfWeek.setDate(startOfWeek.getDate() - dayNum);
+      startOfWeek.setHours(0, 0, 0, 0);
+      const thisWeekCount = deterrentStats.events.filter(
+        (e) => new Date(e.timestamp_utc) >= startOfWeek
+      ).length;
+      document.getElementById('deterrent-summary-count').textContent = thisWeekCount;
     }
     poll();
     setInterval(poll, 2000);

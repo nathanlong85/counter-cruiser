@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Counter Cruiser — Training Progress</title>
+</head>
+<body>
+  <h1>Training Progress</h1>
+  <p><a href="{{ url_for('dashboard') }}">Back to dashboard</a></p>
+  <section id="operational-status">
+    <p>Deterrent: <span id="deterrent-status">loading…</span></p>
+  </section>
+  <section id="chart-controls">
+    <button id="view-day" type="button">Day view</button>
+    <button id="view-week" type="button">Week view</button>
+  </section>
+  <section id="chart-section">
+    <svg id="usage-chart" width="800" height="200"></svg>
+    <p id="no-events-message" hidden>No corrections recorded yet.</p>
+  </section>
+  <section id="failures-section">
+    <h2>Recent failures</h2>
+    <label>Show last
+      <input id="failure-count" type="number" min="1" value="5">
+      failures
+    </label>
+    <div id="failure-list" style="max-height: 200px; overflow-y: auto;"></div>
+  </section>
+  <script>
+    let allEvents = [];
+    let allFailures = [];
+    let currentView = 'day';
+
+    function toLocalDate(timestampUtc) {
+      return new Date(timestampUtc);
+    }
+
+    // Monday-start ISO week key, e.g. "2026-W01", from a local Date.
+    function isoWeekKey(date) {
+      const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      const dayNum = (d.getDay() + 6) % 7; // Monday=0 ... Sunday=6
+      d.setDate(d.getDate() - dayNum + 3); // nearest Thursday
+      const firstThursday = new Date(d.getFullYear(), 0, 4);
+      const firstThursdayDayNum = (firstThursday.getDay() + 6) % 7;
+      firstThursday.setDate(firstThursday.getDate() - firstThursdayDayNum + 3);
+      const weekNum = 1 + Math.round((d - firstThursday) / (7 * 86400000));
+      return `${d.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+    }
+
+    function dayKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function bucketEvents(events, granularity, windowCount) {
+      const now = new Date();
+      const keys = [];
+      if (granularity === 'day') {
+        for (let i = windowCount - 1; i >= 0; i--) {
+          const d = new Date(now);
+          d.setDate(d.getDate() - i);
+          keys.push(dayKey(d));
+        }
+      } else {
+        for (let i = windowCount - 1; i >= 0; i--) {
+          const d = new Date(now);
+          d.setDate(d.getDate() - i * 7);
+          keys.push(isoWeekKey(d));
+        }
+      }
+      const counts = Object.fromEntries(keys.map((k) => [k, 0]));
+      for (const event of events) {
+        const local = toLocalDate(event.timestamp_utc);
+        const key = granularity === 'day' ? dayKey(local) : isoWeekKey(local);
+        if (key in counts) {
+          counts[key] += 1;
+        }
+      }
+      return keys.map((k) => ({ key: k, count: counts[k] }));
+    }
+
+    function renderChart(buckets) {
+      const svg = document.getElementById('usage-chart');
+      const noEventsMessage = document.getElementById('no-events-message');
+      svg.innerHTML = '';
+      const total = buckets.reduce((sum, b) => sum + b.count, 0);
+      noEventsMessage.hidden = total > 0;
+      if (total === 0) {
+        return;
+      }
+      const width = 800;
+      const height = 200;
+      const barGap = 2;
+      const barWidth = width / buckets.length - barGap;
+      const maxCount = Math.max(...buckets.map((b) => b.count), 1);
+      buckets.forEach((bucket, i) => {
+        const barHeight = (bucket.count / maxCount) * (height - 20);
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', i * (barWidth + barGap));
+        rect.setAttribute('y', height - barHeight);
+        rect.setAttribute('width', barWidth);
+        rect.setAttribute('height', barHeight);
+        rect.setAttribute('fill', 'steelblue');
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+        title.textContent = `${bucket.key}: ${bucket.count}`;
+        rect.appendChild(title);
+        svg.appendChild(rect);
+      });
+    }
+
+    function renderStatus(configured, operational) {
+      const el = document.getElementById('deterrent-status');
+      if (!configured) {
+        el.textContent = 'not configured';
+      } else if (operational) {
+        el.textContent = 'configured — healthy';
+      } else {
+        el.textContent = 'configured — not operational';
+      }
+    }
+
+    function renderFailures(failures) {
+      const count = parseInt(document.getElementById('failure-count').value, 10) || 5;
+      const list = document.getElementById('failure-list');
+      list.innerHTML = '';
+      for (const ts of failures.slice(0, count)) {
+        const p = document.createElement('p');
+        p.textContent = toLocalDate(ts).toLocaleString();
+        list.appendChild(p);
+      }
+    }
+
+    function renderCurrentView(data) {
+      const windowCount = currentView === 'day' ? 30 : 26;
+      const buckets = bucketEvents(allEvents, currentView, windowCount);
+      renderChart(buckets);
+    }
+
+    async function load() {
+      const data = await (await fetch('/api/deterrent-stats')).json();
+      allEvents = data.events;
+      allFailures = data.recent_failures;
+      renderStatus(data.configured, data.operational);
+      renderCurrentView(data);
+      renderFailures(allFailures);
+    }
+
+    document.getElementById('view-day').addEventListener('click', () => {
+      currentView = 'day';
+      renderCurrentView();
+    });
+    document.getElementById('view-week').addEventListener('click', () => {
+      currentView = 'week';
+      renderCurrentView();
+    });
+    document.getElementById('failure-count').addEventListener('input', () => renderFailures(allFailures));
+
+    load();
+  </script>
+</body>
+</html>

@@ -12,15 +12,27 @@ class FakeZoneStore:
         return [], 0
 
 
+class FakeStatsStore:
+    def recent_events(self, since_days: int):
+        return []
+
+    def recent_failures(self, limit: int):
+        return []
+
+
 def test_create_app_returns_a_flask_instance() -> None:
     from flask import Flask
 
-    app = create_app(DashboardState(), ClientSettings(), FakeZoneStore())
+    app = create_app(
+        DashboardState(), ClientSettings(), FakeZoneStore(), FakeStatsStore()
+    )
     assert isinstance(app, Flask)
 
 
 def test_create_app_does_not_start_a_server() -> None:
     # Constructing the app must have no side effects beyond building routes;
     # if it did anything blocking, this test would hang.
-    app = create_app(DashboardState(), ClientSettings(), FakeZoneStore())
+    app = create_app(
+        DashboardState(), ClientSettings(), FakeZoneStore(), FakeStatsStore()
+    )
     assert app is not None

@@ -38,6 +38,14 @@ class StatsSnapshot:
 
 
 @dataclass(frozen=True)
+class DeterrentStatus:
+    """Point-in-time deterrent configuration/health for the web UI."""
+
+    configured: bool = False
+    operational: bool = False
+
+
+@dataclass(frozen=True)
 class AlertHistoryEntry:
     """One recorded alert event for the dashboard's history list."""
 
@@ -64,6 +72,7 @@ class DashboardState:
         self._detection = DetectionSnapshot()
         self._stats = StatsSnapshot()
         self._alerts: deque[AlertHistoryEntry] = deque(maxlen=alert_history_capacity)
+        self._deterrent_status = DeterrentStatus()
 
     def update_frame(self, frame: np.ndarray) -> None:
         """Store a copy of the latest captured frame."""
@@ -129,3 +138,20 @@ class DashboardState:
         """Return recorded alerts, newest first, bounded to the configured capacity."""
         with self._lock:
             return list(self._alerts)
+
+    def set_deterrent_status(self, configured: bool, operational: bool) -> None:
+        """Set the deterrent's configured/operational status.
+
+        Called once at startup by main() — the deterrent's operational
+        status is determined entirely by one-time GPIO setup and does not
+        change at runtime (see DeterrentHandler.is_operational).
+        """
+        with self._lock:
+            self._deterrent_status = DeterrentStatus(
+                configured=configured, operational=operational
+            )
+
+    def get_deterrent_status(self) -> DeterrentStatus:
+        """Return the current deterrent status."""
+        with self._lock:
+            return self._deterrent_status

@@ -10,6 +10,7 @@ import time
 from collections import deque
 from collections.abc import Callable
 from datetime import UTC, datetime
+from pathlib import Path
 
 from werkzeug.serving import make_server
 
@@ -20,6 +21,7 @@ from counter_cruiser.client.alerts.manager import AlertManager
 from counter_cruiser.client.alerts.notifications import NotificationHandler
 from counter_cruiser.client.alerts.snapshot import SnapshotHandler
 from counter_cruiser.client.capture import OpenCVCapture
+from counter_cruiser.client.deterrent_stats import DeterrentStatsStore
 from counter_cruiser.client.transport import ClientSession
 from counter_cruiser.client.web.app import create_app
 from counter_cruiser.client.web.state import AlertHistoryEntry, DashboardState
@@ -81,10 +83,21 @@ class _FpsTracker:
         return (len(self._timestamps) - 1) / span if span > 0 else 0.0
 
 
-def _build_alert_manager(config: ClientSettings) -> AlertManager:
-    """Construct the AlertManager from enabled handlers in *config*."""
+def _build_alert_manager(
+    config: ClientSettings, stats_store: DeterrentStatsStore
+) -> tuple[AlertManager, DeterrentHandler | None]:
+    """Construct the AlertManager from enabled handlers in *config*.
+
+    Returns the manager alongside the constructed DeterrentHandler (or None
+    if disabled) so callers can read its operational status without
+    reaching into the manager's internals.
+    """
     alerts = config.alerts
-    deterrent = DeterrentHandler(alerts.deterrent) if alerts.deterrent.enabled else None
+    deterrent = (
+        DeterrentHandler(alerts.deterrent, stats_store)
+        if alerts.deterrent.enabled
+        else None
+    )
     handlers = []
     if alerts.snapshot.enabled:
         handlers.append(SnapshotHandler(alerts.snapshot))
@@ -92,9 +105,10 @@ def _build_alert_manager(config: ClientSettings) -> AlertManager:
         handlers.append(LogHandler(alerts.log))
     if alerts.notification.enabled:
         handlers.append(NotificationHandler(alerts.notification))
-    return AlertManager(
+    manager = AlertManager(
         handlers=handlers, cooldown_seconds=alerts.cooldown_seconds, deterrent=deterrent
     )
+    return manager, deterrent
 
 
 def main() -> None:
@@ -102,12 +116,17 @@ def main() -> None:
     _configure_logging()
     config = load_client_config()
     history = DetectionHistory()
-    alert_manager = _build_alert_manager(config)
+    stats_store = DeterrentStatsStore(Path(config.alerts.deterrent.stats_db_path))
+    alert_manager, deterrent_handler = _build_alert_manager(config, stats_store)
 
     dashboard_state = DashboardState()
+    dashboard_state.set_deterrent_status(
+        configured=config.alerts.deterrent.enabled,
+        operational=deterrent_handler.is_operational if deterrent_handler else False,
+    )
     zone_store = ZoneStore(config, resolve_client_config_path())
     fps_tracker = _FpsTracker()
-    web_app = create_app(dashboard_state, config, zone_store)
+    web_app = create_app(dashboard_state, config, zone_store, stats_store)
     web_thread = threading.Thread(
         target=_run_web_server,
         args=(web_app, config.web_host, config.web_port),

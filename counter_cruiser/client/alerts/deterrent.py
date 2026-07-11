@@ -2,7 +2,9 @@
 
 The Pi does not generate the ultrasonic tone itself; it drives a BCM pin
 HIGH for a configured duration (simulating the trainer's momentary-press
-button) then LOW, wrapped in try/finally so the pin never stays HIGH.
+button) then LOW, wrapped in try/finally so the pin never stays HIGH. Each
+attempted trigger's outcome is recorded via the injected
+DeterrentStatsStore for the deterrent-usage-stats capability.
 """
 
 from __future__ import annotations
@@ -12,6 +14,7 @@ import time
 from types import ModuleType
 
 from counter_cruiser.client.alerts.context import AlertContext
+from counter_cruiser.client.deterrent_stats import DeterrentStatsStore
 from counter_cruiser.config.models import DeterrentConfig
 
 logger = logging.getLogger(__name__)
@@ -34,9 +37,12 @@ def _import_gpio() -> ModuleType | None:
 class DeterrentHandler:
     """Drives a BCM GPIO pin HIGH then LOW to simulate a trainer button press."""
 
-    def __init__(self, config: DeterrentConfig) -> None:
+    def __init__(
+        self, config: DeterrentConfig, stats_store: DeterrentStatsStore
+    ) -> None:
         """Set up GPIO if enabled; self-disable on any failure."""
         self._config = config
+        self._stats_store = stats_store
         self._gpio: ModuleType | None = None
         self._enabled = config.enabled and self._setup()
 
@@ -54,22 +60,36 @@ class DeterrentHandler:
         self._gpio = gpio
         return True
 
+    @property
+    def is_operational(self) -> bool:
+        """Return whether GPIO setup succeeded and the handler is enabled."""
+        return self._enabled
+
     def trigger(self, context: AlertContext) -> None:
-        """Fire one timed burst: pin HIGH for burst_duration_seconds, then LOW."""
+        """Fire one timed burst: pin HIGH for burst_duration_seconds, then LOW.
+
+        Records the attempt's outcome (succeeded/failed) via the injected
+        stats store. A disabled handler returns before recording anything —
+        no event is written when the deterrent isn't operational, since no
+        real GPIO attempt was made.
+        """
         if not self._enabled or self._gpio is None:
             return
         gpio = self._gpio
         pin = self._config.pin
+        succeeded = True
         try:
             gpio.output(pin, gpio.HIGH)
             time.sleep(self._config.burst_duration_seconds)
         except Exception:
+            succeeded = False
             logger.exception('Deterrent burst failed on pin %s', pin)
         finally:
             try:
                 gpio.output(pin, gpio.LOW)
             except Exception:
                 logger.exception('Error resetting pin %s to LOW', pin)
+            self._stats_store.record(succeeded)
 
     def cleanup(self) -> None:
         """Release the GPIO resource; safe to call even if never set up."""

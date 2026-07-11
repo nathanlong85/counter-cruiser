@@ -14,6 +14,10 @@ from typing import Protocol
 from flask import Flask
 
 from counter_cruiser.client.web.routes_dashboard import register_dashboard_routes
+from counter_cruiser.client.web.routes_deterrent_stats import (
+    DeterrentStatsStoreProtocol,
+    register_deterrent_stats_routes,
+)
 from counter_cruiser.client.web.routes_live_feed import register_live_feed_routes
 from counter_cruiser.client.web.routes_zones import register_zone_routes
 from counter_cruiser.client.web.state import DashboardState
@@ -31,11 +35,14 @@ class ZoneStoreProtocol(Protocol):
 
 
 def create_app(
-    state: DashboardState, settings: ClientSettings, zone_store: ZoneStoreProtocol
+    state: DashboardState,
+    settings: ClientSettings,
+    zone_store: ZoneStoreProtocol,
+    stats_store: DeterrentStatsStoreProtocol,
 ) -> Flask:
     """Build and return a Flask app wired to the injected collaborators."""
     app = Flask(__name__, template_folder=str(_TEMPLATES_DIR))
-    _register_all_routes(app, state, settings, zone_store)
+    _register_all_routes(app, state, settings, zone_store, stats_store)
     return app
 
 
@@ -44,6 +51,7 @@ def _register_all_routes(
     state: DashboardState,
     settings: ClientSettings,
     zone_store: ZoneStoreProtocol,
+    stats_store: DeterrentStatsStoreProtocol,
 ) -> None:
     """Register every route module's handlers on *app*.
 
@@ -54,3 +62,4 @@ def _register_all_routes(
     register_dashboard_routes(app, state)
     register_live_feed_routes(app, state, settings, zone_store)
     register_zone_routes(app, zone_store)
+    register_deterrent_stats_routes(app, state, stats_store)

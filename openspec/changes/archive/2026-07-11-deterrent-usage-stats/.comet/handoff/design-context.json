@@ -1,0 +1,16 @@
+{
+  "change": "deterrent-usage-stats",
+  "phase": "design",
+  "mode": "compact",
+  "canonical_spec": "openspec",
+  "generated_by": "comet-handoff.sh",
+  "context_hash": "0b8a4442ba0b3f6f4adcac4ae4130646575737ec9e16ff49ec0ca58a05f4d97f",
+  "files": [
+    { "path": "openspec/changes/deterrent-usage-stats/proposal.md", "sha256": "e4ce12f3d52abdf8679d47404431f057bf421fe4639d91bda279996ce384aa04" },
+    { "path": "openspec/changes/deterrent-usage-stats/design.md", "sha256": "b6f844a392179853271467304cd0c3aa0926f3903b7ec07ce63d007e7614aced" },
+    { "path": "openspec/changes/deterrent-usage-stats/tasks.md", "sha256": "b7b7992a6b1a0a0b472126b799a84c1f41fa97faeea00e161416d7f8d66f4020" },
+    { "path": "openspec/changes/deterrent-usage-stats/specs/deterrent-control/spec.md", "sha256": "652b17e6b31d388eec2d01bd30244edf506f3aa922d767cf7733e95b67899f6a" },
+    { "path": "openspec/changes/deterrent-usage-stats/specs/deterrent-usage-stats/spec.md", "sha256": "58b6862d6459bcbab57a063f6b3276da22bdeef77bda5827e81c1f427d6f975f" },
+    { "path": "openspec/changes/deterrent-usage-stats/specs/status-dashboard/spec.md", "sha256": "549276bd696cb0816c66fbefd602cc0b39b524e30e56132c70c4e9853a0574da" }
+  ]
+}
