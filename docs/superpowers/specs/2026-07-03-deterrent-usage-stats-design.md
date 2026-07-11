@@ -2,6 +2,8 @@
 comet_change: deterrent-usage-stats
 role: technical-design
 canonical_spec: openspec
+archived-with: 2026-07-11-deterrent-usage-stats
+status: final
 ---
 
 # Deterrent Usage Stats — Technical Design

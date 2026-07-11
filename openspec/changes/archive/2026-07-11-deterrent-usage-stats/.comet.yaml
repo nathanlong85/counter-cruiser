@@ -17,6 +17,6 @@ verification_report: docs/superpowers/reports/2026-07-11-deterrent-usage-stats-v
 branch_status: handled
 created_at: 2026-07-03
 verified_at: 2026-07-11
-archived: false
+archived: true
 handoff_context: openspec/changes/deterrent-usage-stats/.comet/handoff/design-context.json
 handoff_hash: 0b8a4442ba0b3f6f4adcac4ae4130646575737ec9e16ff49ec0ca58a05f4d97f

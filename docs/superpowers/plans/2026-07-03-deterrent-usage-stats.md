@@ -2,6 +2,7 @@
 change: deterrent-usage-stats
 design-doc: docs/superpowers/specs/2026-07-03-deterrent-usage-stats-design.md
 base-ref: a46e684b5210781fd1fb52b2f3b831e794ef469c
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 # Deterrent Usage Stats Implementation Plan
@@ -27,6 +28,7 @@ base-ref: a46e684b5210781fd1fb52b2f3b831e794ef469c
 - SQLite access: fresh `sqlite3.connect(path)` per read/write, `PRAGMA journal_mode=WAL` per connection, no shared long-lived connection, no `threading.Lock` (design.md Storage section) — python-resource-management: treat each access as its own resource lifetime, closed via `with self._connect() as conn:`.
 - `since_days=182` and failure `limit=50` are named module-level constants, not magic numbers, matching `_DEFAULT_ALERT_HISTORY_CAPACITY` in `state.py` (design.md Data Endpoint section) — python-code-style: `SCREAMING_SNAKE_CASE` constants.
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 1: `DeterrentConfig.stats_db_path` field
@@ -78,6 +80,7 @@ git add counter_cruiser/config/models.py tests/config/test_config.py
 git commit -m "feat(deterrent-usage-stats): add DeterrentConfig.stats_db_path"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 2: `DeterrentStatsStore` — SQLite-backed event recorder
@@ -317,6 +320,7 @@ git add counter_cruiser/client/deterrent_stats.py tests/client/test_deterrent_st
 git commit -m "feat(deterrent-usage-stats): add DeterrentStatsStore SQLite recorder"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 3: `DeterrentHandler` — `is_operational` property + trigger recording
@@ -574,6 +578,7 @@ git add counter_cruiser/client/alerts/deterrent.py tests/client/alerts/test_dete
 git commit -m "feat(deterrent-usage-stats): add is_operational and trigger-outcome recording to DeterrentHandler"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 4: `DashboardState` — `DeterrentStatus` + set/get
@@ -678,6 +683,7 @@ git add counter_cruiser/client/web/state.py tests/client/web/test_state.py
 git commit -m "feat(deterrent-usage-stats): add DeterrentStatus to DashboardState"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 5: `/api/deterrent-stats` route + `create_app` wiring
@@ -917,6 +923,7 @@ git add counter_cruiser/client/web/routes_deterrent_stats.py counter_cruiser/cli
 git commit -m "feat(deterrent-usage-stats): add /api/deterrent-stats endpoint"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 6: `/training-progress` route + page skeleton (Python-testable parts)
@@ -1031,6 +1038,7 @@ git add counter_cruiser/client/web/routes_deterrent_stats.py \
 git commit -m "feat(deterrent-usage-stats): add /training-progress route and page skeleton"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 7: `/training-progress` client-side JS — bucketing, SVG chart, failures panel
@@ -1219,6 +1227,7 @@ git commit -m "feat(deterrent-usage-stats): implement training-progress page JS 
 
 > **Note:** Step 3 (manual browser verification) was completed via the chrome-devtools MCP plugin against a standalone Flask instance wired to a real `DeterrentStatsStore`/SQLite DB seeded with the Step 2 worked example (3 today, 2 yesterday, 1 forty-days-ago). Confirmed: day view renders bars matching the traced counts (yesterday=2, today=3, rest 0, out-of-window event dropped) with correct `<title>` tooltips (accessible-name snapshot showed e.g. `"2026-07-11: 3"`); week view toggle re-renders into the expected 2 buckets; changing the failure-count input re-rendered the failures list with zero new entries in the network request list (no `fetch` fired); and a second run with an empty DB and `configured=False` showed "No corrections recorded yet." and the "not configured" status line. Verified 2026-07-11.
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 8: Dashboard summary + operational-status indicator
@@ -1309,6 +1318,7 @@ git add counter_cruiser/client/web/templates/dashboard.html tests/client/web/tes
 git commit -m "feat(deterrent-usage-stats): add deterrent usage summary to the dashboard"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 9: Client integration — wire `DeterrentStatsStore` + `DeterrentStatus` into `main()`
@@ -1584,6 +1594,7 @@ git add counter_cruiser/client/__main__.py tests/client/test_main.py
 git commit -m "feat(deterrent-usage-stats): wire DeterrentStatsStore and DeterrentStatus into main()"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 10: Documentation — `CLAUDE.md` update
@@ -1661,6 +1672,7 @@ git add CLAUDE.md
 git commit -m "docs(deterrent-usage-stats): document DeterrentStatsStore and training-progress page"
 ```
 
+archived-with: 2026-07-11-deterrent-usage-stats
 ---
 
 ### Task 11: Finalization — full suite, coverage, lint, docstrings
