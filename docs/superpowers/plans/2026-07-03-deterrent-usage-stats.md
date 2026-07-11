@@ -1202,7 +1202,7 @@ Expected for `bucketEvents(events, 'week', 26)`: the same 6 events described abo
 
 Record the outcome of this trace in the task's commit message or PR description (e.g. "traced bucketEvents against the 3-events-today/2-yesterday/1-forty-days-ago example; day view: last bucket=3, second-to-last=2, rest=0, out-of-window event dropped; week view: collapses to 1-2 buckets as expected").
 
-- [ ] **Step 3: Manual browser verification**
+- [x] **Step 3: Manual browser verification**
 
 Run the client against a test config with `alerts.deterrent.enabled = true` and a handful of manually-inserted rows in the SQLite stats DB (e.g. via `sqlite3 deterrent_stats.db "INSERT INTO deterrent_events (timestamp_utc, succeeded) VALUES (...)"`), then load `http://localhost:8080/training-progress` in a browser and confirm:
 - The day/week toggle buttons switch the rendered SVG bars.
@@ -1217,7 +1217,7 @@ git add counter_cruiser/client/web/templates/training_progress.html
 git commit -m "feat(deterrent-usage-stats): implement training-progress page JS (bucketing, SVG chart, failures panel)"
 ```
 
-> **Note:** Step 3 (manual browser verification) has not been checked off — no GUI browser is available in the agent execution environment used for this task. Verification to date is a structural code trace (Step 2) plus an HTTP-level smoke test (`GET /training-progress` and `GET /api/deterrent-stats` return 200 via Flask's test client). A human should run the actual Step 3 checklist (toggle buttons, tooltip hover, network-tab check, empty-DB state) in a real browser before this is considered fully verified.
+> **Note:** Step 3 (manual browser verification) was completed via the chrome-devtools MCP plugin against a standalone Flask instance wired to a real `DeterrentStatsStore`/SQLite DB seeded with the Step 2 worked example (3 today, 2 yesterday, 1 forty-days-ago). Confirmed: day view renders bars matching the traced counts (yesterday=2, today=3, rest 0, out-of-window event dropped) with correct `<title>` tooltips (accessible-name snapshot showed e.g. `"2026-07-11: 3"`); week view toggle re-renders into the expected 2 buckets; changing the failure-count input re-rendered the failures list with zero new entries in the network request list (no `fetch` fired); and a second run with an empty DB and `configured=False` showed "No corrections recorded yet." and the "not configured" status line. Verified 2026-07-11.
 
 ---
 
